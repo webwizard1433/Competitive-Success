@@ -257,7 +257,7 @@
                 safeStorage.setItem('sessionToken', 'loggedIn');
 
                 // In a real app, you would redirect to the user's dashboard
-                setTimeout(() => { window.location.href = '/home.html'; }, 1500);
+                setTimeout(() => { window.location.replace('/home.html'); }, 1500);
 
             } catch (error) {
                 showMessage(error.message, 'error');
