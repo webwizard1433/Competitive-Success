@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -181,4 +182,189 @@
     </script>
 
 </body>
+=======
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>History Video Lectures | Competitive Success</title>
+    <style>
+        :root { --primary-color: #007bff; --secondary-color: #6c757d; --background-color: #f4f7f6; --card-background: #ffffff; --text-color: #333; --header-height: 70px; }
+        
+        /* --- Dark Mode --- */
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --background-color: #121212;
+                --card-background: #1e1e1e;
+                --text-color: #e0e0e0;
+            }
+        }
+        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif; background-color: var(--background-color); margin: 0; color: var(--text-color); min-height: 100vh; display: flex; flex-direction: column; }
+        .header { background-color: var(--card-background); box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); height: var(--header-height); display: flex; justify-content: space-between; align-items: center; padding: 0 2rem; position: sticky; top: 0; z-index: 1000; }
+        .logo { font-size: 1.5rem; font-weight: bold; color: var(--primary-color); }
+        .back-link a { color: var(--primary-color); text-decoration: none; font-weight: 600; }
+        .main-container { padding: 2rem; max-width: 1200px; margin: auto; flex-grow: 1; }
+        .page-header { text-align: center; margin-bottom: 2.5rem; }
+        .page-header h1 { font-size: 3rem; color: var(--primary-color); margin: 0; }
+        .page-header p { font-size: 1.2rem; color: var(--secondary-color); }
+        .grid-container { display: grid; grid-template-columns: repeat(2, 1fr); gap: 1.5rem; }
+        .resource-card { background-color: var(--card-background); border-radius: 10px; box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08); overflow: hidden; transition: transform 0.3s ease, box-shadow 0.3s ease; display: flex; flex-direction: column; cursor: pointer; }
+        .resource-card:hover { transform: translateY(-8px); box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15); }
+        .card-thumbnail { width: 100%; height: 160px; background-color: #000; position: relative; overflow: hidden; }
+        .card-thumbnail img { width: 100%; height: 100%; object-fit: cover; }
+        .card-thumbnail .play-icon { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 4rem; color: rgba(255, 255, 255, 0.8); text-shadow: 0 0 15px rgba(0,0,0,0.5); transition: transform 0.2s ease; }
+        .resource-card:hover .play-icon { transform: translate(-50%, -50%) scale(1.1); }
+        .card-content { padding: 1.25rem; flex-grow: 1; }
+        .card-content h3 { margin: 0; font-size: 1.1rem; }
+
+        /* --- Modal (Pop-up) Styles --- */
+        .modal { display: none; position: fixed; z-index: 2000; left: 0; top: 0; width: 100%; height: 100%; overflow: auto; background-color: rgba(0,0,0,0.8); }
+        .modal-content { position: relative; margin: 5% auto; padding: 20px; width: 90%; max-width: 800px; }
+        .close-button { position: absolute; top: -30px; right: 0; color: #fff; font-size: 35px; font-weight: bold; cursor: pointer; }
+        .video-container { position: relative; padding-bottom: 56.25%; /* 16:9 Aspect Ratio */ height: 0; }
+        .video-container iframe { position: absolute; top: 0; left: 0; width: 100%; height: 100%; }
+
+        /* --- Footer --- */
+        .footer {
+            text-align: center;
+            padding: 1.5rem 2rem;
+            background-color: #343a40; /* Dark background for contrast */
+            color: white; /* White text color */
+            font-size: 1.8rem; /* Doubled font size */
+            font-weight: bold; /* Bold text */
+        }
+
+        /* Responsive Grid */
+        @media (min-width: 768px) {
+            .grid-container { grid-template-columns: repeat(3, 1fr); }
+        }
+        @media (min-width: 1024px) {
+            .grid-container { grid-template-columns: repeat(5, 1fr); }
+        }
+    </style>
+</head>
+<body>
+
+    <header class="header">
+        <div class="logo">Competitive Success</div>
+        <div class="back-link">
+            <a href="/upsc-videos.html">← Back to Video Subjects</a>
+        </div>
+    </header>
+
+    <main class="main-container">
+        <div class="page-header">
+            <h1>History Lectures</h1>
+            <p>Click on any video to play it instantly.</p>
+        </div>
+        <div class="grid-container" id="videoGrid">
+            <!-- Video cards will be dynamically inserted here by JavaScript -->
+        </div>
+    </main>
+
+    <!-- The Modal -->
+    <div id="videoModal" class="modal">
+        <div class="modal-content">
+            <span class="close-button" onclick="closeModal()">&times;</span>
+            <div class="video-container">
+                <iframe id="videoPlayer" src="" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+            </div>
+        </div>
+    </div>
+
+    <footer class="footer">
+        Copyright © SKP
+    </footer>
+
+    <script>
+        // Generate 47 placeholder videos
+        const videoData = [
+            { id: '1vEVT0mXZg9VpZig4j4ZZOEOeQQfostCi', title: 'History Lecture 1', type: 'gdrive' }, // Updated to Google Drive
+            ...Array.from({ length: 46 }, (_, i) => ({
+                id: `placeholder_${i + 2}`, // Placeholder ID
+                title: `History Lecture ${i + 2}`
+            }))
+        ];
+
+        const videoGrid = document.getElementById('videoGrid');
+        const modal = document.getElementById('videoModal');
+        const videoPlayer = document.getElementById('videoPlayer');
+
+        // Function to create and append video cards
+        function populateVideos() {
+            const newThumbnailUrl = "https://scontent.fdel8-1.fna.fbcdn.net/v/t39.30808-6/474088006_593794079954029_6249807344591285235_n.jpg?_nc_cat=100&ccb=1-7&_nc_sid=cc71e4&_nc_ohc=5NWNksePZaAQ7kNvwGPGl9P&_nc_oc=AdljlAEO2B3oL3WNSR_3gHlkVaRkN768Ey5RteeJg7bHfV5GuFS_tBdhJ7yG_xa3L4g&_nc_zt=23&_nc_ht=scontent.fdel8-1.fna&_nc_gid=Du960dv9CpCDkmEwe62kUg&oh=00_AfYOsKMulVFnclvpTC3v66cRLbndSRxjxQKSPblgGc7IOQ&oe=68C8A565"; // Corrected URL
+            const medievalThumbnailUrl = "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEixT8Oe-GVYl5M_oXCMXS7Qt9B-i1tkSjwVGrbGnY13VrZZQcAoT58rQdbtHfedj4mjhUnWqlX5rpOA4NDd5P3_XK6E3dRoRw_hyphenhyphenGDTV8uA5n8hix4xgOlyANcsF_skwuk7X5GulIKl/s400/Medieval-India.jpg";
+            const modernThumbnailUrl = "https://i0.wp.com/iasmania.com/wp-content/uploads/2022/11/Modern-India-History.jpg";
+
+            videoData.forEach((video, index) => {
+                const card = document.createElement('div');
+                card.className = 'resource-card';
+                
+                let thumbnailUrl;
+                // Check video index to apply the correct thumbnail based on its number
+                if (index < 9) {
+                    thumbnailUrl = newThumbnailUrl;
+                } else if (index >= 9 && index < 14) { // For videos 10 to 14 (index 9 to 13)
+                    thumbnailUrl = medievalThumbnailUrl;
+                } else if (index >= 14 && index < 47) { // For videos 15 to 47 (index 14 to 46)
+                    thumbnailUrl = modernThumbnailUrl;
+                } else {
+                    thumbnailUrl = video.type === 'gdrive'
+                    ? `https://images.unsplash.com/photo-1598257006624-980a25028048?q=80&w=2070`
+                    : `https://img.youtube.com/vi/${video.id}/hqdefault.jpg`;
+                }
+
+                card.innerHTML = `
+                    <div class="card-thumbnail">
+                        <img src="${thumbnailUrl}" alt="${video.title}" onerror="this.onerror=null;this.src='https://via.placeholder.com/300x160.png?text=History+Lecture'; this.parentElement.style.backgroundColor='#ccc';">
+                        <span class="play-icon">▶</span>
+                    </div>
+                    <div class="card-content">
+                        <h3>${video.title}</h3>
+                    </div>
+                `;
+                card.onclick = () => openModal(video);
+                videoGrid.appendChild(card);
+            });
+        }
+
+        // Function to open the modal and play the video
+        function openModal(video) {
+            let embedUrl = '';
+
+            if (video.id.startsWith('placeholder_')) {
+                alert('This is a placeholder video. The link needs to be updated.');
+                return;
+            }
+
+            if (video.type === 'gdrive') {
+                embedUrl = `https://drive.google.com/file/d/${video.id}/preview`;
+            } else { // Default to YouTube
+                embedUrl = `https://www.youtube.com/embed/${video.id}?autoplay=1`;
+            }
+
+            videoPlayer.src = embedUrl;
+            modal.style.display = "block";
+        }
+
+        // Function to close the modal and stop the video
+        function closeModal() {
+            modal.style.display = "none";
+            videoPlayer.src = ""; // Stop the video by clearing the src
+        }
+
+        // Close the modal if the user clicks outside of the video content
+        window.onclick = function(event) {
+            if (event.target == modal) {
+                closeModal();
+            }
+        }
+
+        // Populate the grid when the page loads
+        document.addEventListener('DOMContentLoaded', populateVideos);
+    </script>
+
+</body>
+>>>>>>> aa7581a97de392c33112f6ee232a430c9ebfde1e
 </html>
