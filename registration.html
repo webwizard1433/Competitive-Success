@@ -260,6 +260,26 @@
     </div>
 
     <script>
+        // --- Safe Storage Utility ---
+        // This checks if localStorage is available. If not, it uses a temporary
+        // in-memory object to prevent the app from crashing on mobile WebViews.
+        const safeStorage = (() => {
+            try {
+                const storage = window.localStorage;
+                storage.setItem('__test__', '1');
+                storage.removeItem('__test__');
+                return storage;
+            } catch (e) {
+                console.warn("localStorage is not available. Using in-memory fallback.");
+                const memoryStore = {};
+                return {
+                    setItem: (key, value) => { memoryStore[key] = value; },
+                    getItem: (key) => memoryStore[key] || null,
+                    removeItem: (key) => { delete memoryStore[key]; }
+                };
+            }
+        })();
+
         const form = document.getElementById('registrationForm');
         const messageDiv = document.getElementById('message');
         const captchaLabel = document.getElementById('captcha-label');
