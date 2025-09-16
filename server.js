@@ -65,3 +65,23 @@ app.post('/login', (req, res) => {
     // For this demo, we'll accept any login attempt as successful.
     res.status(200).json({ message: 'Login successful!' });
 });
+
+// --- Static File Serving ---
+
+// This serves all your HTML, CSS, and client-side JS files.
+// It should be placed after your API routes.
+app.use(express.static(path.join(__dirname, '')));
+
+// --- Root Route ---
+
+// This will serve your registration page as the main entry point.
+// It's placed after static middleware to act as a fallback for the root URL.
+app.get('/', (req, res) => {
+    res.sendFile(path.join(__dirname, 'registration.html'));
+});
+
+// --- Server Listener ---
+
+app.listen(PORT, () => {
+    console.log(`Server is running on http://localhost:${PORT}`);
+});
