@@ -7,9 +7,7 @@
     <link rel="icon" href="/success.png" type="image/png">
     <script>
         // Clear any existing session when the registration page is loaded
-        localStorage.removeItem('sessionToken');
-        localStorage.removeItem('userExamChoice');
-        localStorage.removeItem('userName');
+        // This will be handled by the safeStorage utility below
     </script>
     <style>
         :root {
@@ -260,6 +258,11 @@
     </div>
 
     <script>
+        // Clear session on page load using the safe utility
+        safeStorage.removeItem('sessionToken');
+        safeStorage.removeItem('userExamChoice');
+        safeStorage.removeItem('userName');
+
         // --- Safe Storage Utility ---
         // This checks if localStorage is available. If not, it uses a temporary
         // in-memory object to prevent the app from crashing on mobile WebViews.

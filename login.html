@@ -6,10 +6,28 @@
     <title>Login | Competitive Exam Prep</title>
     <link rel="icon" href="/success.png" type="image/png">
     <script>
+        // --- Safe Storage Utility ---
+        const safeStorage = (() => {
+            try {
+                const storage = window.localStorage;
+                storage.setItem('__test__', '1');
+                storage.removeItem('__test__');
+                return storage;
+            } catch (e) {
+                console.warn("localStorage is not available. Using in-memory fallback.");
+                const memoryStore = {};
+                return {
+                    setItem: (key, value) => { memoryStore[key] = value; },
+                    getItem: (key) => memoryStore[key] || null,
+                    removeItem: (key) => { delete memoryStore[key]; }
+                };
+            }
+        })();
+
         // Clear any existing session when the login page is loaded
-        localStorage.removeItem('sessionToken');
-        localStorage.removeItem('userExamChoice');
-        localStorage.removeItem('userName');
+        safeStorage.removeItem('sessionToken');
+        safeStorage.removeItem('userExamChoice');
+        safeStorage.removeItem('userName');
     </script>
     <style>
         :root {
@@ -236,7 +254,7 @@
 
                 showMessage('Login successful! Redirecting...', 'success');
                 // Set a session token in localStorage
-                localStorage.setItem('sessionToken', 'loggedIn');
+                safeStorage.setItem('sessionToken', 'loggedIn');
 
                 // In a real app, you would redirect to the user's dashboard
                 setTimeout(() => { window.location.href = '/home.html'; }, 1500);

@@ -7,8 +7,26 @@
     <title>Welcome | Competitive Success</title>
     <link rel="icon" href="/success.png" type="image/png">
     <script>
+        // --- Safe Storage Utility ---
+        const safeStorage = (() => {
+            try {
+                const storage = window.localStorage;
+                storage.setItem('__test__', '1');
+                storage.removeItem('__test__');
+                return storage;
+            } catch (e) {
+                console.warn("localStorage is not available. Using in-memory fallback.");
+                const memoryStore = {};
+                return {
+                    setItem: (key, value) => { memoryStore[key] = value; },
+                    getItem: (key) => memoryStore[key] || null,
+                    removeItem: (key) => { delete memoryStore[key]; }
+                };
+            }
+        })();
+
         // Auth check: Redirect to login if no session token is found
-        if (!localStorage.getItem('sessionToken')) {
+        if (!safeStorage.getItem('sessionToken')) {
             // Use replace() to prevent user from clicking "back" to the home page
             window.location.replace('/login.html');
         }
@@ -312,9 +330,9 @@
     <script>
         function logout() {
             // Clear all user-related data from localStorage
-            localStorage.removeItem('sessionToken');
-            localStorage.removeItem('userExamChoice');
-            localStorage.removeItem('userName');
+            safeStorage.removeItem('sessionToken');
+            safeStorage.removeItem('userExamChoice');
+            safeStorage.removeItem('userName');
             window.location.replace('/login.html'); // Use replace for a cleaner logout
         }
         function toggleMenu() {
@@ -360,7 +378,7 @@
         function saveExamChoice() {
             const selectedExam = modalSelect.value;
             // In a real app, you'd save this to the server. Here, we'll save it in localStorage.
-            localStorage.setItem('userExamChoice', selectedExam);
+            safeStorage.setItem('userExamChoice', selectedExam);
             updateDashboard(selectedExam);
             closeEditModal();
         }
@@ -374,7 +392,7 @@
             document.getElementById('startLearningBtn').href = exam.page;
             
             // Update the welcome message if a user name is stored
-            const userName = localStorage.getItem('userName');
+            const userName = safeStorage.getItem('userName');
             if (userName) {
                 document.getElementById('userName').textContent = `Welcome, ${userName}!`;
             }
@@ -385,11 +403,11 @@
             // For demonstration, let's assume the user's name and exam are stored after login
             // In a real app, this data would come from the server.
             // We'll simulate it by checking localStorage.
-            let userExam = localStorage.getItem('userExamChoice');
+            let userExam = safeStorage.getItem('userExamChoice');
 
             if (!userExam) {
                 userExam = 'upsc'; // Default to UPSC if nothing is set
-                localStorage.setItem('userExamChoice', userExam);
+                safeStorage.setItem('userExamChoice', userExam);
             }
 
             // Set the dropdown in the modal to the current choice
@@ -402,7 +420,7 @@
         window.addEventListener('pageshow', function(event) {
             // The persisted property is true if the page is from the back/forward cache
             if (event.persisted) {
-                if (!localStorage.getItem('sessionToken')) {
+                if (!safeStorage.getItem('sessionToken')) {
                     window.location.replace('/login.html');
                 }
             }
