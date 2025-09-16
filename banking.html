@@ -15,6 +15,13 @@
         .page-header h1 { font-size: 3rem; color: var(--primary-color); margin: 0; text-transform: uppercase; }
         .page-header p { font-size: 1.2rem; color: var(--secondary-color); }
         .resource-section { margin-bottom: 3rem; }
+
+        @media (max-width: 600px) {
+            .main-container { padding: 1rem; }
+            .page-header h1 { font-size: 2.2rem; }
+            .section-title { font-size: 1.5rem; }
+        }
+
         .content-wrapper { display: flex; flex-wrap: wrap; gap: 2rem; }
         .content-wrapper > .resource-section { flex: 1; min-width: 300px; }
         .section-title { font-size: 2rem; margin-bottom: 1.5rem; border-bottom: 3px solid var(--primary-color); padding-bottom: 0.5rem; display: inline-block; }
@@ -37,6 +44,10 @@
             color: white; /* White text color */
             font-size: 1.8rem; /* Doubled font size */
             font-weight: bold; /* Bold text */
+        }
+
+        @media (max-width: 600px) {
+            .footer { font-size: 1.2rem; }
         }
     </style>
 </head>
