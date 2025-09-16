@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Polity Video Lectures | Competitive Success</title>
+    <title>Post Independence India Video Lectures | Competitive Success</title>
     <style>
         :root { --primary-color: #007bff; --secondary-color: #6c757d; --background-color: #f4f7f6; --card-background: #ffffff; --text-color: #333; --header-height: 70px; }
         
@@ -40,18 +40,11 @@
         .modal { display: none; position: fixed; z-index: 2000; left: 0; top: 0; width: 100%; height: 100%; overflow: auto; background-color: rgba(0,0,0,0.8); }
         .modal-content { position: relative; margin: 5% auto; padding: 20px; width: 90%; max-width: 800px; }
         .close-button { position: absolute; top: -30px; right: 0; color: #fff; font-size: 35px; font-weight: bold; cursor: pointer; }
-        .video-container { position: relative; padding-bottom: 56.25%; /* 16:9 Aspect Ratio */ height: 0; }
+        .video-container { position: relative; padding-bottom: 56.25%; height: 0; }
         .video-container iframe { position: absolute; top: 0; left: 0; width: 100%; height: 100%; }
 
         /* --- Footer --- */
-        .footer {
-            text-align: center;
-            padding: 1.5rem 2rem;
-            background-color: #343a40; /* Dark background for contrast */
-            color: white; /* White text color */
-            font-size: 1.8rem; /* Doubled font size */
-            font-weight: bold; /* Bold text */
-        }
+        .footer { text-align: center; padding: 1.5rem 2rem; background-color: #343a40; color: white; font-size: 1.8rem; font-weight: bold; }
     </style>
 </head>
 <body>
@@ -65,15 +58,12 @@
 
     <main class="main-container">
         <div class="page-header">
-            <h1>Polity Lectures</h1>
+            <h1>Post Independence India Lectures</h1>
             <p>Click on any video to play it instantly.</p>
         </div>
-        <div class="grid-container" id="videoGrid">
-            <!-- Video cards will be dynamically inserted here by JavaScript -->
-        </div>
+        <div class="grid-container" id="videoGrid"></div>
     </main>
 
-    <!-- The Modal -->
     <div id="videoModal" class="modal">
         <div class="modal-content">
             <span class="close-button" onclick="closeModal()">&times;</span>
@@ -88,26 +78,24 @@
     </footer>
 
     <script>
-        // Generate 41 placeholder videos
-        const videoData = Array.from({ length: 41 }, (_, i) => ({
-            id: `placeholder_${i + 1}`, // Placeholder ID
-            title: `Polity Lecture ${i + 1}`
+        const videoData = Array.from({ length: 6 }, (_, i) => ({
+            id: `placeholder_${i + 1}`,
+            title: `Post Independence Lecture ${i + 1}`
         }));
 
         const videoGrid = document.getElementById('videoGrid');
         const modal = document.getElementById('videoModal');
         const videoPlayer = document.getElementById('videoPlayer');
 
-        // Function to create and append video cards
         function populateVideos() {
-            const thumbnailUrl = "https://getintoias.com/wp-content/uploads/2018/07/Indian-Polity-Study-Material-Notes.jpg";
+            const thumbnailUrl = "https://i0.wp.com/iasmania.com/wp-content/uploads/2022/12/post-independence-india.jpg?fit=820%2C429&ssl=1";
 
             videoData.forEach(video => {
                 const card = document.createElement('div');
                 card.className = 'resource-card';
                 card.innerHTML = `
                     <div class="card-thumbnail">
-                        <img src="${thumbnailUrl}" alt="${video.title}" onerror="this.onerror=null;this.src='https://via.placeholder.com/300x160.png?text=Polity+Lecture'; this.parentElement.style.backgroundColor='#ccc';">
+                        <img src="${thumbnailUrl}" alt="${video.title}" onerror="this.onerror=null;this.src='https://via.placeholder.com/300x160.png?text=Video';">
                         <span class="play-icon">▶</span>
                     </div>
                     <div class="card-content">
@@ -119,39 +107,24 @@
             });
         }
 
-        // Function to open the modal and play the video
         function openModal(video) {
-            let embedUrl = '';
-
             if (video.id.startsWith('placeholder_')) {
                 alert('This is a placeholder video. The link needs to be updated.');
                 return;
             }
-
-            if (video.type === 'gdrive') {
-                embedUrl = `https://drive.google.com/file/d/${video.id}/preview`;
-            } else { // Default to YouTube
-                embedUrl = `https://www.youtube.com/embed/${video.id}?autoplay=1`;
-            }
-
-            videoPlayer.src = embedUrl;
-            modal.style.display = "block";
         }
 
-        // Function to close the modal and stop the video
         function closeModal() {
             modal.style.display = "none";
-            videoPlayer.src = ""; // Stop the video by clearing the src
+            videoPlayer.src = "";
         }
 
-        // Close the modal if the user clicks outside of the video content
         window.onclick = function(event) {
             if (event.target == modal) {
                 closeModal();
             }
         }
 
-        // Populate the grid when the page loads
         document.addEventListener('DOMContentLoaded', populateVideos);
     </script>
 

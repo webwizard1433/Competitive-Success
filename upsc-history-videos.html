@@ -23,7 +23,7 @@
         .page-header { text-align: center; margin-bottom: 2.5rem; }
         .page-header h1 { font-size: 3rem; color: var(--primary-color); margin: 0; }
         .page-header p { font-size: 1.2rem; color: var(--secondary-color); }
-        .grid-container { display: grid; grid-template-columns: repeat(2, 1fr); gap: 1.5rem; }
+        .grid-container { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 1.5rem; }
         .resource-card { background-color: var(--card-background); border-radius: 10px; box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08); overflow: hidden; transition: transform 0.3s ease, box-shadow 0.3s ease; display: flex; flex-direction: column; cursor: pointer; }
         .resource-card:hover { transform: translateY(-8px); box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15); }
         .card-thumbnail { width: 100%; height: 160px; background-color: #000; position: relative; overflow: hidden; }
@@ -55,7 +55,7 @@
             .grid-container { grid-template-columns: repeat(3, 1fr); }
         }
         @media (min-width: 1024px) {
-            .grid-container { grid-template-columns: repeat(5, 1fr); }
+            .grid-container { grid-template-columns: repeat(4, 1fr); }
         }
     </style>
 </head>
@@ -108,7 +108,7 @@
 
         // Function to create and append video cards
         function populateVideos() {
-            const newThumbnailUrl = "https://scontent.fdel8-1.fna.fbcdn.net/v/t39.30808-6/474088006_593794079954029_6249807344591285235_n.jpg?_nc_cat=100&ccb=1-7&_nc_sid=cc71e4&_nc_ohc=5NWNksePZaAQ7kNvwGPGl9P&_nc_oc=AdljlAEO2B3oL3WNSR_3gHlkVaRkN768Ey5RteeJg7bHfV5GuFS_tBdhJ7yG_xa3L4g&_nc_zt=23&_nc_ht=scontent.fdel8-1.fna&_nc_gid=Du960dv9CpCDkmEwe62kUg&oh=00_AfYOsKMulVFnclvpTC3v66cRLbndSRxjxQKSPblgGc7IOQ&oe=68C8A565"; // Corrected URL
+            const newThumbnailUrl = "https://i0.wp.com/detechter.com/wp-content/uploads/2018/02/Ancient-India.jpg?resize=662%2C446&ssl=1"; // New Ancient History thumbnail
             const medievalThumbnailUrl = "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEixT8Oe-GVYl5M_oXCMXS7Qt9B-i1tkSjwVGrbGnY13VrZZQcAoT58rQdbtHfedj4mjhUnWqlX5rpOA4NDd5P3_XK6E3dRoRw_hyphenhyphenGDTV8uA5n8hix4xgOlyANcsF_skwuk7X5GulIKl/s400/Medieval-India.jpg";
             const modernThumbnailUrl = "https://i0.wp.com/iasmania.com/wp-content/uploads/2022/11/Modern-India-History.jpg";
 

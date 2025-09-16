@@ -17,6 +17,18 @@ app.use(express.json());
 // This middleware is for parsing URL-encoded form data.
 app.use(express.urlencoded({ extended: true }));
 
+// --- Middleware to prevent caching of protected pages ---
+const noCache = (req, res, next) => {
+    res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, private');
+    next();
+};
+
+// Apply the no-cache middleware to all routes that should be protected.
+// This ensures the browser always re-validates with the server.
+app.use('/home.html', noCache);
+// Add any other protected pages here, for example:
+// app.use('/upsc.html', noCache);
+
 // --- In-memory "Database" (for demonstration) ---
 // In a real application, you would connect to a database like PostgreSQL or MongoDB.
 const users = [];
@@ -58,6 +70,14 @@ app.post('/login', (req, res) => {
 // This serves all your HTML, CSS, and client-side JS files.
 // It should be placed after your API routes.
 app.use(express.static(path.join(__dirname, '')));
+
+// --- Root Route ---
+
+// This will serve your registration page as the main entry point.
+// It's placed after static middleware to act as a fallback for the root URL.
+app.get('/', (req, res) => {
+    res.sendFile(path.join(__dirname, 'registration.html'));
+});
 
 // --- Server Listener ---
 

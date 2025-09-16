@@ -168,7 +168,7 @@
         <h1>Competitive Success</h1>
         <p class="header-text">Welcome back! Login to access your dashboard.</p>
         
-        <form id="loginForm" novalidate>
+        <form id="loginForm" novalidate autocomplete="off">
             <div class="form-group">
                 <label for="contactInfo">Email or Mobile Number</label>
                 <input type="text" id="contactInfo" name="contactInfo" required>
@@ -177,7 +177,7 @@
             <div class="form-group">
                 <label for="password">Password</label>
                 <div class="password-wrapper">
-                    <input type="password" id="password" name="password" required>
+                    <input type="password" id="password" name="password" required autocomplete="new-password">
                     <span class="toggle-password" onclick="togglePassword('password')">👁️</span>
                 </div>
             </div>
