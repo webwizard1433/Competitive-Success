@@ -123,6 +123,7 @@
             padding: 2rem;
             max-width: 1200px;
             margin: auto;
+            width: 100%;
             box-sizing: border-box; /* Add for predictable sizing */
         }
 
@@ -146,6 +147,7 @@
         }
 
         @media (max-width: 600px) {
+            .main-container { padding: 1rem; }
             .welcome-banner { padding: 1.5rem; }
             .welcome-banner h1 { font-size: 2rem; }
             .welcome-banner p { font-size: 1rem; }
@@ -269,10 +271,6 @@
             </div>
         </section>
     </main>
-
-    <footer class="footer">
-        Copyright © SKP
-    </footer>
 
     <!-- Edit Exam Modal -->
     <div id="editModal" class="modal">
