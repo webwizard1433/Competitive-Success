@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Railways Exams Preparation | Competitive Success</title>
+    <style>
+        :root { --primary-color: #007bff; --secondary-color: #6c757d; --background-color: #f4f7f6; --card-background: #ffffff; --text-color: #333; --header-height: 70px; }
+        
+        /* --- Dark Mode --- */
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --background-color: #121212;
+                --card-background: #1e1e1e;
+                --text-color: #e0e0e0;
+            }
+        }
+        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif; background-color: var(--background-color); margin: 0; color: var(--text-color); }
+        .header { background-color: var(--card-background); box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); height: var(--header-height); display: flex; justify-content: space-between; align-items: center; padding: 0 2rem; position: sticky; top: 0; z-index: 1000; }
+        .logo { font-size: 1.5rem; font-weight: bold; color: var(--primary-color); }
+        .back-link a { color: var(--primary-color); text-decoration: none; font-weight: 600; }
+        .main-container { padding: 2rem; max-width: 1200px; margin: auto; }
+        .page-header { text-align: center; margin-bottom: 2.5rem; }
+        .page-header h1 { font-size: 3rem; color: var(--primary-color); margin: 0; text-transform: uppercase; }
+        .page-header p { font-size: 1.2rem; color: var(--secondary-color); }
+        .resource-section { margin-bottom: 3rem; }
+        .content-wrapper { display: flex; flex-wrap: wrap; gap: 2rem; }
+        .content-wrapper > .resource-section { flex: 1; min-width: 300px; }
+        .section-title { font-size: 2rem; margin-bottom: 1.5rem; border-bottom: 3px solid var(--primary-color); padding-bottom: 0.5rem; display: inline-block; }
+        .grid-container { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 1.5rem; }
+        .resource-card { background-color: var(--card-background); border-radius: 10px; box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08); overflow: hidden; transition: transform 0.3s ease, box-shadow 0.3s ease; display: flex; flex-direction: column; }
+        .resource-card:hover { transform: translateY(-8px); box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15); }
+        .card-thumbnail { width: 100%; height: 160px; object-fit: cover; background-color: #e9ecef; }
+        .card-content { padding: 1.25rem; flex-grow: 1; display: flex; flex-direction: column; }
+        .card-content h3 { margin: 0 0 0.5rem; font-size: 1.2rem; } 
+        .card-content p { margin: 0 0 1rem; color: var(--secondary-color); font-size: 0.9rem; flex-grow: 1; }
+        .btn { display: block; padding: 0.6rem 1.2rem; background-color: var(--primary-color); color: white; text-decoration: none; border-radius: 5px; font-weight: bold; text-align: center; transition: background-color 0.3s ease; margin-top: auto; }
+        .btn:hover { background-color: #0056b3; }
+
+        /* --- Footer --- */
+        .footer {
+            text-align: center;
+            padding: 1.5rem 2rem;
+            margin-top: 2rem;
+            background-color: #343a40; /* Dark background for contrast */
+            color: white; /* White text color */
+            font-size: 1.8rem; /* Doubled font size */
+            font-weight: bold; /* Bold text */
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <div class="logo">Competitive Success</div>
+        <div class="back-link">
+            <a href="/home.html">← Back to Dashboard</a>
+        </div>
+    </header>
+    <main class="main-container">
+        <div class="page-header">
+            <h1>Railways Resources</h1>
+            <p>Your complete guide for RRB NTPC, Group D, and other railway exams.</p>
+        </div>
+        <div class="content-wrapper">
+            <section class="resource-section">
+                <h2 class="section-title">Video Lectures</h2>
+                <div class="grid-container">
+                    <div class="resource-card" style="grid-column: 1 / -1;">
+                        <img class="card-thumbnail" src="https://images.unsplash.com/photo-1516321497487-e288fb19713f?q=80&w=2070" alt="Video lectures icon">
+                        <div class="card-content">
+                            <h3>All Video Lectures</h3>
+                            <p>Access topic-wise video playlists for all subjects.</p>
+                            <a href="/railways-videos.html" class="btn">Browse Videos</a>
+                        </div>
+                    </div>
+                </div>
+            </section>
+            <!-- Previous Year Papers Section (Middle) -->
+            <section class="resource-section">
+                <h2 class="section-title">Previous Year Papers</h2>
+                <div class="grid-container">
+                    <!-- Example Paper Card -->
+                    <div class="resource-card" style="grid-column: 1 / -1;">
+                        <img class="card-thumbnail" src="https://images.unsplash.com/photo-1583489794838-1b8f714759a2?q=80&w=2070" alt="Document icon">
+                        <div class="card-content">
+                            <h3>All Previous Year Papers</h3>
+                            <p>Download solved and unsolved papers from the last 10 years.</p>
+                            <a href="/railways-papers.html" class="btn">Browse Papers</a>
+                        </div>
+                    </div>
+                </div>
+            </section>
+            <section class="resource-section">
+                <h2 class="section-title">Recommended Books</h2>
+                <div class="grid-container">
+                    <div class="resource-card" style="grid-column: 1 / -1;">
+                        <img class="card-thumbnail" src="https://m.media-amazon.com/images/I/61bVlA8q2xL._AC_UF1000,1000_QL80_.jpg" alt="Book Cover">
+                        <div class="card-content">
+                            <h3>All Recommended Books</h3>
+                            <p>Find the best books for every subject, recommended by toppers.</p>
+                            <a href="/railways-books.html" class="btn">Browse Books</a>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </div>
+    </main>
+    <footer class="footer">
+        Copyright © SKP
+    </footer>
+</body>
+</html>

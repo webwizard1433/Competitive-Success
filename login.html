@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login | Competitive Exam Prep</title>
+    <script>
+        // Clear any existing session when the login page is loaded
+        localStorage.removeItem('sessionToken');
+        localStorage.removeItem('userExamChoice');
+        localStorage.removeItem('userName');
+    </script>
+    <style>
+        :root {
+            --primary-color: #007bff;
+            --primary-hover-color: #0056b3;
+            --background-color: #f4f7f6;
+            --form-background: #ffffff;
+            --input-border-color: #ccc;
+            --text-color: #333;
+            --error-color: #dc3545;
+            --success-color: #28a745;
+        }
+
+        /* --- Dark Mode --- */
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --background-color: #121212;
+                --form-background: #1e1e1e;
+                --text-color: #e0e0e0;
+                --input-border-color: #444;
+            }
+        }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            background-color: var(--background-color);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            padding: 0; /* Remove body padding */
+        }
+
+        .container {
+            background-color: var(--form-background);
+            padding: 2rem 3rem;
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 450px;
+            margin: auto; /* Center the container */
+            flex-grow: 1; /* Allow container to grow */
+        }
+
+        h1 {
+            color: var(--text-color);
+            text-align: center;
+            margin-bottom: 0.5rem;
+        }
+
+        .header-text {
+            text-align: center;
+            color: #666;
+            margin-bottom: 2rem;
+        }
+
+        .form-group {
+            margin-bottom: 1.25rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: var(--text-color);
+            font-weight: 600;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid var(--input-border-color);
+            border-radius: 5px;
+            box-sizing: border-box;
+            font-size: 1rem;
+        }
+
+        .form-group input:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.25);
+        }
+
+        .password-wrapper {
+            position: relative;
+        }
+
+        .toggle-password {
+            position: absolute;
+            top: 50%;
+            right: 10px;
+            transform: translateY(-50%);
+            cursor: pointer;
+            user-select: none;
+            color: #777;
+        }
+
+        .btn {
+            width: 100%;
+            padding: 0.85rem;
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-size: 1.1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        .btn:hover {
+            background-color: var(--primary-hover-color);
+        }
+
+        .message {
+            text-align: center;
+            margin-top: 1rem;
+            padding: 0.75rem;
+            border-radius: 5px;
+            display: none;
+        }
+
+        .message.error { background-color: #f8d7da; color: var(--error-color); display: block; }
+        .message.success { background-color: #d4edda; color: var(--success-color); display: block; }
+
+        .form-footer {
+            text-align: center;
+            margin-top: 1.5rem;
+            color: #666;
+        }
+        .form-footer a {
+            color: var(--primary-color);
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        /* --- Footer --- */
+        .footer {
+            text-align: center;
+            padding: 0.75rem 2rem; /* Halved vertical padding */
+            background-color: #343a40; /* Dark background for contrast */
+            color: white; /* White text color */
+            font-size: 1.8rem; /* Doubled font size */
+            font-weight: bold; /* Bold text */
+            width: 100%; box-sizing: border-box;
+        }
+
+        /* Responsive adjustments for smaller screens */
+        @media (max-width: 600px) {
+            .container { padding: 2rem 1.5rem; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h1>Competitive Success</h1>
+        <p class="header-text">Welcome back! Login to access your dashboard.</p>
+        
+        <form id="loginForm" novalidate>
+            <div class="form-group">
+                <label for="contactInfo">Email or Mobile Number</label>
+                <input type="text" id="contactInfo" name="contactInfo" required>
+            </div>
+
+            <div class="form-group">
+                <label for="password">Password</label>
+                <div class="password-wrapper">
+                    <input type="password" id="password" name="password" required>
+                    <span class="toggle-password" onclick="togglePassword('password')">👁️</span>
+                </div>
+            </div>
+
+            <button type="submit" class="btn">Login</button>
+
+            <div id="message" class="message"></div>
+        </form>
+
+        <div class="form-footer">
+            Don't have an account? <a href="/">Register here</a>
+        </div>
+    </div>
+    <footer class="footer">
+         Copyright © SKP
+    </footer>
+
+    <script>
+        function togglePassword(id) {
+            const input = document.getElementById(id);
+            input.type = input.type === 'password' ? 'text' : 'password';
+        }
+
+        const form = document.getElementById('loginForm');
+        form.addEventListener('submit', async function(e) {
+            e.preventDefault();
+            const messageDiv = document.getElementById('message');
+            const submitButton = form.querySelector('button[type="submit"]');
+
+            const contactInfo = form.elements.contactInfo.value.trim();
+            const password = form.elements.password.value;
+
+            if (!contactInfo || !password) {
+                showMessage('Please fill out all fields.', 'error');
+                return;
+            }
+
+            submitButton.disabled = true;
+            submitButton.textContent = 'Logging in...';
+
+            try {
+                const response = await fetch('http://localhost:3000/login', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ contactInfo, password })
+                });
+
+                const result = await response.json();
+
+                if (!response.ok) {
+                    throw new Error(result.message || 'Login failed.');
+                }
+
+                showMessage('Login successful! Redirecting...', 'success');
+                // Set a session token in localStorage
+                localStorage.setItem('sessionToken', 'loggedIn');
+
+                // In a real app, you would redirect to the user's dashboard
+                setTimeout(() => { window.location.href = '/home.html'; }, 1500);
+
+            } catch (error) {
+                showMessage(error.message, 'error');
+            } finally {
+                submitButton.disabled = false;
+                submitButton.textContent = 'Login';
+            }
+        });
+
+        function showMessage(msg, type) {
+            const messageDiv = document.getElementById('message');
+            messageDiv.textContent = msg;
+            messageDiv.className = `message ${type}`;
+        }
+
+        // Clear form fields on page load for security
+        window.addEventListener('DOMContentLoaded', () => {
+            form.elements.contactInfo.value = '';
+            form.elements.password.value = '';
+        });
+    </script>
+
+</body>
+</html>
