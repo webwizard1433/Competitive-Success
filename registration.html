@@ -124,6 +124,7 @@
             background-color: #eee;
             padding: 0.75rem;
             border-radius: 5px;
+            color: #333; /* Explicitly set a dark color for visibility */
             user-select: none;
         }
 
@@ -347,7 +348,9 @@
             submitButton.textContent = 'Registering...';
 
             try {
-                const response = await fetch('/register', {
+                // IMPORTANT: Replace 'YOUR_COMPUTER_IP' with your actual local IP address (e.g., 192.168.1.5)
+                // Both your computer and your mobile device must be on the same Wi-Fi network.
+                const response = await fetch('http://YOUR_COMPUTER_IP:3000/register', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
