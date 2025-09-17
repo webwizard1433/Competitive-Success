@@ -169,6 +169,64 @@
             color: var(--text-color);
         }
 
+        /* --- Search Bar --- */
+        .search-container {
+            padding: 0 2rem 1.5rem;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        .search-bar {
+            background-color: var(--card-background);
+            border: 1px solid var(--card-border-color);
+            border-radius: 50px;
+            padding: 0.75rem 1.5rem;
+            cursor: pointer;
+            text-align: left;
+            color: var(--secondary-text-color);
+            width: 100%;
+            box-sizing: border-box;
+        }
+
+        /* --- Search Popup --- */
+        .search-popup {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(10, 35, 66, 0.95);
+            backdrop-filter: blur(10px);
+            z-index: 2000;
+            display: none; /* Hidden by default */
+            flex-direction: column;
+            padding: 2rem;
+            box-sizing: border-box;
+        }
+        .search-popup-input {
+            width: 100%;
+            max-width: 700px;
+            margin: 2rem auto;
+            padding: 1rem;
+            font-size: 1.5rem;
+            border-radius: 5px;
+            border: 1px solid var(--card-border-color);
+            background-color: var(--card-background);
+            color: var(--text-color);
+        }
+        .search-results {
+            max-width: 700px;
+            width: 100%;
+            margin: 0 auto;
+            overflow-y: auto;
+        }
+        .search-popup .close-btn { position: absolute; top: 2rem; right: 2rem; font-size: 2.5rem; color: white; cursor: pointer; }
+        .search-results a { display: block; padding: 1rem; color: var(--text-color); text-decoration: none; border-bottom: 1px solid var(--card-border-color); }
+        .search-results a:hover { background-color: rgba(255, 255, 255, 0.1); }
+        .search-results a.active {
+            background-color: var(--primary-color);
+            color: #0A2342;
+        }
+
         .center-content {
             display: flex; /* Changed to flex */
             flex-wrap: wrap; /* Allow wrapping on smaller screens */
@@ -286,6 +344,12 @@
                     <img src="https://st4.depositphotos.com/1842549/20934/i/450/depositphotos_209344954-stock-photo-success-icon-internet-button-white.jpg" alt="Competitive Success Logo">
                 </div>
             </div>
+            <!-- Search Bar -->
+            <div class="search-container">
+                <div class="search-bar" onclick="openSearch()">
+                    &#x1F50D; Search for any exam or subject...
+                </div>
+            </div>
             <div class="center-content">
                     <div class="thumbnail-card">
                         <!-- The image and text would be dynamically set based on the user's selected exam -->
@@ -307,8 +371,20 @@
         </section>
     </main>
 
+    <!-- Search Popup -->
+    <div id="searchPopup" class="search-popup">
+        <span class="close-btn" onclick="closeSearch()">&times;</span>
+        <input type="text" id="searchInput" class="search-popup-input" placeholder="Type to search...">
+        <div id="searchResults" class="search-results"></div>
+    </div>
+
     <script>
         // --- Dynamic Content & Modal Logic ---
+
+        // --- Search Data ---
+        const searchableContent = [
+            // This will be populated dynamically
+        ];
 
         const examData = {
             upsc: { name: "UPSC", image: "https://images.unsplash.com/photo-1523240795612-9a054b0db644?q=80&w=2070", page: "/upsc.html",
@@ -395,12 +471,154 @@
             }
         }
 
+        // --- Search Functionality ---
+        const searchPopup = document.getElementById('searchPopup');
+        const searchInput = document.getElementById('searchInput');
+        const searchResults = document.getElementById('searchResults');
+
+        function openSearch() {
+            searchPopup.style.display = 'flex';
+            searchInput.focus();
+        }
+
+        function closeSearch() {
+            searchPopup.style.display = 'none';
+            searchInput.value = '';
+            searchResults.innerHTML = '';
+        }
+
+        function buildSearchIndex() {
+            // Add main exam pages
+            for (const key in examData) {
+                if (examData[key].page !== '#') {
+                    searchableContent.push({ name: examData[key].name, link: examData[key].page });
+                }
+            }
+            // Manually add video folder pages
+            searchableContent.push({ name: 'UPSC History Videos', link: '/upsc-history-videos.html' });
+            searchableContent.push({ name: 'UPSC Geography Videos', link: '/upsc-geography-videos.html' });
+            searchableContent.push({ name: 'UPSC Polity Videos', link: '/upsc-polity-videos.html' });
+            searchableContent.push({ name: 'UPSC Economy Videos', link: '/upsc-economy-videos.html' });
+            searchableContent.push({ name: 'UPSC World History Videos', link: '/upsc-world-history-videos.html' });
+            searchableContent.push({ name: 'UPSC International Relations Videos', link: '/upsc-ir-videos.html' });
+            searchableContent.push({ name: 'UPSC Biology Videos', link: '/upsc-biology-videos.html' });
+            searchableContent.push({ name: 'UPSC Maps Videos', link: '/upsc-maps-videos.html' });
+            searchableContent.push({ name: 'UPSC Art & Culture Videos', link: '/upsc-art-culture-videos.html' });
+            searchableContent.push({ name: 'UPSC Post Independence Videos', link: '/upsc-post-independence-videos.html' });
+            searchableContent.push({ name: 'SSC-CGL Quant Videos', link: '/ssc-cgl-quant-videos.html' });
+
+            // Add individual lectures
+            const ssc_cgl_quant_videos = [ { id: "anhbMmxLSiU", title: "Day 1 | 75 Days Maths Hard Challenge" }, { id: "13lhhdfulYk", title: "Day 2 | 75 Days Maths Hard Challenge" }, { id: "uIgfE1yWHMs", title: "Day 3 | 75 Days Maths Hard Challenge" }, { id: "HvwaRsvUwQI", title: "Day 4 | 75 Days Maths Hard Challenge" }, { id: "KNJntHXUrOA", title: "Day 5 | 75 Days Maths Hard Challenge" }, { id: "m5mKtzU7T9I", title: "Day 6 | 75 Days Maths Hard Challenge" }, { id: "kFsw5NbaN5s", title: "Day 7 | 75 Days Maths Hard Challenge" }, { id: "qbNzR6eLdXQ", title: "Day 8 | 75 Days Maths Hard Challenge" }, { id: "m0GZ1TiJIX4", title: "Day 9 | 75 Days Maths Hard Challenge" }, { id: "iS1suoSyuTg", title: "Day 10 | 75 Days Maths Hard Challenge" }, { id: "GoaN-Lp2GvY", title: "Day 11 | 75 Days Maths Hard Challenge" }, { id: "uTkx2WSf5Sg", title: "Day 12 | 75 Days Maths Hard Challenge" }, { id: "1uFbJWf8M28", title: "Day 13 | 75 Days Maths Hard Challenge" }, { id: "NyXzvPDyCyY", title: "Day 14 | 75 Days Maths Hard Challenge" }, { id: "n_Lln6kNSN8", title: "Day 15 | 75 Days Maths Hard Challenge" }, { id: "_ahnSXEjHPU", title: "Day 16 | 75 Days Maths Hard Challenge" }, { id: "4vqHnuid4hQ", title: "Day 17 | 75 Days Maths Hard Challenge" }, { id: "n_Lln6kNSN8", title: "Day 18 | 75 Days Maths Hard Challenge" }, { id: "_ahnSXEjHPU", title: "Day 19 | 75 Days Maths Hard Challenge" }, { id: "4vqHnuid4hQ", title: "Day 20 | 75 Days Maths Hard Challenge" }, { id: "s_t_u_v_w_x", title: "Day 21 | 75 Days Maths Hard Challenge" }, { id: "y_z_A_B_C_D", title: "Day 22 | 75 Days Maths Hard Challenge" }, { id: "E_F_G_H_I_J", title: "Day 23 | 75 Days Maths Hard Challenge" }, { id: "K_L_M_N_O_P", title: "Day 24 | 75 Days Maths Hard Challenge" }, { id: "Q_R_S_T_U_V", title: "Day 25 | 75 Days Maths Hard Challenge" }, { id: "W_X_Y_Z_1_2", title: "Day 26 | 75 Days Maths Hard Challenge" }, { id: "3_4_5_6_7_8", title: "Day 27 | 75 Days Maths Hard Challenge" }, { id: "9_0_A_B_C_D", title: "Day 28 | 75 Days Maths Hard Challenge" }, { id: "E_F_G_H_I_J", title: "Day 29 | 75 Days Maths Hard Challenge" }, { id: "K_L_M_N_O_P", title: "Day 30 | 75 Days Maths Hard Challenge" }, { id: "Q_R_S_T_U_V", title: "Day 31 | 75 Days Maths Hard Challenge" }, { id: "W_X_Y_Z_1_2", title: "Day 32 | 75 Days Maths Hard Challenge" }, { id: "3_4_5_6_7_8", title: "Day 33 | 75 Days Maths Hard Challenge" }, { id: "9_0_A_B_C_D", title: "Day 34 | 75 Days Maths Hard Challenge" }, { id: "E_F_G_H_I_J", title: "Day 35 | 75 Days Maths Hard Challenge" }, { id: "K_L_M_N_O_P", title: "Day 36 | 75 Days Maths Hard Challenge" }, { id: "Q_R_S_T_U_V", title: "Day 37 | 75 Days Maths Hard Challenge" }, { id: "W_X_Y_Z_1_2", title: "Day 38 | 75 Days Maths Hard Challenge" }, { id: "3_4_5_6_7_8", title: "Day 39 | 75 Days Maths Hard Challenge" }, { id: "9_0_A_B_C_D", title: "Day 40 | 75 Days Maths Hard Challenge" }, { id: "E_F_G_H_I_J", title: "Day 41 | 75 Days Maths Hard Challenge" }, { id: "K_L_M_N_O_P", title: "Day 42 | 75 Days Maths Hard Challenge" }, { id: "Q_R_S_T_U_V", title: "Day 43 | 75 Days Maths Hard Challenge" }, { id: "W_X_Y_Z_1_2", title: "Day 44 | 75 Days Maths Hard Challenge" }, { id: "3_4_5_6_7_8", title: "Day 45 | 75 Days Maths Hard Challenge" }, { id: "9_0_A_B_C_D", title: "Day 46 | 75 Days Maths Hard Challenge" }, { id: "E_F_G_H_I_J", title: "Day 47 | 75 Days Maths Hard Challenge" }, { id: "K_L_M_N_O_P", title: "Day 48 | 75 Days Maths Hard Challenge" }, { id: "Q_R_S_T_U_V", title: "Day 49 | 75 Days Maths Hard Challenge" }, { id: "W_X_Y_Z_1_2", title: "Day 50 | 75 Days Maths Hard Challenge" }, { id: "3_4_5_6_7_8", title: "Day 51 | 75 Days Maths Hard Challenge" }, { id: "9_0_A_B_C_D", title: "Day 52 | 75 Days Maths Hard Challenge" }, { id: "E_F_G_H_I_J", title: "Day 53 | 75 Days Maths Hard Challenge" }, { id: "K_L_M_N_O_P", title: "Day 54 | 75 Days Maths Hard Challenge" }, { id: "Q_R_S_T_U_V", title: "Day 55 | 75 Days Maths Hard Challenge" }, { id: "W_X_Y_Z_1_2", title: "Day 56 | 75 Days Maths Hard Challenge" }, { id: "3_4_5_6_7_8", title: "Day 57 | 75 Days Maths Hard Challenge" }, { id: "9_0_A_B_C_D", title: "Day 58 | 75 Days Maths Hard Challenge" }, { id: "E_F_G_H_I_J", title: "Day 59 | 75 Days Maths Hard Challenge" }, { id: "K_L_M_N_O_P", title: "Day 60 | 75 Days Maths Hard Challenge" }, { id: "Q_R_S_T_U_V", title: "Day 61 | 75 Days Maths Hard Challenge" }, { id: "W_X_Y_Z_1_2", title: "Day 62 | 75 Days Maths Hard Challenge" }, { id: "3_4_5_6_7_8", title: "Day 63 | 75 Days Maths Hard Challenge" }, { id: "9_0_A_B_C_D", title: "Day 64 | 75 Days Maths Hard Challenge" }, { id: "E_F_G_H_I_J", title: "Day 65 | 75 Days Maths Hard Challenge" }, { id: "K_L_M_N_O_P", title: "Day 66 | 75 Days Maths Hard Challenge" }, { id: "Q_R_S_T_U_V", title: "Day 67 | 75 Days Maths Hard Challenge" }, { id: "W_X_Y_Z_1_2", title: "Day 68 | 75 Days Maths Hard Challenge" }, { id: "3_4_5_6_7_8", title: "Day 69 | 75 Days Maths Hard Challenge" }, { id: "9_0_A_B_C_D", title: "Day 70 | 75 Days Maths Hard Challenge" }, { id: "E_F_G_H_I_J", title: "Day 71 | 75 Days Maths Hard Challenge" }, { id: "K_L_M_N_O_P", title: "Day 72 | 75 Days Maths Hard Challenge" }, { id: "Q_R_S_T_U_V", title: "Day 73 | 75 Days Maths Hard Challenge" }, { id: "W_X_Y_Z_1_2", title: "Day 74 | 75 Days Maths Hard Challenge" }, { id: "3_4_5_6_7_8", title: "Day 75 | 75 Days Maths Hard Challenge" } ];
+            ssc_cgl_quant_videos.forEach(video => searchableContent.push({ name: `SSC CGL Quant: ${video.title}`, link: `/ssc-cgl-quant-videos.html` }));
+
+            const upsc_history_videos = Array.from({ length: 47 }, (_, i) => ({ title: `History Lecture ${i + 1}` }));
+            upsc_history_videos.forEach(video => searchableContent.push({ name: `UPSC: ${video.title}`, link: `/upsc-history-videos.html` }));
+
+            const upsc_geography_videos = Array.from({ length: 39 }, (_, i) => ({ title: `Geography Lecture ${i + 1}` }));
+            upsc_geography_videos.forEach(video => searchableContent.push({ name: `UPSC: ${video.title}`, link: `/upsc-geography-videos.html` }));
+
+            const upsc_polity_videos = Array.from({ length: 41 }, (_, i) => ({ title: `Polity Lecture ${i + 1}` }));
+            upsc_polity_videos.forEach(video => searchableContent.push({ name: `UPSC: ${video.title}`, link: `/upsc-polity-videos.html` }));
+
+            const upsc_economy_videos = Array.from({ length: 55 }, (_, i) => ({ title: `Economy Lecture ${i + 1}` }));
+            upsc_economy_videos.forEach(video => searchableContent.push({ name: `UPSC: ${video.title}`, link: `/upsc-economy-videos.html` }));
+
+            const upsc_world_history_videos = Array.from({ length: 14 }, (_, i) => ({ title: `World History Lecture ${i + 1}` }));
+            upsc_world_history_videos.forEach(video => searchableContent.push({ name: `UPSC: ${video.title}`, link: `/upsc-world-history-videos.html` }));
+
+            const upsc_ir_videos = Array.from({ length: 23 }, (_, i) => ({ title: `IR Lecture ${i + 1}` }));
+            upsc_ir_videos.forEach(video => searchableContent.push({ name: `UPSC: ${video.title}`, link: `/upsc-ir-videos.html` }));
+
+            const upsc_biology_videos = Array.from({ length: 7 }, (_, i) => ({ title: `Biology Lecture ${i + 1}` }));
+            upsc_biology_videos.forEach(video => searchableContent.push({ name: `UPSC: ${video.title}`, link: `/upsc-biology-videos.html` }));
+
+            const upsc_maps_videos = Array.from({ length: 9 }, (_, i) => ({ title: `Maps Lecture ${i + 1}` }));
+            upsc_maps_videos.forEach(video => searchableContent.push({ name: `UPSC: ${video.title}`, link: `/upsc-maps-videos.html` }));
+
+            const upsc_art_culture_videos = Array.from({ length: 18 }, (_, i) => ({ title: `Art & Culture Lecture ${i + 1}` }));
+            upsc_art_culture_videos.forEach(video => searchableContent.push({ name: `UPSC: ${video.title}`, link: `/upsc-art-culture-videos.html` }));
+
+            const upsc_post_independence_videos = Array.from({ length: 6 }, (_, i) => ({ title: `Post Independence Lecture ${i + 1}` }));
+            upsc_post_independence_videos.forEach(video => searchableContent.push({ name: `UPSC: ${video.title}`, link: `/upsc-post-independence-videos.html` }));
+
+            // Add main resource pages
+            searchableContent.push({ name: 'UPSC Books', link: '/upsc-books.html' });
+            searchableContent.push({ name: 'UPSC Previous Year Papers', link: '/upsc-papers.html' });
+            searchableContent.push({ name: 'CDS Books', link: '/cds-books.html' });
+            searchableContent.push({ name: 'CDS Previous Year Papers', link: '/cds-papers.html' });
+            searchableContent.push({ name: 'NDA Books', link: '/nda-books.html' });
+            searchableContent.push({ name: 'NDA Previous Year Papers', link: '/nda-papers.html' });
+            searchableContent.push({ name: 'SSC-CGL Books', link: '/ssc-cgl-books.html' });
+            searchableContent.push({ name: 'SSC-CGL Previous Year Papers', link: '/ssc-cgl-papers.html' });
+            searchableContent.push({ name: 'Railways Books', link: '/railways-books.html' });
+            searchableContent.push({ name: 'Railways Previous Year Papers', link: '/railways-papers.html' });
+            searchableContent.push({ name: 'Banking Books', link: '/banking-books.html' });
+            searchableContent.push({ name: 'Banking Previous Year Papers', link: '/banking-papers.html' });
+        }
+
+        searchInput.addEventListener('input', (e) => {
+            const query = e.target.value.toLowerCase();
+            searchResults.innerHTML = '';
+            if (query.length < 2) return;
+
+            const filtered = searchableContent.filter(item => item.name.toLowerCase().includes(query));
+
+            filtered.forEach(item => {
+                const a = document.createElement('a');
+                a.href = item.link;
+                a.textContent = item.name;
+                searchResults.appendChild(a);
+            });
+        });
+
+        searchInput.addEventListener('keydown', (e) => {
+            const results = searchResults.getElementsByTagName('a');
+            if (results.length === 0) return;
+
+            let activeIndex = -1;
+            for (let i = 0; i < results.length; i++) {
+                if (results[i].classList.contains('active')) {
+                    activeIndex = i;
+                    break;
+                }
+            }
+
+            if (e.key === 'ArrowDown') {
+                e.preventDefault();
+                if (activeIndex !== -1) {
+                    results[activeIndex].classList.remove('active');
+                }
+                activeIndex = (activeIndex + 1) % results.length;
+                results[activeIndex].classList.add('active');
+                results[activeIndex].scrollIntoView({ block: 'nearest' });
+            } else if (e.key === 'ArrowUp') {
+                e.preventDefault();
+                if (activeIndex !== -1) {
+                    results[activeIndex].classList.remove('active');
+                }
+                activeIndex = (activeIndex - 1 + results.length) % results.length;
+                results[activeIndex].classList.add('active');
+                results[activeIndex].scrollIntoView({ block: 'nearest' });
+            } else if (e.key === 'Enter') {
+                if (activeIndex !== -1) {
+                    results[activeIndex].click();
+                }
+            }
+        });
+
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape' && searchPopup.style.display === 'flex') closeSearch();
+        });
+
         // On page load, check for a saved choice and update the dashboard
         document.addEventListener('DOMContentLoaded', () => {
             // Default to UPSC every time, as caching is disabled.
             const userExam = 'upsc';
             populateExamMenu(userExam);
             updateDashboard(userExam);
+
+            // Build the search index
+            buildSearchIndex();
 
             // Add a listener to the main content area to remove blur before navigating
             const mainContainer = document.querySelector('.main-container');
