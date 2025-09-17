@@ -114,17 +114,19 @@
         }
 
         .captcha-group {
-            display: flex;
-            align-items: center;
+            display: flex; /* Changed to flex for alignment */
+            flex-direction: column; /* Stack items vertically */
+            align-items: stretch; /* Stretch items to full width */
             gap: 10px;
         }
 
         #captcha-label {
             font-weight: bold;
             background-color: #eee;
-            padding: 0.75rem;
+            padding: 0.85rem; /* Match button height */
             border-radius: 5px;
-            color: #333; /* Explicitly set a dark color for visibility */
+            color: #333; /* Ensure text is visible */
+            text-align: center; /* Center the captcha text */
             user-select: none;
         }
 
@@ -189,7 +191,6 @@
 
         /* Responsive adjustments for smaller screens */
         @media (max-width: 600px) {
-            .captcha-group { flex-direction: column; align-items: stretch; }
         }
     </style>
 </head>
