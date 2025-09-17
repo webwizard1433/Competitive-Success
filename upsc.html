@@ -8,18 +8,18 @@
     <link rel="icon" href="/success.png" type="image/png">
     <style>
         :root {
-            --primary-color: #FFC107; /* Gold */
-            --primary-hover-color: #DAA520; /* Darker Gold */
-            --background-color: #0A2342; /* Deep Blue */
-            --card-background: #D2B48C; /* Tan */
-            --text-color: #0A2342; /* Deep Blue on Tan */
-            --header-text-color: #F5F5DC; /* Beige on Deep Blue */
-            --secondary-text-color: #5a3a1a; /* Darker tan for secondary text */
+            --primary-color: #FFC107; /* Gold for accents */
+            --primary-hover-color: #DAA520;
+            --card-background: rgba(255, 255, 255, 0.05); /* Slightly transparent white */
+            --card-border-color: rgba(255, 255, 255, 0.2);
+            --text-color: #F5F5DC; /* Beige/Off-white */
+            --secondary-text-color: #adb5bd; /* Lighter gray for secondary text */
             --header-height: 70px;
         }
 
         body {
             min-height: 100vh;
+            background: linear-gradient(135deg, rgb(10, 35, 66) 0%, rgb(0, 26, 51) 100%);
             display: flex;
             flex-direction: column;
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
@@ -30,7 +30,7 @@
 
         /* --- Header --- */
         .header {
-            background-color: #001a33; /* Slightly lighter blue for header */
+            background-color: var(--card-background);
             box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
             height: var(--header-height);
             display: flex;
@@ -46,11 +46,11 @@
         .logo {
             font-size: 1.5rem;
             font-weight: bold;
-            color: var(--header-text-color);
+            color: var(--text-color);
         }
 
         .back-link a {
-            color: var(--header-text-color);
+            color: var(--text-color);
             text-decoration: none;
             font-weight: 600;
         }
@@ -79,7 +79,7 @@
 
         .page-header p {
             font-size: 1.2rem;
-            color: var(--header-text-color);
+            color: var(--text-color);
         }
 
         @media (max-width: 600px) {
@@ -97,7 +97,7 @@
         .section-title {
             font-size: 2rem;
             margin-bottom: 1.5rem;
-            border-bottom: 3px solid var(--header-text-color);
+            border-bottom: 3px solid var(--card-border-color);
             padding-bottom: 0.5rem;
             display: inline-block;
         }
@@ -125,9 +125,10 @@
             border-radius: 10px;
             box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
             overflow: hidden;
+            backdrop-filter: blur(5px);
+            border: 1px solid var(--card-border-color);
             transition: transform 0.3s ease, box-shadow 0.3s ease;
             display: flex;
-            color: var(--text-color); /* Set text color for cards */
             flex-direction: column;
         }
 
@@ -165,7 +166,7 @@
         .btn {
             display: block;
             padding: 0.6rem 1.2rem;
-            background-color: var(--text-color);
+            background-color: var(--primary-color);
             color: white;
             text-decoration: none;
             border-radius: 5px;
