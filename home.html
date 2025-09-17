@@ -42,6 +42,7 @@
             background: linear-gradient(135deg, rgb(10, 35, 66) 0%, rgb(0, 26, 51) 100%);
             margin: 0;
             color: var(--text-color);
+            padding-left: 0; /* Remove default padding */
             background-attachment: fixed; /* Prevents gradient from scrolling with content */
         }
 
@@ -50,57 +51,70 @@
             background-color: var(--card-background);
             box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
             height: var(--header-height);
-            display: flex;
-            justify-content: space-between;
+            display: grid;
+            grid-template-columns: 1fr auto 1fr;
             align-items: center;
-            padding: 0 2rem;
-            box-sizing: border-box; /* Add for predictable sizing */
             position: sticky;
             top: 0;
             z-index: 1000;
+            box-sizing: border-box; /* Add for predictable sizing */
+            padding: 0 2rem;
         }
+
+        /* --- New Flip Menu (Left Sidebar) --- */
+        .side-menu {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 250px;
+            transform: translateX(-100%); /* Hidden by default */
+            height: 100%;
+            background-color: var(--card-background);
+            backdrop-filter: blur(10px);
+            border-right: 1px solid var(--card-border-color);
+            padding: 1.5rem;
+            padding-top: calc(var(--header-height) + 1rem); /* Space for header */
+            box-sizing: border-box;
+            overflow-y: auto;
+            z-index: 1100; /* Above header */
+            transition: transform 0.3s ease-in-out;
+        }
+
+        .side-menu.open {
+            transform: translateX(0);
+        }
+
+        body.menu-open .main-container {
+            filter: blur(5px) brightness(0.7);
+            transform: scale(0.98);
+            pointer-events: none; /* Prevent interaction with blurred background */
+            user-select: none; /* Prevent text selection on blurred background */
+            transition: filter 0.3s ease-in-out, transform 0.3s ease-in-out;
+        }
+        .side-menu h2 {
+            font-size: 1.5rem;
+            color: var(--primary-color);
+            margin: 0 0 1.5rem 0;
+            text-align: center;
+        }
+        .side-menu ul { list-style: none; padding: 0; margin: 0; }
+        .side-menu li a {
+            display: block;
+            color: var(--text-color);
+            text-decoration: none;
+            padding: 0.8rem 1rem;
+            border-radius: 5px;
+            margin-bottom: 0.5rem;
+            transition: background-color 0.3s ease;
+        }
+        .side-menu li a:hover, .side-menu li a.active { background-color: rgba(255, 255, 255, 0.2); }
 
         .logo {
             font-size: 1.5rem;
             font-weight: bold;
             color: var(--text-color);
-        }
-
-        .profile-menu {
-            position: relative;
-        }
-
-        .menu-icon {
-            cursor: pointer;
-            font-size: 1.8rem;
-            display: flex;
-            flex-direction: column;
-            gap: 4px;
-        }
-
-        .menu-icon .bar {
-            width: 28px;
-            height: 3px;
-            background-color: var(--text-color);
-            border-radius: 2px;
-            transition: all 0.3s ease-in-out;
-        }
-
-        @media (prefers-color-scheme: dark) {
-            .menu-icon .bar { background-color: #e0e0e0; }
-        }
-
-        .dropdown-content {
-            display: none;
-            position: absolute;
-            right: 0;
-            top: 45px;
-            background-color: var(--card-background);
-            min-width: 160px;
-            box-shadow: 0 8px 16px rgba(0,0,0,0.2);
-            border-radius: 8px;
-            overflow: hidden;
-            z-index: 1;
+            font-size: 3rem;
+            text-align: center;
         }
 
         .dropdown-content a {
@@ -120,10 +134,6 @@
             background-color: #f1f1f1;
         }
 
-        .profile-menu.active .dropdown-content {
-            display: block;
-        }
-
         /* --- Main Content --- */
         .main-container {
             padding: 2rem; 
@@ -133,38 +143,27 @@
             box-sizing: border-box; /* Add for predictable sizing */
         }
 
-        .welcome-banner {
-            background: rgba(255, 255, 255, 0.1);
-            color: white;
-            padding: 2rem;
-            border-radius: 10px;
-            margin-bottom: 2rem;
-        }
-
-        .welcome-banner h1 {
-            margin: 0;
-            font-size: 2.5rem;
-        }
-
-        .welcome-banner p {
-            margin: 0.5rem 0 0;
-            font-size: 1.2rem;
-            opacity: 0.9;
-        }
-
         @media (max-width: 600px) {
             .main-container { padding: 1rem; }
-            .welcome-banner { padding: 1.5rem; }
-            .welcome-banner h1 { font-size: 2rem; }
-            .welcome-banner p { font-size: 1rem; }
         }
 
         /* --- Exam Thumbnail Section --- */
-        .content-section h2 {
-            font-size: 1.8rem;
+        .section-header {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
             margin-bottom: 1.5rem;
             border-bottom: 2px solid var(--card-border-color);
             padding-bottom: 0.5rem;
+        }
+        .section-header h2 {
+            font-size: 1.8rem;
+            margin: 0;
+        }
+        .menu-toggle {
+            font-size: 1.8rem;
+            cursor: pointer;
+            color: var(--text-color);
         }
 
         .thumbnail-card {
@@ -228,30 +227,19 @@
 </head>
 <body>
 
-    <header class="header">
-        <div class="logo">Competitive Success</div>
-        <div class="profile-menu" id="profileMenu">
-            <div class="menu-icon" onclick="toggleMenu()">
-                <div class="bar"></div>
-                <div class="bar"></div>
-                <div class="bar"></div>
-            </div>
-            <div class="dropdown-content">
-                <!-- This will open the modal -->
-                <a href="#" onclick="openEditModal()">Edit Exam</a>
-            </div>
-        </div>
-    </header>
+    <aside class="side-menu" id="examMenu">
+        <h2>Select Exam</h2>
+        <ul id="examList">
+            <!-- Exam links will be populated by JavaScript -->
+        </ul>
+    </aside>
 
     <main class="main-container">
-        <div class="welcome-banner">
-            <!-- This name would be dynamically inserted from user data -->
-            <h1 id="userName">Welcome, User!</h1>
-            <p>Ready to ace your exam? Let's get started.</p>
-        </div>
-
         <section class="content-section">
-            <h2>Your Focus Area</h2>
+            <div class="section-header">
+                <div class="menu-toggle" onclick="toggleSideMenu()">&#9776;</div>
+                <h2>Your Focus Area</h2>
+            </div>
             <div class="thumbnail-card">
                 <!-- The image and text would be dynamically set based on the user's selected exam -->
                 <img id="examImage" src="https://images.unsplash.com/photo-1523240795612-9a054b0db644?q=80&w=2070" alt="Exam Thumbnail">
@@ -264,57 +252,7 @@
         </section>
     </main>
 
-    <!-- Edit Exam Modal -->
-    <div id="editModal" class="modal">
-        <div class="modal-content">
-            <span class="close-button" onclick="closeEditModal()">&times;</span>
-            <h2>Change Your Exam</h2>
-            <p>Select the exam you are currently preparing for.</p>
-            <div class="form-group">
-                <label for="modalExamSelect">Preparing For</label>
-                <select id="modalExamSelect">
-                    <option value="upsc">UPSC</option>
-                    <option value="cds">CDS</option>
-                    <option value="nda">NDA</option>
-                    <option value="ssc-cgl">SSC-CGL</option>
-                    <option value="banking">Banking</option>
-                    <option value="railways">Railways</option>
-                    <option value="other">Other</option>
-                </select>
-            </div>
-            <button class="btn" onclick="saveExamChoice()">Save Changes</button>
-        </div>
-    </div>
-
-    <style>
-        /* --- Modal Styles --- */
-        .modal { display: none; position: fixed; z-index: 2000; left: 0; top: 0; width: 100%; height: 100%; overflow: auto; background-color: rgba(0,0,0,0.6); }
-        .modal-content { background-color: #001a33; color: var(--text-color); margin: 15% auto; padding: 2rem; border: 1px solid var(--card-border-color); width: 80%; max-width: 500px; border-radius: 10px; position: relative; }
-        .close-button { color: #aaa; position: absolute; top: 10px; right: 20px; font-size: 28px; font-weight: bold; }
-        .close-button:hover, .close-button:focus { color: black; text-decoration: none; cursor: pointer; }
-        .modal .form-group { margin-bottom: 1.5rem; }
-        .modal select { width: 100%; padding: 0.75rem; border: 1px solid var(--card-border-color); border-radius: 5px; font-size: 1rem; background-color: var(--card-background); color: var(--text-color); }
-        .modal .btn { width: 100%; margin-top: 1rem; }
-    </style>
-
     <script>
-        function toggleMenu() {
-            document.getElementById('profileMenu').classList.toggle('active');
-        }
-
-        // Close the dropdown if the user clicks outside of it
-        window.onclick = function(event) {
-            if (!event.target.matches('.menu-icon, .menu-icon .bar')) {
-                var dropdowns = document.getElementsByClassName("profile-menu");
-                for (var i = 0; i < dropdowns.length; i++) {
-                    var openDropdown = dropdowns[i];
-                    if (openDropdown.classList.contains('active')) {
-                        openDropdown.classList.remove('active');
-                    }
-                }
-            }
-        }
-
         // --- Dynamic Content & Modal Logic ---
 
         const examData = {
@@ -327,25 +265,6 @@
             other: { name: "Other", image: "https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?q=80&w=2070", page: "#" }
         };
 
-        const modal = document.getElementById('editModal');
-        const modalSelect = document.getElementById('modalExamSelect');
-
-        function openEditModal() {
-            modal.style.display = "block";
-        }
-
-        function closeEditModal() {
-            modal.style.display = "none";
-        }
-
-        function saveExamChoice() {
-            const selectedExam = modalSelect.value;
-            // In a real app, you'd save this to the server. Here, we'll save it in localStorage.
-            safeStorage.setItem('userExamChoice', selectedExam);
-            updateDashboard(selectedExam);
-            closeEditModal();
-        }
-
         function updateDashboard(examKey) {
             const exam = examData[examKey];
             if (!exam) return;
@@ -353,30 +272,64 @@
             document.getElementById('examName').textContent = exam.name;
             document.getElementById('examImage').src = exam.image;
             document.getElementById('startLearningBtn').href = exam.page;
-            
-            // Update the welcome message if a user name is stored
-            const userName = safeStorage.getItem('userName');
-            if (userName) {
-                document.getElementById('userName').textContent = `Welcome, ${userName}!`;
+        }
+
+        function toggleSideMenu() {
+            document.getElementById('examMenu').classList.toggle('open');
+            document.body.classList.toggle('menu-open');
+        }
+
+        function selectExam(examKey) {
+            // Update the main dashboard content
+            updateDashboard(examKey);
+
+            // Update the active state in the side menu
+            document.querySelectorAll('#examList a').forEach(link => {
+                link.classList.remove('active');
+            });
+            document.querySelector(`#examList a[data-exam="${examKey}"]`).classList.add('active');
+
+            // Always hide menu on selection
+            toggleSideMenu();
+        }
+
+        function populateExamMenu(currentExam) {
+            const examList = document.getElementById('examList');
+            examList.innerHTML = ''; // Clear existing items
+
+            for (const key in examData) {
+                const exam = examData[key];
+                const listItem = document.createElement('li');
+                const link = document.createElement('a');
+                link.href = '#';
+                link.textContent = exam.name;
+                link.dataset.exam = key;
+                if (key === currentExam) {
+                    link.classList.add('active');
+                }
+                link.onclick = (e) => {
+                    e.preventDefault();
+                    selectExam(key);
+                };
+                listItem.appendChild(link);
+                examList.appendChild(listItem);
             }
         }
 
         // On page load, check for a saved choice and update the dashboard
         document.addEventListener('DOMContentLoaded', () => {
-            // For demonstration, let's assume the user's name and exam are stored after login
-            // In a real app, this data would come from the server.
-            // We'll simulate it by checking localStorage.
-            let userExam = safeStorage.getItem('userExamChoice');
-
-            if (!userExam) {
-                userExam = 'upsc'; // Default to UPSC if nothing is set
-                safeStorage.setItem('userExamChoice', userExam);
-            }
-
-            // Set the dropdown in the modal to the current choice
-            modalSelect.value = userExam;
-
+            // Default to UPSC every time, as caching is disabled.
+            const userExam = 'upsc';
+            populateExamMenu(userExam);
             updateDashboard(userExam);
+
+            // Add a listener to the main content area to remove blur before navigating
+            const mainContainer = document.querySelector('.main-container');
+            mainContainer.addEventListener('click', function(e) {
+                if (e.target.closest('a')) {
+                    document.body.classList.remove('menu-open');
+                }
+            }, true); // Use capture phase to catch the event early
         });
     </script>
 
