@@ -29,6 +29,30 @@
         .page-header h1 { font-size: 3rem; color: var(--primary-color); margin: 0; text-transform: uppercase; }
         .page-header p { font-size: 1.2rem; color: var(--text-color); }
         .resource-section { margin-bottom: 3rem; }
+        .description-box {
+            background-color: var(--card-background);
+            border: 1px solid var(--card-border-color);
+            border-radius: 10px;
+            padding: 1.5rem 2rem;
+            margin-bottom: 2.5rem;
+            backdrop-filter: blur(5px);
+        }
+        .description-box h2 {
+            color: var(--primary-color);
+            margin-top: 0;
+        }
+        .website-link-box {
+            margin-top: 1rem;
+            padding: 0.75rem 1rem;
+            background-color: rgba(0,0,0,0.2);
+            border-radius: 5px;
+            text-align: center;
+        }
+        .website-link-box a {
+            color: var(--primary-color);
+            text-decoration: none;
+            font-weight: bold;
+        }
         .content-wrapper { display: flex; flex-wrap: wrap; gap: 2rem; }
         .content-wrapper > .resource-section { flex: 1; min-width: 300px; }
         .section-title { font-size: 2rem; margin-bottom: 1.5rem; border-bottom: 3px solid var(--card-border-color); padding-bottom: 0.5rem; display: inline-block; }
@@ -41,6 +65,12 @@
         .card-content p { margin: 0 0 1rem; color: var(--secondary-text-color); font-size: 0.9rem; flex-grow: 1; }
         .btn { display: block; padding: 0.6rem 1.2rem; background-color: var(--primary-color); color: #0A2342; text-decoration: none; border-radius: 5px; font-weight: bold; text-align: center; transition: background-color 0.3s ease; margin-top: auto; }
         .btn:hover { background-color: var(--primary-hover-color); }
+
+        @media (max-width: 600px) {
+            .main-container { padding: 1rem; }
+            .page-header h1 { font-size: 2.2rem; }
+            .content-wrapper { flex-direction: column; }
+        }
     </style>
 </head>
 <body>
@@ -48,6 +78,15 @@
         <div class="page-header">
             <h1>CDS Resources</h1>
             <p>Your complete guide for the Combined Defence Services examination.</p>
+        </div>
+
+        <!-- Description Box -->
+        <div class="description-box">
+            <h2>About the Combined Defence Services (CDS) Examination</h2>
+            <p>The Combined Defence Services Examination is conducted by the Union Public Service Commission (UPSC) for recruitment of Commissioned Officers into the Indian Military Academy, Officers Training Academy, Indian Naval Academy, and Indian Air Force Academy. The exam is held twice a year and consists of a written test followed by an SSB interview.</p>
+            <div class="website-link-box">
+                <a href="https://upsc.gov.in/examinations/active-exam/combined-defence-services-examination-i-2024" target="_blank" rel="noopener noreferrer">Official Website Link</a>
+            </div>
         </div>
 
         <div class="content-wrapper">

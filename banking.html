@@ -23,6 +23,30 @@
         .page-header h1 { font-size: 3rem; color: var(--primary-color); margin: 0; text-transform: uppercase; }
         .page-header p { font-size: 1.2rem; color: var(--text-color); }
         .resource-section { margin-bottom: 3rem; }
+        .description-box {
+            background-color: var(--card-background);
+            border: 1px solid var(--card-border-color);
+            border-radius: 10px;
+            padding: 1.5rem 2rem;
+            margin-bottom: 2.5rem;
+            backdrop-filter: blur(5px);
+        }
+        .description-box h2 {
+            color: var(--primary-color);
+            margin-top: 0;
+        }
+        .website-link-box {
+            margin-top: 1rem;
+            padding: 0.75rem 1rem;
+            background-color: rgba(0,0,0,0.2);
+            border-radius: 5px;
+            text-align: center;
+        }
+        .website-link-box a {
+            color: var(--primary-color);
+            text-decoration: none;
+            font-weight: bold;
+        }
 
         @media (max-width: 600px) {
             .main-container { padding: 1rem; }
@@ -50,6 +74,15 @@
             <h1>Banking Resources</h1>
             <p>Your complete guide for IBPS, SBI, and other banking exams.</p>
         </div>
+        <!-- Description Box -->
+        <div class="description-box">
+            <h2>About Banking Exams</h2>
+            <p>Banking exams like IBPS PO, IBPS Clerk, SBI PO, and RBI Assistant are conducted for recruitment to various officer and clerical posts in public sector banks across India. They typically test candidates on Quantitative Aptitude, Reasoning Ability, English Language, and General/Banking Awareness.</p>
+            <div class="website-link-box">
+                <a href="https://www.ibps.in/" target="_blank" rel="noopener noreferrer">Official IBPS Website</a>
+            </div>
+        </div>
+
         <div class="content-wrapper">
             <section class="resource-section">
                 <h2 class="section-title">Video Lectures</h2>

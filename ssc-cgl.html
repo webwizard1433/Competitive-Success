@@ -25,6 +25,30 @@
         .page-header h1 { font-size: 3rem; color: var(--primary-color); margin: 0; text-transform: uppercase; }
         .page-header p { font-size: 1.2rem; color: var(--text-color); }
         .resource-section { margin-bottom: 3rem; }
+        .description-box {
+            background-color: var(--card-background);
+            border: 1px solid var(--card-border-color);
+            border-radius: 10px;
+            padding: 1.5rem 2rem;
+            margin-bottom: 2.5rem;
+            backdrop-filter: blur(5px);
+        }
+        .description-box h2 {
+            color: var(--primary-color);
+            margin-top: 0;
+        }
+        .website-link-box {
+            margin-top: 1rem;
+            padding: 0.75rem 1rem;
+            background-color: rgba(0,0,0,0.2);
+            border-radius: 5px;
+            text-align: center;
+        }
+        .website-link-box a {
+            color: var(--primary-color);
+            text-decoration: none;
+            font-weight: bold;
+        }
         .content-wrapper { display: flex; flex-wrap: wrap; gap: 2rem; }
         .content-wrapper > .resource-section { flex: 1; min-width: 300px; }
         .section-title { font-size: 2rem; margin-bottom: 1.5rem; border-bottom: 3px solid var(--card-border-color); padding-bottom: 0.5rem; display: inline-block; }
@@ -44,6 +68,15 @@
         <div class="page-header">
             <h1>SSC-CGL Resources</h1>
             <p>Your complete guide for the Staff Selection Commission - Combined Graduate Level exam.</p>
+        </div>
+
+        <!-- Description Box -->
+        <div class="description-box">
+            <h2>About the SSC Combined Graduate Level (CGL) Examination</h2>
+            <p>The SSC CGL is a national-level exam conducted by the Staff Selection Commission to recruit candidates for Group 'B' and 'C' posts in various ministries, departments, and organizations of the Government of India. The selection process involves a multi-tier examination structure.</p>
+            <div class="website-link-box">
+                <a href="https://ssc.gov.in/" target="_blank" rel="noopener noreferrer">Official Website Link</a>
+            </div>
         </div>
 
         <div class="content-wrapper">

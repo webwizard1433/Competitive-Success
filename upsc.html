@@ -88,6 +88,30 @@
             color: var(--text-color);
         }
 
+        .description-box {
+            background-color: var(--card-background);
+            border: 1px solid var(--card-border-color);
+            border-radius: 10px;
+            padding: 1.5rem 2rem;
+            margin-bottom: 2.5rem;
+            backdrop-filter: blur(5px);
+        }
+        .description-box h2 {
+            color: var(--primary-color);
+            margin-top: 0;
+        }
+        .website-link-box {
+            margin-top: 1rem;
+            padding: 0.75rem 1rem;
+            background-color: rgba(0,0,0,0.2);
+            border-radius: 5px;
+            text-align: center;
+        }
+        .website-link-box a {
+            color: var(--primary-color);
+            text-decoration: none;
+            font-weight: bold;
+        }
         @media (max-width: 600px) {
             .main-container { padding: 1rem; }
             .page-header h1 { font-size: 2.2rem; }
@@ -195,6 +219,15 @@
             <!-- Content is now specific to UPSC -->
             <h1>UPSC Resources</h1>
             <p>Your complete guide to cracking the civil services exam.</p>
+        </div>
+
+        <!-- Description Box -->
+        <div class="description-box">
+            <h2>About the Civil Service Examination (CSE)</h2>
+            <p>The Civil Service Examination is a nationwide competitive examination in India conducted by the Union Public Service Commission (UPSC) for recruitment to various Civil Services of the Government of India, including the Indian Administrative Service (IAS), Indian Foreign Service (IFS), and Indian Police Service (IPS).</p>
+            <div class="website-link-box">
+                <a href="https://upsconline.nic.in" target="_blank" rel="noopener noreferrer">Official Website Link</a>
+            </div>
         </div>
 
         <div class="content-wrapper">
