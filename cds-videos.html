@@ -43,4 +43,13 @@
             <a href="#" class="folder"><span class="folder-icon">📁</span><span class="folder-name">Chemistry</span></a>
         </div>
     </main>
+    <script>
+        // Add a listener to the main content area to remove blur before navigating
+        const mainContainer = document.querySelector('.main-container');
+        mainContainer.addEventListener('click', function(e) {
+            if (e.target.closest('a')) {
+                document.body.classList.remove('menu-open');
+            }
+        }, true); // Use capture phase to catch the event early
+    </script>
 </html>

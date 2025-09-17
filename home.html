@@ -3,7 +3,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
     <title>Welcome | Competitive Success</title>
     <link rel="icon" href="/success.png" type="image/png">
     <script>
@@ -86,10 +86,9 @@
 
         body.menu-open .main-container {
             filter: blur(5px) brightness(0.7);
-            transform: scale(0.98);
             pointer-events: none; /* Prevent interaction with blurred background */
-            user-select: none; /* Prevent text selection on blurred background */
-            transition: filter 0.3s ease-in-out, transform 0.3s ease-in-out;
+            user-select: none;
+            transition: filter 0.3s ease-in-out;
         }
         .side-menu h2 {
             font-size: 1.5rem;
@@ -136,9 +135,9 @@
 
         /* --- Main Content --- */
         .main-container {
-            padding: 2rem; 
+            padding: 2rem 0; 
             max-width: 1200px;
-            margin: auto;
+            margin: 0 auto; /* Keep horizontal centering but remove top/bottom auto */
             width: 100%;
             box-sizing: border-box; /* Add for predictable sizing */
         }
