@@ -7,12 +7,22 @@
     <link rel="icon" href="/success.png" type="image/png">
     <title>Biology Video Lectures | Competitive Success</title>
     <style>
-        :root { --primary-color: #007bff; --secondary-color: #6c757d; --background-color: #f4f7f6; --card-background: #ffffff; --text-color: #333; --header-height: 70px; }
-        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif; background-color: var(--background-color); margin: 0; color: var(--text-color); min-height: 100vh; display: flex; flex-direction: column; }
+        :root {
+            --primary-color: #FFC107;
+            --card-background: rgba(255, 255, 255, 0.05);
+            --card-border-color: rgba(255, 255, 255, 0.2);
+            --text-color: #F5F5DC;
+            --secondary-text-color: #adb5bd;
+        }
+        body {
+            background: linear-gradient(135deg, rgb(10, 35, 66) 0%, rgb(0, 26, 51) 100%);
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            margin: 0; color: var(--text-color); min-height: 100vh; display: flex; flex-direction: column;
+        }
         .main-container { padding: 2rem; max-width: 1200px; margin: auto; flex-grow: 1; }
         .page-header { text-align: center; margin-bottom: 2.5rem; }
         .page-header h1 { font-size: 3rem; color: var(--primary-color); margin: 0; }
-        .page-header p { font-size: 1.2rem; color: var(--secondary-color); }
+        .page-header p { font-size: 1.2rem; color: var(--text-color); }
         .grid-container { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1.5rem; }
 
         @media (max-width: 600px) {
@@ -21,7 +31,7 @@
             .grid-container { grid-template-columns: repeat(2, 1fr); }
         }
 
-        .resource-card { background-color: var(--card-background); border-radius: 10px; box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08); overflow: hidden; transition: transform 0.3s ease, box-shadow 0.3s ease; display: flex; flex-direction: column; cursor: pointer; }
+        .resource-card { background-color: var(--card-background); border-radius: 10px; box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08); overflow: hidden; transition: transform 0.3s ease, box-shadow 0.3s ease; display: flex; flex-direction: column; cursor: pointer; color: var(--text-color); }
         .resource-card:hover { transform: translateY(-8px); box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15); }
         .card-thumbnail { width: 100%; height: 160px; background-color: #000; position: relative; overflow: hidden; }
         .card-thumbnail img { width: 100%; height: 100%; object-fit: cover; }
@@ -31,8 +41,12 @@
         .card-content h3 { margin: 0; font-size: 1.1rem; }
 
         /* --- Modal (Pop-up) Styles --- */
-        .modal { display: none; position: fixed; z-index: 2000; left: 0; top: 0; width: 100%; height: 100%; overflow: auto; background-color: rgba(0,0,0,0.8); }
-        .modal-content { position: relative; margin: 5% auto; padding: 20px; width: 90%; max-width: 800px; }
+        .modal {
+            display: none; position: fixed; z-index: 2000; left: 0; top: 0; width: 100%; height: 100%;
+            background-color: rgba(0,0,0,0.8);
+            display: flex; justify-content: center; align-items: center;
+        }
+        .modal-content { position: relative; width: 90%; max-width: 850px; }
         .close-button { position: absolute; top: -30px; right: 0; color: #fff; font-size: 35px; font-weight: bold; cursor: pointer; }
         .video-container { position: relative; padding-bottom: 56.25%; height: 0; }
         .video-container iframe { position: absolute; top: 0; left: 0; width: 100%; height: 100%; }
@@ -51,7 +65,7 @@
     <div id="videoModal" class="modal">
         <div class="modal-content">
             <div class="video-container">
-                <iframe id="videoPlayer" src="" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+                <iframe id="videoPlayer" src="" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; fullscreen" allowfullscreen webkitallowfullscreen mozallowfullscreen></iframe>
             </div>
         </div>
     </div>
@@ -91,6 +105,9 @@
                 alert('This is a placeholder video. The link needs to be updated.');
                 return;
             }
+
+            videoPlayer.src = `https://www.youtube.com/embed/${video.id}?autoplay=1`;
+            modal.style.display = "flex";
         }
 
         function closeModal() {

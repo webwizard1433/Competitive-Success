@@ -28,12 +28,12 @@
     </script>
     <style>
         :root {
-            --primary-color: #FFC107; /* Gold for accents */
-            --primary-hover-color: #DAA520;
-            --card-background: rgba(255, 255, 255, 0.05); /* Slightly transparent white */
-            --card-border-color: rgba(255, 255, 255, 0.2);
-            --text-color: #F5F5DC; /* Beige/Off-white */
-            --secondary-text-color: #adb5bd; /* Lighter gray for secondary text */
+            --primary-color: #FFC107; 
+            --primary-hover-color: #DAA520; 
+            --card-background: rgba(255, 255, 255, 0.05); 
+            --card-border-color: rgba(255, 255, 255, 0.2); 
+            --text-color: #F5F5DC; 
+            --secondary-text-color: #adb5bd; 
             --header-height: 70px;
         }
 
@@ -135,9 +135,8 @@
 
         /* --- Main Content --- */
         .main-container {
-            padding: 2rem 0; 
-            max-width: 1200px;
-            margin: 0 auto; /* Keep horizontal centering but remove top/bottom auto */
+            padding: 2rem;
+            margin: 0;
             width: 100%;
             box-sizing: border-box; /* Add for predictable sizing */
         }
@@ -233,6 +232,8 @@
         </ul>
     </aside>
 
+    <div class="overlay" id="menuOverlay" onclick="toggleSideMenu()"></div>
+
     <main class="main-container">
         <section class="content-section">
             <div class="section-header">
@@ -272,10 +273,16 @@
             document.getElementById('examImage').src = exam.image;
             document.getElementById('startLearningBtn').href = exam.page;
         }
+        
+        const menuOverlay = document.getElementById('menuOverlay');
+        menuOverlay.style.display = 'none'; // Initially hidden
+        menuOverlay.style.position = 'fixed';
+        menuOverlay.style.inset = '0';
 
         function toggleSideMenu() {
             document.getElementById('examMenu').classList.toggle('open');
             document.body.classList.toggle('menu-open');
+            menuOverlay.style.display = document.body.classList.contains('menu-open') ? 'block' : 'none';
         }
 
         function selectExam(examKey) {
