@@ -202,11 +202,469 @@
             padding: 2rem;
             box-sizing: border-box;
         }
-        .search-popup-input {
+        .search-popup-content {
             width: 100%;
             max-width: 700px;
             margin: 2rem auto;
+            position: relative;
+        }
+        .search-popup-input {
+            width: 100%;
             padding: 1rem;
+            padding-right: 3rem; /* Make space for clear button */
+            font-size: 1.5rem;
+            border-radius: 5px;
+            border: 1px solid var(--card-border-color);
+            background-color: var(--card-background);
+            color: var(--text-color);
+            box-sizing: border-box;
+        }
+        .search-popup-input-clear {
+            position: absolute; right: 1rem; top: 50%; transform: translateY(-50%);
+            font-size: 2rem; color: var(--secondary-text-color); cursor: pointer; display: none;
+        }
+        @media (max-width: 600px) {
+            .search-popup-input { font-size: 1.1rem; }
+            .search-popup {
+                padding: 1rem; /* Reduce padding on smaller screens */
+            }
+        }
+        .search-results {
+            max-width: 700px;
+            width: 100%;
+            margin: 0 auto;
+            overflow-y: auto;
+        }
+        .search-popup .close-btn { position: absolute; top: 2rem; right: 2rem; font-size: 2.5rem; color: white; cursor: pointer; }
+        .search-results a { display: block; padding: 1rem; color: var(--text-color); text-decoration: none; border-bottom: 1px solid var(--card-border-color); }
+        .search-results a:hover { background-color: rgba(255, 255, 255, 0.1); }
+        .search-results a.active {
+            background-color: var(--primary-color);
+            color: #0A2342;
+        }
+
+        .center-content {
+            display: flex; /* Changed to flex */
+            flex-wrap: wrap; /* Allow wrapping on smaller screens */
+            justify-content: center; /* Center items horizontally */
+            align-items: center; /* Align items vertically */
+            gap: 2rem; /* Add space between card and description */
+        }
+
+        .thumbnail-card {
+            background-color: var(--card-background);
+            border-radius: 10px;
+            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+            backdrop-filter: blur(5px);
+            border: 1px solid var(--card-border-color);
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            width: 100%;
+            max-width: 350px;
+            box-sizing: border-box; /* Add for predictable sizing */
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .thumbnail-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.12);
+        }
+
+        .thumbnail-card img {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+        }
+
+        .thumbnail-content {
+            padding: 1.5rem;
+        }
+
+        .thumbnail-content h3 {
+            margin: 0 0 0.5rem;
+            font-size: 1.5rem;
+            text-transform: uppercase;
+        }
+
+        .thumbnail-content p {
+            margin: 0 0 1.5rem;
+            color: var(--secondary-text-color);
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 0.75rem 1.5rem;
+            background-color: var(--primary-color);
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+            font-weight: bold;
+            text-align: center;
+            transition: background-color 0.3s ease;
+        }
+
+        .description-box {
+            background-color: var(--card-background);
+            border: 1px solid var(--card-border-color);
+            border-radius: 10px;
+            padding: 1.5rem 2rem; /* Removed margin-top */
+            backdrop-filter: blur(5px);
+            max-width: 550px;
+        }
+        .description-box h2 {
+            color: var(--primary-color);
+            margin-top: 0;
+        }
+        #description-text {
+            color: white;
+            font-weight: bold;
+        }
+
+        .website-link-box {
+            margin-top: 1rem;
+            padding: 0.75rem 1rem;
+            background-color: rgba(0,0,0,0.2);
+            border-radius: 5px;
+            text-align: center;
+        }
+        .website-link-box a {
+            color: var(--primary-color);
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+        .btn:hover {
+            background-color: var(--primary-hover-color);
+        }
+
+    </style>
+</head>
+<body>
+
+    <aside class="side-menu" id="examMenu">
+        <h2>Select Exam</h2>
+        <ul id="examList">
+            <!-- Exam links will be populated by JavaScript -->
+        </ul>
+    </aside>
+
+    <div class="overlay" id="menuOverlay" onclick="toggleSideMenu()"></div>
+
+    <main class="main-container" id="mainContainer">
+        <section class="content-section">
+            <div class="section-header">
+                <div class="menu-toggle" onclick="toggleSideMenu()">&#9776;</div>
+                <h2>Competitive Success</h2>
+                <div class="header-logo">
+                    <img src="https://st4.depositphotos.com/1842549/20934/i/450/depositphotos_209344954-stock-photo-success-icon-internet-button-white.jpg" alt="Competitive Success Logo">
+                </div>
+            </div>
+            <!-- Search Bar -->
+            <div class="search-container">
+                <div class="search-bar" onclick="openSearch()">
+                    &#x1F50D; Search for any exam or subject...
+                </div>
+            </div>
+            <div class="center-content">
+                    <div class="thumbnail-card">
+                        <!-- The image and text would be dynamically set based on the user's selected exam -->
+                        <img id="examImage" src="https://images.unsplash.com/photo-1523240795612-9a054b0db644?q=80&w=2070" alt="Exam Thumbnail">
+                        <div class="thumbnail-content">
+                            <h3 id="examName">Your Exam</h3>
+                            <p>All the free content for your selected exam is just one click away.</p>
+                            <a href="#" class="btn" id="startLearningBtn">Start Learning</a>
+                        </div>
+                    </div>
+        
+                    <!-- Description Box -->
+                    <div class="description-box">
+                        <h2 id="description-title">About the Exam</h2>
+                        <p id="description-text">Select an exam from the menu to see a brief description here.</p>
+                        <div id="website-box" style="display: none;"></div>
+                    </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Search Popup -->
+    <div id="searchPopup" class="search-popup">
+        <span class="close-btn" onclick="closeSearch()">&times;</span>
+        <div class="search-popup-content">
+            <input type="text" id="searchInput" class="search-popup-input" placeholder="Type to search...">
+            <span id="clearSearchBtn" class="search-popup-input-clear">&times;</span>
+        </div>
+        <div id="searchResults" class="search-results"></div>
+    </div>
+
+    <script>
+        // --- Dynamic Content & Modal Logic ---
+
+        // --- Search Data ---
+        const searchableContent = [
+            // This will be populated dynamically
+        ];
+
+        const examData = {
+            upsc: { name: "UPSC", image: "https://images.unsplash.com/photo-1523240795612-9a054b0db644?q=80&w=2070", page: "/upsc.html",
+                description: "The Civil Service Examination (CSE) is a nationwide competitive examination in India conducted by the Union Public Service Commission (UPSC) for recruitment to various Civil Services, including IAS, IFS, and IPS.", website: "https://upsconline.nic.in" },
+            cds: { name: "CDS", image: "https://images.unsplash.com/photo-1566665797739-1674de7a421a?q=80&w=1974", page: "/cds.html",
+                description: "The Combined Defence Services (CDS) Examination is conducted by the UPSC for recruitment of Commissioned Officers into the Indian Military Academy, Officers Training Academy, Indian Naval Academy, and Indian Air Force Academy.", website: "https://upsc.gov.in/" },
+            nda: { name: "NDA", image: "https://images.unsplash.com/photo-1517842645767-c6f90405774b?q=80&w=2070", page: "/nda.html",
+                description: "The National Defence Academy (NDA) exam is conducted by the UPSC for admission to the Army, Navy, and Air Force wings of the NDA. It is the gateway for candidates looking to join the Defence Forces as commissioned officers right after the 10+2 level.", website: "https://upsc.gov.in/" },
+            'ssc-cgl': { name: "SSC-CGL", image: "https://images.unsplash.com/photo-1521791136064-7986c2920216?q=80&w=2070", page: "/ssc-cgl.html",
+                description: "The SSC Combined Graduate Level (CGL) is a national-level exam conducted to recruit candidates for Group 'B' and 'C' posts in various ministries, departments, and organizations of the Government of India.", website: "https://ssc.gov.in/" },
+            banking: { name: "Banking", image: "https://images.unsplash.com/photo-1553729459-efe14ef6055d?q=80&w=2070", page: "/banking.html",
+                description: "Banking exams like IBPS PO, IBPS Clerk, SBI PO, and RBI Assistant are conducted for recruitment to various officer and clerical posts in public sector banks across India.", website: "https://www.ibps.in/" },
+            railways: { name: "Railways", image: "https://images.unsplash.com/photo-1603189549925-a869e9a34019?q=80&w=2070", page: "/railways.html",
+                description: "Railway Recruitment Boards (RRBs) conduct exams like RRB NTPC and RRB Group D to recruit a wide range of staff for the Indian Railways, one of the largest employers in the country.", website: "https://indianrailways.gov.in/railwayboard/view_section.jsp?lang=0&id=0,4,1244" },
+            other: { name: "Other", image: "https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?q=80&w=2070", page: "#" }
+        };
+
+        function updateDashboard(examKey) {
+            const exam = examData[examKey];
+            if (!exam) return;
+
+            document.getElementById('examName').textContent = exam.name;
+            document.getElementById('examImage').src = exam.image;
+            document.getElementById('startLearningBtn').href = exam.page;
+            document.getElementById('description-title').textContent = `About ${exam.name}`;
+            document.getElementById('description-text').textContent = exam.description || "No description available for this selection.";
+
+            // Handle the website link
+            const websiteBox = document.getElementById('website-box');
+            if (exam.website) {
+                websiteBox.innerHTML = `<div class="website-link-box"><a href="${exam.website}" target="_blank" rel="noopener noreferrer">Website Link</a></div>`;
+                websiteBox.style.display = 'block';
+            } else {
+                websiteBox.style.display = 'none';
+                websiteBox.innerHTML = '';
+            }
+        }
+        
+        const menuOverlay = document.getElementById('menuOverlay');
+        menuOverlay.style.display = 'none'; // Initially hidden
+        menuOverlay.style.position = 'fixed';
+        menuOverlay.style.inset = '0';
+
+        function toggleSideMenu() {
+            document.getElementById('examMenu').classList.toggle('open');
+            document.body.classList.toggle('menu-open');
+            menuOverlay.style.display = document.body.classList.contains('menu-open') ? 'block' : 'none';
+        }
+
+        function selectExam(examKey) {
+            // Update the main dashboard content
+            updateDashboard(examKey);
+
+            // Update the active state in the side menu
+            document.querySelectorAll('#examList a').forEach(link => {
+                link.classList.remove('active');
+            });
+            document.querySelector(`#examList a[data-exam="${examKey}"]`).classList.add('active');
+
+            // Always hide menu on selection
+            toggleSideMenu();
+        }
+
+        function populateExamMenu(currentExam) {
+            const examList = document.getElementById('examList');
+            examList.innerHTML = ''; // Clear existing items
+
+            for (const key in examData) {
+                const exam = examData[key];
+                const listItem = document.createElement('li');
+                const link = document.createElement('a');
+                link.href = '#';
+                link.textContent = exam.name;
+                link.dataset.exam = key;
+                if (key === currentExam) {
+                    link.classList.add('active');
+                }
+                link.onclick = (e) => {
+                    e.preventDefault();
+                    selectExam(key);
+                };
+                listItem.appendChild(link);
+                examList.appendChild(listItem);
+            }
+        }
+
+        // --- Search Functionality ---
+        const searchPopup = document.getElementById('searchPopup');
+        const searchInput = document.getElementById('searchInput');
+        const searchResults = document.getElementById('searchResults');
+        const clearSearchBtn = document.getElementById('clearSearchBtn');
+
+        function openSearch() {
+            searchPopup.style.display = 'flex';
+            searchInput.focus();
+        }
+
+        function closeSearch() {
+            searchPopup.style.display = 'none';
+            searchInput.value = '';
+            searchResults.innerHTML = '';
+            clearSearchBtn.style.display = 'none';
+        }
+
+        function buildSearchIndex() {
+            // Add main exam pages
+            for (const key in examData) {
+                if (examData[key].page !== '#') {
+                    searchableContent.push({ name: examData[key].name, link: examData[key].page });
+                }
+            }
+            // Manually add video folder pages
+            searchableContent.push({ name: 'UPSC History Videos', link: '/upsc-history-videos.html' });
+            searchableContent.push({ name: 'UPSC Geography Videos', link: '/upsc-geography-videos.html' });
+            searchableContent.push({ name: 'UPSC Polity Videos', link: '/upsc-polity-videos.html' });
+            searchableContent.push({ name: 'UPSC Economy Videos', link: '/upsc-economy-videos.html' });
+            searchableContent.push({ name: 'UPSC World History Videos', link: '/upsc-world-history-videos.html' });
+            searchableContent.push({ name: 'UPSC International Relations Videos', link: '/upsc-ir-videos.html' });
+            searchableContent.push({ name: 'UPSC Biology Videos', link: '/upsc-biology-videos.html' });
+            searchableContent.push({ name: 'UPSC Maps Videos', link: '/upsc-maps-videos.html' });
+            searchableContent.push({ name: 'UPSC Art & Culture Videos', link: '/upsc-art-culture-videos.html' });
+            searchableContent.push({ name: 'UPSC Post Independence Videos', link: '/upsc-post-independence-videos.html' });
+            searchableContent.push({ name: 'SSC-CGL Quant Videos', link: '/ssc-cgl-quant-videos.html' });
+
+            // Add individual lectures
+            const ssc_cgl_quant_videos = [ { id: "anhbMmxLSiU", title: "Day 1 | 75 Days Maths Hard Challenge" }, { id: "13lhhdfulYk", title: "Day 2 | 75 Days Maths Hard Challenge" }, { id: "uIgfE1yWHMs", title: "Day 3 | 75 Days Maths Hard Challenge" }, { id: "HvwaRsvUwQI", title: "Day 4 | 75 Days Maths Hard Challenge" }, { id: "KNJntHXUrOA", title: "Day 5 | 75 Days Maths Hard Challenge" }, { id: "m5mKtzU7T9I", title: "Day 6 | 75 Days Maths Hard Challenge" }, { id: "kFsw5NbaN5s", title: "Day 7 | 75 Days Maths Hard Challenge" }, { id: "qbNzR6eLdXQ", title: "Day 8 | 75 Days Maths Hard Challenge" }, { id: "m0GZ1TiJIX4", title: "Day 9 | 75 Days Maths Hard Challenge" }, { id: "iS1suoSyuTg", title: "Day 10 | 75 Days Maths Hard Challenge" }, { id: "GoaN-Lp2GvY", title: "Day 11 | 75 Days Maths Hard Challenge" }, { id: "uTkx2WSf5Sg", title: "Day 12 | 75 Days Maths Hard Challenge" }, { id: "1uFbJWf8M28", title: "Day 13 | 75 Days Maths Hard Challenge" }, { id: "NyXzvPDyCyY", title: "Day 14 | 75 Days Maths Hard Challenge" }, { id: "n_Lln6kNSN8", title: "Day 15 | 75 Days Maths Hard Challenge" }, { id: "_ahnSXEjHPU", title: "Day 16 | 75 Days Maths Hard Challenge" }, { id: "4vqHnuid4hQ", title: "Day 17 | 75 Days Maths Hard Challenge" }, { id: "n_Lln6kNSN8", title: "Day 18 | 75 Days Maths Hard Challenge" }, { id: "_ahnSXEjHPU", title: "Day 19 | 75 Days Maths Hard Challenge" }, { id: "4vqHnuid4hQ", title: "Day 20 | 75 Days Maths Hard Challenge" }, { id: "s_t_u_v_w_x", title: "Day 21 | 75 Days Maths Hard Challenge" }, { id: "y_z_A_B_C_D", title: "Day 22 | 75 Days Maths Hard Challenge" }, { id: "E_F_G_H_I_J", title: "Day 23 | 75 Days Maths Hard Challenge" }, { id: "K_L_M_N_O_P", title: "Day 24 | 75 Days Maths Hard Challenge" }, { id: "Q_R_S_T_U_V", title: "Day 25 | 75 Days Maths Hard Challenge" }, { id: "W_X_Y_Z_1_2", title: "Day 26 | 75 Days Maths Hard Challenge" }, { id: "3_4_5_6_7_8", title: "Day 27 | 75 Days Maths Hard Challenge" }, { id: "9_0_A_B_C_D", title: "Day 28 | 75 Days Maths Hard Challenge" }, { id: "E_F_G_H_I_J", title: "Day 29 | 75 Days Maths Hard Challenge" }, { id: "K_L_M_N_O_P", title: "Day 30 | 75 Days Maths Hard Challenge" }, { id: "Q_R_S_T_U_V", title: "Day 31 | 75 Days Maths Hard Challenge" }, { id: "W_X_Y_Z_1_2", title: "Day 32 | 75 Days Maths Hard Challenge" }, { id: "3_4_5_6_7_8", title: "Day 33 | 75 Days Maths Hard Challenge" }, { id: "9_0_A_B_C_D", title: "Day 34 | 75 Days Maths Hard Challenge" }, { id: "E_F_G_H_I_J", title: "Day 35 | 75 Days Maths Hard Challenge" }, { id: "K_L_M_N_O_P", title: "Day 36 | 75 Days Maths Hard Challenge" }, { id: "Q_R_S_T_U_V", title: "Day 37 | 75 Days Maths Hard Challenge" }, { id: "W_X_Y_Z_1_2", title: "Day 38 | 75 Days Maths Hard Challenge" }, { id: "3_4_5_6_7_8", title: "Day 39 | 75 Days Maths Hard Challenge" }, { id: "9_0_A_B_C_D", title: "Day 40 | 75 Days Maths Hard Challenge" }, { id: "E_F_G_H_I_J", title: "Day 41 | 75 Days Maths Hard Challenge" }, { id: "K_L_M_N_O_P", title: "Day 42 | 75 Days Maths Hard Challenge" }, { id: "Q_R_S_T_U_V", title: "Day 43 | 75 Days Maths Hard Challenge" }, { id: "W_X_Y_Z_1_2", title: "Day 44 | 75 Days Maths Hard Challenge" }, { id: "3_4_5_6_7_8", title: "Day 45 | 75 Days Maths Hard Challenge" }, { id: "9_0_A_B_C_D", title: "Day 46 | 75 Days Maths Hard Challenge" }, { id: "E_F_G_H_I_J", title: "Day 47 | 75 Days Maths Hard Challenge" }, { id: "K_L_M_N_O_P", title: "Day 48 | 75 Days Maths Hard Challenge" }, { id: "Q_R_S_T_U_V", title: "Day 49 | 75 Days Maths Hard Challenge" }, { id: "W_X_Y_Z_1_2", title: "Day 50 | 75 Days Maths Hard Challenge" }, { id: "3_4_5_6_7_8", title: "Day 51 | 75 Days Maths Hard Challenge" }, { id: "9_0_A_B_C_D", title: "Day 52 | 75 Days Maths Hard Challenge" }, { id: "E_F_G_H_I_J", title: "Day 53 | 75 Days Maths Hard Challenge" }, { id: "K_L_M_N_O_P", title: "Day 54 | 75 Days Maths Hard Challenge" }, { id: "Q_R_S_T_U_V", title: "Day 55 | 75 Days Maths Hard Challenge" }, { id: "W_X_Y_Z_1_2", title: "Day 56 | 75 Days Maths Hard Challenge" }, { id: "3_4_5_6_7_8", title: "Day 57 | 75 Days Maths Hard Challenge" }, { id: "9_0_A_B_C_D", title: "Day 58 | 75 Days Maths Hard Challenge" }, { id: "E_F_G_H_I_J", title: "Day 59 | 75 Days Maths Hard Challenge" }, { id: "K_L_M_N_O_P", title: "Day 60 | 75 Days Maths Hard Challenge" }, { id: "Q_R_S_T_U_V", title: "Day 61 | 75 Days Maths Hard Challenge" }, { id: "W_X_Y_Z_1_2", title: "Day 62 | 75 Days Maths Hard Challenge" }, { id: "3_4_5_6_7_8", title: "Day 63 | 75 Days Maths Hard Challenge" }, { id: "9_0_A_B_C_D", title: "Day 64 | 75 Days Maths Hard Challenge" }, { id: "E_F_G_H_I_J", title: "Day 65 | 75 Days Maths Hard Challenge" }, { id: "K_L_M_N_O_P", title: "Day 66 | 75 Days Maths Hard Challenge" }, { id: "Q_R_S_T_U_V", title: "Day 67 | 75 Days Maths Hard Challenge" }, { id: "W_X_Y_Z_1_2", title: "Day 68 | 75 Days Maths Hard Challenge" }, { id: "3_4_5_6_7_8", title: "Day 69 | 75 Days Maths Hard Challenge" }, { id: "9_0_A_B_C_D", title: "Day 70 | 75 Days Maths Hard Challenge" }, { id: "E_F_G_H_I_J", title: "Day 71 | 75 Days Maths Hard Challenge" }, { id: "K_L_M_N_O_P", title: "Day 72 | 75 Days Maths Hard Challenge" }, { id: "Q_R_S_T_U_V", title: "Day 73 | 75 Days Maths Hard Challenge" }, { id: "W_X_Y_Z_1_2", title: "Day 74 | 75 Days Maths Hard Challenge" }, { id: "3_4_5_6_7_8", title: "Day 75 | 75 Days Maths Hard Challenge" } ];
+            ssc_cgl_quant_videos.forEach(video => searchableContent.push({ name: `SSC CGL Quant: ${video.title}`, link: `/ssc-cgl-quant-videos.html` }));
+
+            const upsc_history_videos = Array.from({ length: 47 }, (_, i) => ({ title: `History Lecture ${i + 1}` }));
+            upsc_history_videos.forEach(video => searchableContent.push({ name: `UPSC: ${video.title}`, link: `/upsc-history-videos.html` }));
+
+            const upsc_geography_videos = Array.from({ length: 39 }, (_, i) => ({ title: `Geography Lecture ${i + 1}` }));
+            upsc_geography_videos.forEach(video => searchableContent.push({ name: `UPSC: ${video.title}`, link: `/upsc-geography-videos.html` }));
+
+            const upsc_polity_videos = Array.from({ length: 41 }, (_, i) => ({ title: `Polity Lecture ${i + 1}` }));
+            upsc_polity_videos.forEach(video => searchableContent.push({ name: `UPSC: ${video.title}`, link: `/upsc-polity-videos.html` }));
+
+            const upsc_economy_videos = Array.from({ length: 55 }, (_, i) => ({ title: `Economy Lecture ${i + 1}` }));
+            upsc_economy_videos.forEach(video => searchableContent.push({ name: `UPSC: ${video.title}`, link: `/upsc-economy-videos.html` }));
+
+            const upsc_world_history_videos = Array.from({ length: 14 }, (_, i) => ({ title: `World History Lecture ${i + 1}` }));
+            upsc_world_history_videos.forEach(video => searchableContent.push({ name: `UPSC: ${video.title}`, link: `/upsc-world-history-videos.html` }));
+
+            const upsc_ir_videos = Array.from({ length: 23 }, (_, i) => ({ title: `IR Lecture ${i + 1}` }));
+            upsc_ir_videos.forEach(video => searchableContent.push({ name: `UPSC: ${video.title}`, link: `/upsc-ir-videos.html` }));
+
+            const upsc_biology_videos = Array.from({ length: 7 }, (_, i) => ({ title: `Biology Lecture ${i + 1}` }));
+            upsc_biology_videos.forEach(video => searchableContent.push({ name: `UPSC: ${video.title}`, link: `/upsc-biology-videos.html` }));
+
+            const upsc_maps_videos = Array.from({ length: 9 }, (_, i) => ({ title: `Maps Lecture ${i + 1}` }));
+            upsc_maps_videos.forEach(video => searchableContent.push({ name: `UPSC: ${video.title}`, link: `/upsc-maps-videos.html` }));
+
+            const upsc_art_culture_videos = Array.from({ length: 18 }, (_, i) => ({ title: `Art & Culture Lecture ${i + 1}` }));
+            upsc_art_culture_videos.forEach(video => searchableContent.push({ name: `UPSC: ${video.title}`, link: `/upsc-art-culture-videos.html` }));
+
+            const upsc_post_independence_videos = Array.from({ length: 6 }, (_, i) => ({ title: `Post Independence Lecture ${i + 1}` }));
+            upsc_post_independence_videos.forEach(video => searchableContent.push({ name: `UPSC: ${video.title}`, link: `/upsc-post-independence-videos.html` }));
+
+            // Add main resource pages
+            searchableContent.push({ name: 'UPSC Books', link: '/upsc-books.html' });
+            searchableContent.push({ name: 'UPSC Previous Year Papers', link: '/upsc-papers.html' });
+            searchableContent.push({ name: 'CDS Books', link: '/cds-books.html' });
+            searchableContent.push({ name: 'CDS Previous Year Papers', link: '/cds-papers.html' });
+            searchableContent.push({ name: 'NDA Books', link: '/nda-books.html' });
+            searchableContent.push({ name: 'NDA Previous Year Papers', link: '/nda-papers.html' });
+            searchableContent.push({ name: 'SSC-CGL Books', link: '/ssc-cgl-books.html' });
+            searchableContent.push({ name: 'SSC-CGL Previous Year Papers', link: '/ssc-cgl-papers.html' });
+            searchableContent.push({ name: 'Railways Books', link: '/railways-books.html' });
+            searchableContent.push({ name: 'Railways Previous Year Papers', link: '/railways-papers.html' });
+            searchableContent.push({ name: 'Banking Books', link: '/banking-books.html' });
+            searchableContent.push({ name: 'Banking Previous Year Papers', link: '/banking-papers.html' });
+        }
+
+        searchInput.addEventListener('input', (e) => {
+            const query = e.target.value.toLowerCase();
+            searchResults.innerHTML = '';
+            clearSearchBtn.style.display = query.length > 0 ? 'block' : 'none';
+
+            if (query.length < 2) return;
+
+            const filtered = searchableContent.filter(item => item.name.toLowerCase().includes(query));
+
+            filtered.forEach(item => {
+                const a = document.createElement('a');
+                a.href = item.link;
+                a.textContent = item.name;
+                searchResults.appendChild(a);
+            });
+        });
+
+        clearSearchBtn.addEventListener('click', () => {
+            searchInput.value = '';
+            searchResults.innerHTML = '';
+            clearSearchBtn.style.display = 'none';
+            searchInput.focus();
+        });
+
+        searchInput.addEventListener('keydown', (e) => {
+            const results = searchResults.getElementsByTagName('a');
+            if (results.length === 0) return;
+
+            let activeIndex = -1;
+            for (let i = 0; i < results.length; i++) {
+                if (results[i].classList.contains('active')) {
+                    activeIndex = i;
+                    break;
+                }
+            }
+
+            if (e.key === 'ArrowDown') {
+                e.preventDefault();
+                if (activeIndex !== -1) {
+                    results[activeIndex].classList.remove('active');
+                }
+                activeIndex = (activeIndex + 1) % results.length;
+                results[activeIndex].classList.add('active');
+                results[activeIndex].scrollIntoView({ block: 'nearest' });
+            } else if (e.key === 'ArrowUp') {
+                e.preventDefault();
+                if (activeIndex !== -1) {
+                    results[activeIndex].classList.remove('active');
+                }
+                activeIndex = (activeIndex - 1 + results.length) % results.length;
+                results[activeIndex].classList.add('active');
+                results[activeIndex].scrollIntoView({ block: 'nearest' });
+            } else if (e.key === 'Enter') {
+                if (activeIndex !== -1) {
+                    results[activeIndex].click();
+                }
+            }
+        });
+
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape' && searchPopup.style.display === 'flex') closeSearch();
+        });
+
+        // On page load, check for a saved choice and update the dashboard
+        document.addEventListener('DOMContentLoaded', () => {
+            // Default to UPSC every time, as caching is disabled.
+            const userExam = 'upsc';
+            populateExamMenu(userExam);
+            updateDashboard(userExam);
+
+            // Build the search index
+            buildSearchIndex();
+
+            // Add a listener to the main content area to remove blur before navigating
+            const mainContainer = document.getElementById('mainContainer');
+            mainContainer.addEventListener('click', function(e) {
+                if (searchPopup.style.display === 'flex') {
+                    closeSearch();
+                }
+                if (e.target.closest('a')) {
+                    document.body.classList.remove('menu-open');
+                }
+            }, true); // Use capture phase to catch the event early
+        });
+    </script>
+
+</body>
+</html>
             font-size: 1.5rem;
             border-radius: 5px;
             border: 1px solid var(--card-border-color);
