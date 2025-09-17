@@ -202,17 +202,6 @@
             padding: 2rem;
             box-sizing: border-box;
         }
-        .search-popup-input {
-            width: 100%;
-            padding: 1rem;
-            padding-right: 3rem; /* Make space for clear button */
-            font-size: 1.5rem;
-            border-radius: 5px;
-            border: 1px solid var(--card-border-color);
-            background-color: var(--card-background);
-            color: var(--text-color);
-            box-sizing: border-box;
-        }
         @media (max-width: 600px) {
             .search-popup-input { font-size: 1.1rem; }
             .search-popup {
@@ -380,7 +369,7 @@
     <!-- Search Popup -->
     <div id="searchPopup" class="search-popup">
         <span class="close-btn" onclick="closeSearch()">&times;</span>
-        <input type="text" id="searchInput" class="search-popup-input" placeholder="Type to search...">
+        <input type="text" id="searchInput" class="search-popup-input" placeholder="Type to search..." style="width: 100%; max-width: 700px; margin: 2rem auto; padding: 1rem; font-size: 1.5rem; border-radius: 5px; border: 1px solid var(--card-border-color); background-color: var(--card-background); color: var(--text-color); box-sizing: border-box;">
         <div id="searchResults" class="search-results"></div>
     </div>
 
@@ -565,8 +554,6 @@
         searchInput.addEventListener('input', (e) => {
             const query = e.target.value.toLowerCase();
             searchResults.innerHTML = '';
-            if (query.length < 2) return;
-
             const filtered = searchableContent.filter(item => item.name.toLowerCase().includes(query));
 
             filtered.forEach(item => {
@@ -575,6 +562,10 @@
                 a.textContent = item.name;
                 searchResults.appendChild(a);
             });
+            if (query.length < 2) {
+                searchResults.innerHTML = '';
+                return;
+            }
         });
 
         searchInput.addEventListener('keydown', (e) => {
@@ -1048,14 +1039,6 @@
 
             // Build the search index
             buildSearchIndex();
-
-            // Add a listener to the main content area to remove blur before navigating
-            const mainContainer = document.querySelector('.main-container');
-            mainContainer.addEventListener('click', function(e) {
-                if (e.target.closest('a')) {
-                    document.body.classList.remove('menu-open');
-                }
-            }, true); // Use capture phase to catch the event early
         });
     </script>
 
