@@ -244,6 +244,19 @@
             font-weight: bold;
         }
 
+        .website-link-box {
+            margin-top: 1rem;
+            padding: 0.75rem 1rem;
+            background-color: rgba(0,0,0,0.2);
+            border-radius: 5px;
+            text-align: center;
+        }
+        .website-link-box a {
+            color: var(--primary-color);
+            text-decoration: none;
+            font-weight: bold;
+        }
+
         .btn:hover {
             background-color: var(--primary-hover-color);
         }
@@ -285,6 +298,7 @@
                     <div class="description-box">
                         <h2 id="description-title">About the Exam</h2>
                         <p id="description-text">Select an exam from the menu to see a brief description here.</p>
+                        <div id="website-box" style="display: none;"></div>
                     </div>
             </div>
         </section>
@@ -295,7 +309,7 @@
 
         const examData = {
             upsc: { name: "UPSC", image: "https://images.unsplash.com/photo-1523240795612-9a054b0db644?q=80&w=2070", page: "/upsc.html",
-                description: "The Civil Service Examination (CSE) is a nationwide competitive examination in India conducted by the Union Public Service Commission (UPSC) for recruitment to various Civil Services, including IAS, IFS, and IPS." },
+                description: "The Civil Service Examination (CSE) is a nationwide competitive examination in India conducted by the Union Public Service Commission (UPSC) for recruitment to various Civil Services, including IAS, IFS, and IPS.", website: "https://upsconline.nic.in" },
             cds: { name: "CDS", image: "https://images.unsplash.com/photo-1566665797739-1674de7a421a?q=80&w=1974", page: "/cds.html",
                 description: "The Combined Defence Services (CDS) Examination is conducted by the UPSC for recruitment of Commissioned Officers into the Indian Military Academy, Officers Training Academy, Indian Naval Academy, and Indian Air Force Academy." },
             nda: { name: "NDA", image: "https://images.unsplash.com/photo-1517842645767-c6f90405774b?q=80&w=2070", page: "/nda.html",
@@ -318,6 +332,16 @@
             document.getElementById('startLearningBtn').href = exam.page;
             document.getElementById('description-title').textContent = `About ${exam.name}`;
             document.getElementById('description-text').textContent = exam.description || "No description available for this selection.";
+
+            // Handle the website link
+            const websiteBox = document.getElementById('website-box');
+            if (exam.website) {
+                websiteBox.innerHTML = `<div class="website-link-box"><a href="${exam.website}" target="_blank" rel="noopener noreferrer">Website Link</a></div>`;
+                websiteBox.style.display = 'block';
+            } else {
+                websiteBox.style.display = 'none';
+                websiteBox.innerHTML = '';
+            }
         }
         
         const menuOverlay = document.getElementById('menuOverlay');
