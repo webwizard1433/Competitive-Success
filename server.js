@@ -17,22 +17,6 @@ app.use(express.json());
 // This middleware is for parsing URL-encoded form data.
 app.use(express.urlencoded({ extended: true }));
 
-// --- Middleware to prevent caching of protected pages ---
-const noCache = (req, res, next) => {
-    res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, private');
-    next();
-};
-
-// Apply the no-cache middleware to all routes that should be protected.
-// This ensures the browser always re-validates with the server.
-app.use('/home.html', noCache);
-// Add any other protected pages here, for example:
-// app.use('/upsc.html', noCache);
-
-// --- In-memory "Database" (for demonstration) ---
-// In a real application, you would connect to a database like PostgreSQL or MongoDB.
-const users = [];
-
 // --- Static File Serving ---
 
 // This serves all your HTML, CSS, and client-side JS files.
