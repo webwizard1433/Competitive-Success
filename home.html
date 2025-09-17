@@ -202,12 +202,6 @@
             padding: 2rem;
             box-sizing: border-box;
         }
-        .search-popup-content {
-            width: 100%;
-            max-width: 700px;
-            margin: 2rem auto;
-            position: relative;
-        }
         .search-popup-input {
             width: 100%;
             padding: 1rem;
@@ -218,10 +212,6 @@
             background-color: var(--card-background);
             color: var(--text-color);
             box-sizing: border-box;
-        }
-        .search-popup-input-clear {
-            position: absolute; right: 1rem; top: 50%; transform: translateY(-50%);
-            font-size: 2rem; color: var(--secondary-text-color); cursor: pointer; display: none;
         }
         @media (max-width: 600px) {
             .search-popup-input { font-size: 1.1rem; }
@@ -390,10 +380,7 @@
     <!-- Search Popup -->
     <div id="searchPopup" class="search-popup">
         <span class="close-btn" onclick="closeSearch()">&times;</span>
-        <div class="search-popup-content">
-            <input type="text" id="searchInput" class="search-popup-input" placeholder="Type to search...">
-            <span id="clearSearchBtn" class="search-popup-input-clear">&times;</span>
-        </div>
+        <input type="text" id="searchInput" class="search-popup-input" placeholder="Type to search...">
         <div id="searchResults" class="search-results"></div>
     </div>
 
@@ -494,7 +481,6 @@
         const searchPopup = document.getElementById('searchPopup');
         const searchInput = document.getElementById('searchInput');
         const searchResults = document.getElementById('searchResults');
-        const clearSearchBtn = document.getElementById('clearSearchBtn');
 
         function openSearch() {
             searchPopup.style.display = 'flex';
@@ -505,7 +491,6 @@
             searchPopup.style.display = 'none';
             searchInput.value = '';
             searchResults.innerHTML = '';
-            clearSearchBtn.style.display = 'none';
         }
 
         function buildSearchIndex() {
@@ -580,8 +565,6 @@
         searchInput.addEventListener('input', (e) => {
             const query = e.target.value.toLowerCase();
             searchResults.innerHTML = '';
-            clearSearchBtn.style.display = query.length > 0 ? 'block' : 'none';
-
             if (query.length < 2) return;
 
             const filtered = searchableContent.filter(item => item.name.toLowerCase().includes(query));
@@ -592,13 +575,6 @@
                 a.textContent = item.name;
                 searchResults.appendChild(a);
             });
-        });
-
-        clearSearchBtn.addEventListener('click', () => {
-            searchInput.value = '';
-            searchResults.innerHTML = '';
-            clearSearchBtn.style.display = 'none';
-            searchInput.focus();
         });
 
         searchInput.addEventListener('keydown', (e) => {
@@ -649,17 +625,6 @@
 
             // Build the search index
             buildSearchIndex();
-
-            // Add a listener to the main content area to remove blur before navigating
-            const mainContainer = document.getElementById('mainContainer');
-            mainContainer.addEventListener('click', function(e) {
-                if (searchPopup.style.display === 'flex') {
-                    closeSearch();
-                }
-                if (e.target.closest('a')) {
-                    document.body.classList.remove('menu-open');
-                }
-            }, true); // Use capture phase to catch the event early
         });
     </script>
 
