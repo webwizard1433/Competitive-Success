@@ -25,11 +25,6 @@
             }
         })();
 
-        // Auth check: Redirect to login if no session token is found
-        if (!safeStorage.getItem('sessionToken')) {
-            // Use replace() to prevent user from clicking "back" to the home page
-            window.location.replace('/login.html');
-        }
     </script>
     <style>
         :root {
@@ -264,7 +259,6 @@
             <div class="dropdown-content">
                 <!-- This will open the modal -->
                 <a href="#" onclick="openEditModal()">Edit Exam</a>
-                <a href="#" onclick="logout()">Logout</a>
             </div>
         </div>
     </header>
@@ -328,13 +322,6 @@
     </style>
 
     <script>
-        function logout() {
-            // Clear all user-related data from localStorage
-            safeStorage.removeItem('sessionToken');
-            safeStorage.removeItem('userExamChoice');
-            safeStorage.removeItem('userName');
-            window.location.replace('/login.html'); // Use replace for a cleaner logout
-        }
         function toggleMenu() {
             document.getElementById('profileMenu').classList.toggle('active');
         }
@@ -414,16 +401,6 @@
             modalSelect.value = userExam;
 
             updateDashboard(userExam);
-        });
-
-        // Re-check auth when the page is shown, e.g., on back button press
-        window.addEventListener('pageshow', function(event) {
-            // The persisted property is true if the page is from the back/forward cache
-            if (event.persisted) {
-                if (!safeStorage.getItem('sessionToken')) {
-                    window.location.replace('/login.html');
-                }
-            }
         });
     </script>
 

@@ -33,38 +33,6 @@ app.use('/home.html', noCache);
 // In a real application, you would connect to a database like PostgreSQL or MongoDB.
 const users = [];
 
-// --- API Routes ---
-
-app.post('/register', (req, res) => {
-    const { fullName, preparingFor, contactInfo } = req.body;
-    console.log('Registering user:', { fullName, preparingFor, contactInfo });
-
-    // Basic validation
-    if (!fullName || !contactInfo) {
-        return res.status(400).json({ message: 'Full name and contact info are required.' });
-    }
-
-    // In a real app, you would hash the password and save the user to a database.
-    // For now, we'll just log it and send a success response.
-    users.push({ fullName, contactInfo }); // Storing user data in memory
-
-    res.status(201).json({ message: 'Registration successful!' });
-});
-
-app.post('/login', (req, res) => {
-    const { contactInfo, password } = req.body;
-    console.log('Login attempt:', { contactInfo });
-
-    // Basic validation
-    if (!contactInfo || !password) {
-        return res.status(400).json({ message: 'Contact info and password are required.' });
-    }
-
-    // In a real app, you would find the user and verify the password hash.
-    // For this demo, we'll accept any login attempt as successful.
-    res.status(200).json({ message: 'Login successful!' });
-});
-
 // --- Static File Serving ---
 
 // This serves all your HTML, CSS, and client-side JS files.
@@ -73,10 +41,10 @@ app.use(express.static(path.join(__dirname, '')));
 
 // --- Root Route ---
 
-// This will serve your registration page as the main entry point.
+// This will serve your home page as the main entry point.
 // It's placed after static middleware to act as a fallback for the root URL.
 app.get('/', (req, res) => {
-    res.sendFile(path.join(__dirname, 'registration.html'));
+    res.sendFile(path.join(__dirname, 'home.html'));
 });
 
 // --- Server Listener ---
