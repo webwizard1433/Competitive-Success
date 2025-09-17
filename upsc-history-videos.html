@@ -41,21 +41,8 @@
         .card-content h3 { margin: 0; font-size: 1.1rem; }
 
         /* --- Modal (Pop-up) Styles --- */
-        .modal {
-            display: none; /* Hidden by default */
-            position: fixed; /* Stay in place */
-            z-index: 2000; /* Sit on top */
-            left: 0;
-            top: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0,0,0,0.85); /* Darker background */
-            /* Use Flexbox to center the content */
-            display: flex;
-            justify-content: center;
-            align-items: center;
-        }
-        .modal-content { position: relative; width: 90%; max-width: 850px; }
+        .modal { display: none; position: fixed; z-index: 2000; left: 0; top: 0; width: 100%; height: 100%; overflow: auto; background-color: rgba(0,0,0,0.8); }
+        .modal-content { position: relative; margin: 5% auto; padding: 20px; width: 90%; max-width: 800px; }
         .close-button { position: absolute; top: -30px; right: 0; color: #fff; font-size: 35px; font-weight: bold; cursor: pointer; }
         .video-container { position: relative; padding-bottom: 56.25%; /* 16:9 Aspect Ratio */ height: 0; }
         .video-container iframe { position: absolute; top: 0; left: 0; width: 100%; height: 100%; }
@@ -175,26 +162,6 @@
             videoPlayer.src = embedUrl;
             modal.style.display = "block";
         }
-
-        // --- Fullscreen and Auto-Rotation Logic ---
-        videoPlayer.addEventListener('fullscreenchange', () => {
-            if (document.fullscreenElement) {
-                // When entering fullscreen, try to lock to landscape
-                try {
-                    screen.orientation.lock('landscape').catch(err => {
-                        // This might fail on some browsers/devices, which is okay.
-                        console.log("Screen orientation lock failed:", err);
-                    });
-                } catch (err) {
-                    console.log("Screen orientation API not supported.");
-                }
-            } else {
-                // When exiting fullscreen, unlock the orientation
-                if (screen.orientation && screen.orientation.unlock) {
-                    screen.orientation.unlock();
-                }
-            }
-        });
 
         // Function to close the modal and stop the video
         function closeModal() {
