@@ -170,7 +170,8 @@
             flex-direction: column; /* This will be the main flex container */
             align-items: center;
             justify-content: center;
-            margin-top: var(--header-height); /* Use margin to push the whole container down */
+            min-height: 100vh; /* Ensure it takes full viewport height */
+            padding-top: var(--header-height); /* Add padding to account for fixed header */
         }
 
         @media (max-width: 600px) {
@@ -206,8 +207,6 @@
             padding: 0 2rem 1.5rem;
             max-width: 600px;
             margin: 0 auto;
-            width: 100%;
-            box-sizing: border-box; /* This is the key fix */
         }
         .search-bar {
             background-color: var(--card-background);
@@ -344,7 +343,7 @@
 
         .thumbnail-card img {
             width: 100%;
-            height: 300px; /* Taller image */
+            height: 250px; /* Adjust height to fit screen */
             object-fit: cover;
         }
 
@@ -443,13 +442,12 @@
     </header>
 
     <main class="main-container" id="mainContainer">
-        <section class="content-section" style="display: flex; flex-direction: column; align-items: center; width: 100%;">
+        <section class="content-section">
             <!-- Search Bar -->
             <div class="search-container">
                 <div class="search-bar" onclick="handleSearchClick(event)">
                     &#x1F50D; Search for any exam or subject...
                 </div>
-            
                 <!-- Search bar is now part of the header flow -->
             </div>
 
@@ -568,14 +566,21 @@
             for (const key in examData) {
                 const exam = examData[key];
                 const listItem = document.createElement('li');
-                const link = document.createElement('a');                link.href = '#';
-                link.innerHTML = `<span class="icon">${exam.icon || '📄'}</span> ${exam.name}`;                link.dataset.exam = key;
-                if (key === currentExam) {                    link.classList.add('active');
-                }                link.onclick = (e) => {
+                const link = document.createElement('a');
+                const iconSpan = document.createElement('span');
+                iconSpan.className = 'icon';
+                iconSpan.textContent = exam.icon || '📄'; // Default icon
+                link.href = '#';
+                link.innerHTML = `<span class="icon">${exam.icon || '📄'}</span> ${exam.name}`;
+                link.dataset.exam = key;
+                if (key === currentExam) {
+                    link.classList.add('active');
+                }
+                link.onclick = (e) => {
                     e.preventDefault();
                     selectExam(key);
                 };
-                listItem.appendChild(link); // This was incorrect, it should be listItem.appendChild(link)
+                listItem.appendChild(link);
                 examList.appendChild(listItem);
             }
         }
