@@ -52,14 +52,17 @@
     <script src="/video-page.js"></script>
     <script>
         // --- Page Initialization ---
-        document.addEventListener('DOMContentLoaded', () => {
+        document.addEventListener('DOMContentLoaded', async () => {
+            // Fetch user data first to know progress and favorites
+            await fetchUserData();
+
             populateVideos(videoData, defaultThumbnails);
 
             // Restore video state on reload
             if (window.sessionStorage) {
                 const activeVideoJson = sessionStorage.getItem('activeVideo');
                 if (activeVideoJson) {
-                    try { openModal(JSON.parse(activeVideoJson)); } catch (e) { console.error(e); }
+                    try { openModal(JSON.parse(activeVideoJson)); } catch (e) { console.error("Error restoring video", e); }
                 }
             }
         });

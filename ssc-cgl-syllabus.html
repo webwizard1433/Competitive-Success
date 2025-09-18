@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SSC-CGL Syllabus | Competitive Success</title>
+    <link rel="icon" href="/success.png" type="image/png">
+    <link rel="stylesheet" href="/video-page.css">
+    <style>
+        .syllabus-section {
+            background-color: var(--card-background);
+            border: 1px solid var(--card-border-color);
+            border-radius: 12px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+        }
+        .syllabus-section h2 {
+            color: var(--primary-color);
+            border-bottom: 2px solid var(--card-border-color);
+            padding-bottom: 0.5rem;
+            margin-top: 0;
+        }
+        .syllabus-section ul {
+            list-style-type: disc;
+            padding-left: 20px;
+            line-height: 1.8;
+        }
+        .syllabus-section li {
+            margin-bottom: 0.5rem;
+        }
+        .collapsible-header {
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .collapsible-header::after {
+            content: '▼'; /* Down arrow */
+            transition: transform 0.3s ease;
+        }
+        .collapsible-content {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.5s ease-out;
+        }
+    </style>
+</head>
+<body>
+    <main class="main-container">
+        <div class="back-to-home">
+            <a href="/ssc-cgl.html">← Back to SSC-CGL Resources</a>
+        </div>
+        <div class="page-header">
+            <h1>SSC-CGL Syllabus</h1>
+            <p>Official syllabus for the Combined Graduate Level Examination.</p>
+        </div>
+
+        <section class="syllabus-section">
+            <div class="collapsible-header" onclick="toggleCollapse(this)">
+                <h2>Tier-I Examination</h2>
+            </div>
+            <div class="collapsible-content">
+                <ul>
+                    <li>General Intelligence & Reasoning</li>
+                    <li>General Awareness</li>
+                    <li>Quantitative Aptitude</li>
+                    <li>English Comprehension</li>
+                </ul>
+            </div>
+        </section>
+
+        <section class="syllabus-section">
+            <div class="collapsible-header" onclick="toggleCollapse(this)">
+                <h2>Tier-II Examination</h2>
+            </div>
+            <div class="collapsible-content">
+                <ul>
+                    <li>Paper-I: Mathematical Abilities, Reasoning and General Intelligence, English Language and Comprehension, General Awareness, Computer Knowledge Test, Data Entry Speed Test.</li>
+                    <li>Paper-II: Statistics</li>
+                    <li>Paper-III: General Studies (Finance and Economics)</li>
+                </ul>
+            </div>
+        </section>
+
+    </main>
+    <script>
+        function toggleCollapse(header) {
+            header.classList.toggle('active');
+            const content = header.nextElementSibling;
+            if (content.style.maxHeight) {
+                content.style.maxHeight = null;
+                header.style.setProperty('--arrow-transform', 'rotate(0deg)');
+            } else {
+                content.style.maxHeight = content.scrollHeight + "px";
+                header.style.setProperty('--arrow-transform', 'rotate(180deg)');
+            }
+        }
+    </script>
+</body>
+</html>

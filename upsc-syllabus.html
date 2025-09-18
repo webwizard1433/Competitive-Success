@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>UPSC Syllabus | Competitive Success</title>
+    <link rel="icon" href="/success.png" type="image/png">
+    <link rel="stylesheet" href="/video-page.css">
+    <style>
+        .syllabus-section {
+            background-color: var(--card-background);
+            border: 1px solid var(--card-border-color);
+            border-radius: 12px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+        }
+        .syllabus-section h2 {
+            color: var(--primary-color);
+            border-bottom: 2px solid var(--card-border-color);
+            padding-bottom: 0.5rem;
+            margin-top: 0;
+        }
+        .syllabus-section h3 {
+            color: var(--primary-hover-color);
+            margin-top: 1.5rem;
+        }
+        .syllabus-section ul {
+            list-style-type: disc;
+            padding-left: 20px;
+            line-height: 1.8;
+        }
+        .syllabus-section li {
+            margin-bottom: 0.5rem;
+        }
+        .collapsible-header {
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .collapsible-header::after {
+            content: '▼'; /* Down arrow */
+            transition: transform 0.3s ease;
+        }
+        .collapsible-content {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.5s ease-out;
+        }
+    </style>
+</head>
+<body>
+    <main class="main-container">
+        <div class="back-to-home">
+            <a href="/upsc.html">← Back to UPSC Resources</a>
+        </div>
+        <div class="page-header">
+            <h1>UPSC Syllabus</h1>
+            <p>Official syllabus for the Civil Services Examination (CSE).</p>
+        </div>
+
+        <section class="syllabus-section">
+            <div class="collapsible-header" onclick="toggleCollapse(this)">
+                <h2>Preliminary Examination</h2>
+            </div>
+            <div class="collapsible-content">
+                <h3>Paper I - General Studies (200 marks)</h3>
+                <ul>
+                    <li>Current events of national and international importance.</li>
+                    <li>History of India and Indian National Movement.</li>
+                    <li>Indian and World Geography-Physical, Social, Economic Geography of India and the World.</li>
+                    <li>Indian Polity and Governance-Constitution, Political System, Panchayati Raj, Public Policy, Rights Issues, etc.</li>
+                    <li>Economic and Social Development-Sustainable Development, Poverty, Inclusion, Demographics, Social Sector Initiatives, etc.</li>
+                    <li>General issues on Environmental ecology, Bio-diversity and Climate Change - that do not require subject specialization.</li>
+                    <li>General Science.</li>
+                </ul>
+
+                <h3>Paper II - CSAT (200 marks) (Qualifying)</h3>
+                <ul>
+                    <li>Comprehension.</li>
+                    <li>Interpersonal skills including communication skills.</li>
+                    <li>Logical reasoning and analytical ability.</li>
+                    <li>Decision making and problem solving.</li>
+                    <li>General mental ability.</li>
+                    <li>Basic numeracy (numbers and their relations, orders of magnitude, etc.) (Class X level), Data interpretation (charts, graphs, tables, data sufficiency etc. — Class X level).</li>
+                </ul>
+            </div>
+        </section>
+
+        <section class="syllabus-section">
+            <div class="collapsible-header" onclick="toggleCollapse(this)">
+                <h2>Main Examination</h2>
+            </div>
+            <div class="collapsible-content">
+                <p>The main examination includes 9 papers of conventional essay type, including two qualifying papers.</p>
+                <ul>
+                    <li>Paper-A: (One of the Indian Language to be selected by the candidate from the Languages included in the Eighth Schedule to the Constitution). 300 marks.</li>
+                    <li>Paper-B: English. 300 marks.</li>
+                    <li>Paper-I: Essay. 250 marks.</li>
+                    <li>Paper-II: General Studies–I (Indian Heritage and Culture, History and Geography of the World and Society). 250 marks.</li>
+                    <li>Paper-III: General Studies –II (Governance, Constitution, Polity, Social Justice and International relations). 250 marks.</li>
+                    <li>Paper-IV: General Studies –III (Technology, Economic Development, Bio-diversity, Environment, Security and Disaster Management). 250 marks.</li>
+                    <li>Paper-V: General Studies –IV (Ethics, Integrity and Aptitude). 250 marks.</li>
+                    <li>Paper-VI: Optional Subject – Paper 1. 250 marks.</li>
+                    <li>Paper-VII: Optional Subject – Paper 2. 250 marks.</li>
+                </ul>
+            </div>
+        </section>
+
+    </main>
+    <script>
+        function toggleCollapse(header) {
+            header.classList.toggle('active');
+            const content = header.nextElementSibling;
+            if (content.style.maxHeight) {
+                content.style.maxHeight = null;
+                header.style.setProperty('--arrow-transform', 'rotate(0deg)');
+            } else {
+                content.style.maxHeight = content.scrollHeight + "px";
+                header.style.setProperty('--arrow-transform', 'rotate(180deg)');
+            }
+        }
+    </script>
+</body>
+</html>

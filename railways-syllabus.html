@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Railways Syllabus | Competitive Success</title>
+    <link rel="icon" href="/success.png" type="image/png">
+    <link rel="stylesheet" href="/video-page.css">
+    <style>
+        .syllabus-section {
+            background-color: var(--card-background);
+            border: 1px solid var(--card-border-color);
+            border-radius: 12px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+        }
+        .syllabus-section h2 {
+            color: var(--primary-color);
+            border-bottom: 2px solid var(--card-border-color);
+            padding-bottom: 0.5rem;
+            margin-top: 0;
+        }
+        .syllabus-section ul {
+            list-style-type: disc;
+            padding-left: 20px;
+            line-height: 1.8;
+        }
+        .syllabus-section li {
+            margin-bottom: 0.5rem;
+        }
+        .collapsible-header {
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .collapsible-header::after {
+            content: '▼'; /* Down arrow */
+            transition: transform 0.3s ease;
+        }
+        .collapsible-content {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.5s ease-out;
+        }
+    </style>
+</head>
+<body>
+    <main class="main-container">
+        <div class="back-to-home">
+            <a href="/railways.html">← Back to Railways Resources</a>
+        </div>
+        <div class="page-header">
+            <h1>Railways (RRB) Syllabus</h1>
+            <p>Common syllabus for major RRB examinations like NTPC and Group D.</p>
+        </div>
+
+        <section class="syllabus-section">
+            <div class="collapsible-header" onclick="toggleCollapse(this)">
+                <h2>Mathematics</h2>
+            </div>
+            <div class="collapsible-content">
+                <ul>
+                    <li>Number System, Decimals, Fractions, LCM, HCF, Ratio and Proportion, Percentage, Mensuration, Time and Work, Time and Distance, Simple and Compound Interest, Profit and Loss, Elementary Algebra, Geometry and Trigonometry, etc.</li>
+                </ul>
+            </div>
+        </section>
+
+        <section class="syllabus-section">
+            <div class="collapsible-header" onclick="toggleCollapse(this)">
+                <h2>General Intelligence and Reasoning</h2>
+            </div>
+            <div class="collapsible-content">
+                <ul>
+                    <li>Analogies, Completion of Number and Alphabetical Series, Coding and Decoding, Mathematical Operations, Similarities and Differences, Relationships, Analytical Reasoning, Syllogism, Jumbling, Venn Diagrams, Puzzle, Data Sufficiency, etc.</li>
+                </ul>
+            </div>
+        </section>
+
+        <section class="syllabus-section">
+            <div class="collapsible-header" onclick="toggleCollapse(this)">
+                <h2>General Awareness</h2>
+            </div>
+            <div class="collapsible-content">
+                <ul>
+                    <li>Current Events of National and International Importance, Games and Sports, Art and Culture of India, Indian Literature, Monuments and Places of India, General Science and Life Science (up to 10th CBSE), History of India and Freedom Struggle, Physical, Social and Economic Geography of India and World, Indian Polity and Governance, etc.</li>
+                </ul>
+            </div>
+        </section>
+    </main>
+    <script>
+        function toggleCollapse(header) {
+            header.classList.toggle('active');
+            const content = header.nextElementSibling;
+            if (content.style.maxHeight) {
+                content.style.maxHeight = null;
+                header.style.setProperty('--arrow-transform', 'rotate(0deg)');
+            } else {
+                content.style.maxHeight = content.scrollHeight + "px";
+                header.style.setProperty('--arrow-transform', 'rotate(180deg)');
+            }
+        }
+    </script>
+</body>
+</html>

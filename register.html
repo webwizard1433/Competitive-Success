@@ -3,32 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <title>Login | Competitive Exam Prep</title>
+    <title>Register | Competitive Success</title>
     <link rel="icon" href="/success.png" type="image/png">
-    <script>
-        // --- Safe Storage Utility ---
-        const safeStorage = (() => {
-            try {
-                const storage = window.localStorage;
-                storage.setItem('__test__', '1');
-                storage.removeItem('__test__');
-                return storage;
-            } catch (e) {
-                console.warn("localStorage is not available. Using in-memory fallback.");
-                const memoryStore = {};
-                return {
-                    setItem: (key, value) => { memoryStore[key] = value; },
-                    getItem: (key) => memoryStore[key] || null,
-                    removeItem: (key) => { delete memoryStore[key]; }
-                };
-            }
-        })();
-
-        // Clear any existing session when the login page is loaded
-        safeStorage.removeItem('sessionToken');
-        safeStorage.removeItem('userExamChoice');
-        safeStorage.removeItem('userName');
-    </script>
     <style>
        /* --- Modern Dark Theme --- */
        :root {
@@ -67,9 +43,7 @@
             text-align: center;
             margin-bottom: 1rem;
         }
-
         .container {
-            /* Changed to a gradient for a more modern look */
             background: rgba(255, 255, 255, 0.05);
             backdrop-filter: blur(10px);
             padding: 2rem 3rem;
@@ -77,27 +51,22 @@
             box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
             width: 100%;
             max-width: 450px;
-            box-sizing: border-box;
         }
-
-        h1 {
-            color: var(--primary-color);
-            text-align: center;
-            margin-bottom: 0.5rem;
-        }
-
-        .header-text {
-            text-align: center;
-            color: var(--secondary-text-color);
-            margin-bottom: 2rem;
-        }
-
         .logo-container img {
             width: 60px;
             height: 60px;
             border-radius: 50%;
         }
-
+        h1 {
+            color: var(--primary-color);
+            text-align: center;
+            margin-bottom: 0.5rem;
+        }
+        .header-text {
+            text-align: center;
+            color: var(--secondary-text-color);
+            margin-bottom: 2rem;
+        }
         .form-group {
             margin-bottom: 1.25rem;
         }
@@ -116,13 +85,12 @@
         .form-group input {
             width: 100%;
             padding: 0.75rem 0.75rem 0.75rem 2.5rem; /* Add padding for icon */
-            border: 1px solid var(--input-border-color);
+            border: 1px solid rgba(255, 255, 255, 0.2);
             background: rgba(0,0,0,0.2);
             color: var(--text-color);
             border-radius: 5px;
             box-sizing: border-box;
             font-size: 1rem;
-            border-color: var(--card-border-color);
         }
 
         .input-icon {
@@ -138,20 +106,6 @@
             outline: none;
             border-color: var(--primary-color);
             background-color: rgba(0,0,0,0.3);
-        }
-
-        .password-wrapper {
-            position: relative;
-        }
-
-        .toggle-password {
-            position: absolute;
-            top: 50%;
-            right: 10px;
-            transform: translateY(-50%);
-            cursor: pointer;
-            user-select: none;
-            color: var(--secondary-text-color);
         }
 
         .btn {
@@ -195,110 +149,67 @@
     </style>
 </head>
 <body>
-
     <div class="container">
         <div class="logo-container">
             <img src="/success.png" alt="Logo">
         </div>
-        <h1>Competitive Success</h1>
-        <p class="header-text">Welcome back! Login to access your dashboard.</p>
+        <h1>Create Account</h1>
+        <p class="header-text">Join to start your preparation journey.</p>
         
-        <form id="loginForm" novalidate autocomplete="off">
+        <form id="registerForm" novalidate>
             <div class="form-group">
                 <label for="contactInfo">Email or Mobile Number</label>
                 <div class="input-wrapper">
                     <span class="input-icon">👤</span>
-                    <input type="text" id="contactInfo" name="contactInfo" required>
+                    <input type="text" id="contactInfo" required>
                 </div>
             </div>
-
             <div class="form-group">
                 <label for="password">Password</label>
-                <div class="password-wrapper input-wrapper">
+                <div class="input-wrapper">
                     <span class="input-icon">🔒</span>
-                    <input type="password" id="password" name="password" required autocomplete="new-password">
-                    <span class="toggle-password" onclick="togglePassword('password')">👁️</span>
+                    <input type="password" id="password" required>
                 </div>
             </div>
-
-            <button type="submit" class="btn">Login</button>
-
+            <button type="submit" class="btn">Register</button>
             <div id="message" class="message"></div>
         </form>
 
         <div class="form-footer">
-            Don't have an account? <a href="/register.html">Register Now</a>
+            Already have an account? <a href="/login.html">Login</a>
         </div>
     </div>
 
     <script>
-        function togglePassword(id) {
-            const input = document.getElementById(id);
-            input.type = input.type === 'password' ? 'text' : 'password';
-        }
-
-        const form = document.getElementById('loginForm');
+        const form = document.getElementById('registerForm');
         form.addEventListener('submit', async function(e) {
             e.preventDefault();
+            const contactInfo = document.getElementById('contactInfo').value;
+            const password = document.getElementById('password').value;
             const messageDiv = document.getElementById('message');
-            const submitButton = form.querySelector('button[type="submit"]');
-
-            const contactInfo = form.elements.contactInfo.value.trim();
-            const password = form.elements.password.value;
-
-            if (!contactInfo || !password) {
-                showMessage('Please fill out all fields.', 'error');
-                return;
-            }
-
-            submitButton.disabled = true;
-            submitButton.textContent = 'Logging in...';
 
             try {
-                // IMPORTANT: Replace 'YOUR_COMPUTER_IP' with your actual local IP address (e.g., 192.168.1.5)
-                // Make sure your computer and mobile device are on the same Wi-Fi network. 
-                // I've removed the hardcoded IP and replaced it with a placeholder for you.
-                const response = await fetch('http://YOUR_COMPUTER_IP:3000/login', {
+                // IMPORTANT: This is a temporary endpoint for demonstration and is NOT secure.
+                // Replace 'YOUR_NPOINT_ID' with your actual npoint.io bin ID.
+                // Go to npoint.io, create a new bin with initial content like `[]`, and get your ID.
+                // The backend service at 'http://192.168.1.57:3000/register' is the proper place
+                // to implement logic to store data securely, potentially using the GitHub API.
+                const response = await fetch('https://api.npoint.io/YOUR_NPOINT_ID', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ contactInfo, password })
+                    body: JSON.stringify({ contactInfo, password, registeredAt: new Date().toISOString() }) // Storing password here is insecure, for demo only
                 });
-
                 const result = await response.json();
-
-                if (!response.ok) {
-                    throw new Error(result.message || 'Login failed. Please check your credentials.');
+                messageDiv.textContent = result.message;
+                messageDiv.className = `message ${response.ok ? 'success' : 'error'}`;
+                if (response.ok) {
+                    setTimeout(() => window.location.href = '/login.html', 2000);
                 }
-
-                showMessage('Login successful! Redirecting...', 'success');
-                // Store user info from server
-                safeStorage.setItem('sessionToken', result.user.id); // Use user ID as a simple token
-                safeStorage.setItem('userName', result.user.contactInfo);
-
-
-                // Redirect to the user's dashboard
-                setTimeout(() => { window.location.replace('/home.html'); }, 1500);
-
             } catch (error) {
-                showMessage(error.message, 'error');
-            } finally {
-                submitButton.disabled = false;
-                submitButton.textContent = 'Login';
+                messageDiv.textContent = 'An error occurred. Please try again.';
+                messageDiv.className = 'message error';
             }
         });
-
-        function showMessage(msg, type) {
-            const messageDiv = document.getElementById('message');
-            messageDiv.textContent = msg;
-            messageDiv.className = `message ${type}`;
-        }
-
-        // Clear form fields on page load for security
-        window.addEventListener('DOMContentLoaded', () => {
-            form.elements.contactInfo.value = '';
-            form.elements.password.value = '';
-        });
     </script>
-
 </body>
 </html>

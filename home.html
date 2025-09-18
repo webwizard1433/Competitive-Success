@@ -434,6 +434,11 @@
         <ul id="examList">
             <!-- Exam links will be populated by JavaScript -->
         </ul>
+        <ul class="user-menu" style="margin-top: auto; padding-top: 1rem; border-top: 1px solid var(--card-border-color);">
+            <li><a href="/dashboard.html"><span class="icon">📊</span> My Dashboard</a></li>
+            <li><a href="/profile.html"><span class="icon">👤</span> My Profile</a></li>
+            <li><a href="#" onclick="logout()"><span class="icon">🚪</span> Logout</a></li>
+        </ul>
     </aside>
 
     <div class="overlay" id="menuOverlay" onclick="toggleSideMenu()"></div>
@@ -567,6 +572,12 @@
 
             // Always hide menu on selection
             toggleSideMenu();
+        }
+
+        function logout() {
+            safeStorage.removeItem('sessionToken');
+            // Redirect to login page
+            window.location.replace('/login.html');
         }
 
         function populateExamMenu(currentExam) {

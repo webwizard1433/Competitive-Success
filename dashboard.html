@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Dashboard | Competitive Success</title>
+    <link rel="icon" href="/success.png" type="image/png">
+    <link rel="stylesheet" href="/video-page.css">
+    <style>
+        .dashboard-section {
+            margin-bottom: 3rem;
+        }
+        .dashboard-section h2 {
+            font-size: 1.8rem;
+            color: var(--primary-color);
+            border-bottom: 2px solid var(--card-border-color);
+            padding-bottom: 0.5rem;
+            margin-bottom: 1.5rem;
+        }
+        .empty-state p {
+            margin: 0;
+            font-size: 1.1rem;
+            color: var(--secondary-text-color);
+        }
+        .empty-state {
+            background-color: var(--card-background);
+            border: 1px dashed var(--card-border-color);
+            border-radius: 12px;
+            padding: 2rem;
+            text-align: center;
+        }
+        .empty-state a {
+            color: var(--primary-color);
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <main class="main-container">
+        <div class="back-to-home">
+            <a href="/home.html">← Back to Home</a>
+        </div>
+        <div class="page-header">
+            <h1>My Dashboard</h1>
+            <p>Your progress, favorites, and recently watched videos.</p>
+        </div>
+
+        <!-- Recently Watched Section -->
+        <section class="dashboard-section">
+            <h2>Recently Watched</h2>
+            <div id="recentGrid" class="grid-container">
+                <!-- Recently watched videos will be populated here -->
+            </div>
+            <div id="recentEmpty" class="empty-state" style="display: none;">
+                <p>You haven't watched any videos yet. <a href="/home.html">Start learning now!</a></p>
+            </div>
+        </section>
+
+        <!-- Favorites Section -->
+        <section class="dashboard-section">
+            <h2>My Favorites</h2>
+            <div id="favoritesGrid" class="grid-container">
+                <!-- Favorite videos will be populated here -->
+            </div>
+            <div id="favoritesEmpty" class="empty-state" style="display: none;">
+                <p>You haven't favorited any videos yet. Look for the ⭐ icon on video cards.</p>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- The Modal (copied from video-page.js for consistency) -->
+    <div id="videoModal" class="modal">
+        <div class="modal-content">
+            <span class="close-button" onclick="closeModal()">&times;</span>
+            <div class="video-container">
+                <iframe id="videoPlayer" src="" title="Video Player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; fullscreen" allowfullscreen></iframe>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Minimal safeStorage implementation
+        const safeStorage = (() => {
+            try {
+                const storage = window.localStorage;
+                storage.setItem('__test__', '1'); storage.removeItem('__test__');
+                return storage;
+            } catch (e) {
+                const memoryStore = {};
+                return { setItem: (k, v) => { memoryStore[k] = v; }, getItem: (k) => memoryStore[k] || null, removeItem: (k) => { delete memoryStore[k]; } };
+            }
+        })();
+
+        const userId = safeStorage.getItem('sessionToken');
+
+        // --- Dashboard Population ---
+        document.addEventListener('DOMContentLoaded', async () => {
+            if (!userId) {
+                window.location.replace('/login.html');
+                return;
+            }
+
+            try {
+                const response = await fetch(`/user/${userId}`);
+                if (!response.ok) throw new Error('Could not fetch user data.');
+                
+                const user = await response.json();
+                
+                // Populate Favorites
+                const favoritesGrid = document.getElementById('favoritesGrid');
+                if (user.favorites && user.favorites.length > 0) {
+                    user.favorites.forEach(video => favoritesGrid.appendChild(createVideoCard(video)));
+                } else {
+                    document.getElementById('favoritesEmpty').style.display = 'block';
+                }
+
+                // Populate Recently Watched (from sessionStorage for simplicity)
+                const recentGrid = document.getElementById('recentGrid');
+                const recentVideoJson = sessionStorage.getItem('activeVideo');
+                if (recentVideoJson) {
+                    const recentVideo = JSON.parse(recentVideoJson);
+                    recentGrid.appendChild(createVideoCard(recentVideo));
+                } else {
+                     document.getElementById('recentEmpty').style.display = 'block';
+                }
+
+            } catch (error) {
+                console.error('Error loading dashboard:', error);
+                document.getElementById('favoritesEmpty').style.display = 'block';
+                document.getElementById('recentEmpty').style.display = 'block';
+            }
+        });
+
+        function createVideoCard(video) {
+            const card = document.createElement('div');
+            card.className = 'resource-card';
+            const thumbnailUrl = `https://img.youtube.com/vi/${video.id}/mqdefault.jpg`;
+            card.innerHTML = `
+                <div class="card-thumbnail">
+                    <img src="${thumbnailUrl}" alt="${video.title}" style="opacity: 1;">
+                    <span class="play-icon">▶</span>
+                </div>
+                <div class="card-content">
+                    <h3>${video.title}</h3>
+                </div>
+            `;
+            card.onclick = () => openModal(video);
+            return card;
+        }
+
+        // --- Modal Functions (Simplified) ---
+        const modal = document.getElementById('videoModal');
+        const videoPlayer = document.getElementById('videoPlayer');
+        function openModal(video) {
+            videoPlayer.src = `https://www.youtube.com/embed/${video.id}?autoplay=1`;
+            modal.classList.add('show');
+        }
+        function closeModal() {
+            modal.classList.remove('show');
+            videoPlayer.src = "";
+        }
+        window.onclick = (event) => { if (event.target == modal) closeModal(); };
+    </script>
+</body>
+</html>

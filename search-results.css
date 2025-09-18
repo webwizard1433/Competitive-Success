@@ -1,0 +1,42 @@
+.search-results a {
+    display: flex;
+    align-items: center;
+    padding: 0.8rem 1.2rem;
+    color: var(--text-color);
+    text-decoration: none;
+    border-bottom: 1px solid var(--card-border-color);
+    transition: background-color 0.2s ease;
+}
+
+.search-results a:last-child {
+    border-bottom: none;
+}
+
+.search-results a:hover, .search-results a.active {
+    background-color: rgba(77, 171, 247, 0.15);
+}
+
+.search-results a.active {
+    border-left: 3px solid var(--primary-color);
+    padding-left: calc(1.2rem - 3px);
+}
+
+.search-result-icon {
+    font-size: 1.5rem;
+    margin-right: 1rem;
+    width: 25px;
+    text-align: center;
+    color: var(--primary-color);
+}
+
+.search-result-text h4 {
+    margin: 0 0 0.2rem 0;
+    font-size: 1rem;
+    font-weight: 600;
+}
+
+.search-result-text p {
+    margin: 0;
+    font-size: 0.85rem;
+    color: var(--secondary-text-color);
+}

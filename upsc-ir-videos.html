@@ -5,61 +5,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="icon" href="/success.png" type="image/png">
     <title>UPSC International Relations Videos | Competitive Success</title>
-    <style>
-        :root {
-            --primary-color: #FFC107;
-            --card-background: rgba(255, 255, 255, 0.05);
-            --card-border-color: rgba(255, 255, 255, 0.2);
-            --text-color: #F5F5DC;
-            --secondary-text-color: #adb5bd;
-        }
-        body {
-            background: linear-gradient(135deg, rgb(10, 35, 66) 0%, rgb(0, 26, 51) 100%);
-        }
-        .back-to-home { text-align: left; margin-bottom: 1.5rem; }
-        .back-to-home a { display: inline-block; padding: 0.5rem 1rem; background-color: var(--card-background); border: 1px solid var(--card-border-color); color: var(--primary-color); text-decoration: none; font-weight: bold; border-radius: 5px; transition: background-color 0.3s ease; }
-        .back-to-home a:hover { background-color: rgba(255, 255, 255, 0.1); }
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-            margin: 0; color: var(--text-color); min-height: 100vh; display: flex; flex-direction: column;
-        }
-        .main-container { padding: 2rem; max-width: 1200px; margin: auto; flex-grow: 1; }
-        .page-header { text-align: center; margin-bottom: 2.5rem; }
-        .page-header h1 { font-size: 3rem; color: var(--primary-color); margin: 0; }
-        .page-header p { font-size: 1.2rem; color: var(--text-color); }
-        .grid-container { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1.5rem; }
-
-        @media (max-width: 600px) {
-            .main-container { padding: 1rem; }
-            .page-header h1 { font-size: 2rem; }
-            .grid-container { grid-template-columns: repeat(2, 1fr); }
-        }
-
-        .resource-card { background-color: var(--card-background); border-radius: 10px; box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08); overflow: hidden; transition: transform 0.3s ease, box-shadow 0.3s ease; display: flex; flex-direction: column; cursor: pointer; color: var(--text-color); }
-        .resource-card:hover { transform: translateY(-8px); box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15); }
-        .card-thumbnail { width: 100%; height: 160px; background-color: #000; position: relative; overflow: hidden; }
-        .card-thumbnail img { width: 100%; height: 100%; object-fit: cover; }
-        .card-thumbnail .play-icon { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 4rem; color: rgba(255, 255, 255, 0.8); text-shadow: 0 0 15px rgba(0,0,0,0.5); transition: transform 0.2s ease; }
-        .resource-card:hover .play-icon { transform: translate(-50%, -50%) scale(1.1); }
-        .card-content { padding: 1.25rem; flex-grow: 1; }
-        .card-content h3 { margin: 0; font-size: 1.1rem; }
-
-        /* --- Modal (Pop-up) Styles --- */
-        .modal {
-            display: none; position: fixed; z-index: 2000; left: 0; top: 0; width: 100%; height: 100%;
-            background-color: rgba(0,0,0,0.8); justify-content: center; align-items: center;
-        }
-        .modal.show {
-            display: flex;
-        }
-        .modal-content { position: relative; width: 90%; max-width: 850px; }
-        .close-button { position: absolute; top: -30px; right: 0; color: #fff; font-size: 35px; font-weight: bold; cursor: pointer; }
-        .video-container { position: relative; padding-bottom: 56.25%; height: 0; }
-        .video-container iframe { position: absolute; top: 0; left: 0; width: 100%; height: 100%; }
-
-    </style>
+    <link rel="stylesheet" href="/video-page.css">
 </head>
 <body>
     <main class="main-container">
+        <button id="backToTopBtn" title="Go to top">↑</button>
         <div class="back-to-home">
             <a href="/upsc-videos.html">← Back to Subjects</a>
         </div>
@@ -67,11 +17,14 @@
             <h1>International Relations Lectures</h1>
             <p>Click on any video to play it instantly.</p>
         </div>
-        <div class="grid-container" id="videoGrid"></div>
+        <div class="grid-container" id="videoGrid">
+            <!-- Video cards are populated by video-page.js -->
+        </div>
     </main>
 
     <div id="videoModal" class="modal">
         <div class="modal-content">
+            <span class="close-button" onclick="closeModal()">&times;</span>
             <div class="video-container">
                 <iframe id="videoPlayer" src="" title="Video Player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; fullscreen" allowfullscreen></iframe>
             </div>
@@ -79,62 +32,29 @@
     </div>
 
     <script>
-        // New theme variables for consistency
-        :root { --primary-color: #4dabf7; --primary-hover-color: #74c0fc; --background-start: #101113; --background-end: #1d1e20; --card-background: #25262b; --card-border-color: #343a40; --text-color: #e9ecef; --secondary-text-color: #adb5bd; } body { background: linear-gradient(135deg, var(--background-start) 0%, var(--background-end) 100%); color: var(--text-color); } .page-header h1 { color: var(--primary-color); } .page-header p { color: var(--text-color); } .resource-card { background-color: var(--card-background); border-color: var(--card-border-color); box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2); } .resource-card:hover { border-color: var(--primary-color); box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3); } .card-content h3 { color: var(--text-color); } .card-content p { color: var(--secondary-text-color); } .btn { background-color: var(--primary-color); color: #0A2342; } .btn:hover { background-color: var(--primary-hover-color); }
-
+        // --- Page-Specific Data ---
         const videoData = Array.from({ length: 23 }, (_, i) => ({
             id: `placeholder_${i + 1}`,
             title: `IR Lecture ${i + 1}`
         }));
+        const defaultThumbnails = {
+            placeholder: "https://images.unsplash.com/photo-1543286386-713bdd548da4?q=80&w=2070"
+        };
+    </script>
+    <script src="/video-page.js"></script>
+    <script>
+        // --- Page Initialization ---
+        document.addEventListener('DOMContentLoaded', () => {
+            populateVideos(videoData, defaultThumbnails);
 
-        const videoGrid = document.getElementById('videoGrid');
-        const modal = document.getElementById('videoModal');
-        const videoPlayer = document.getElementById('videoPlayer');
-
-        function populateVideos() {
-            const thumbnailUrl = "https://pbs.twimg.com/profile_images/1314595688076976134/_bfHGIAq_400x400.jpg";
-
-            videoData.forEach(video => {
-                const card = document.createElement('div');
-                card.className = 'resource-card';
-                card.innerHTML = `
-                    <div class="card-thumbnail">
-                        <img src="${thumbnailUrl}" alt="${video.title}" onerror="this.onerror=null;this.src='https://via.placeholder.com/300x160.png?text=Video';">
-                        <span class="play-icon">▶</span>
-                    </div>
-                    <div class="card-content">
-                        <h3>${video.title}</h3>
-                    </div>
-                `;
-                card.onclick = () => openModal(video);
-                videoGrid.appendChild(card);
-            });
-        }
-
-        function openModal(video) {
-            if (video.id.startsWith('placeholder_')) {
-                alert('This is a placeholder video. The link needs to be updated.');
-                return;
+            // Restore video state on reload
+            if (window.sessionStorage) {
+                const activeVideoJson = sessionStorage.getItem('activeVideo');
+                if (activeVideoJson) {
+                    try { openModal(JSON.parse(activeVideoJson)); } catch (e) { console.error(e); }
+                }
             }
-            videoPlayer.src = `https://www.youtube.com/embed/${video.id}?autoplay=1`;
-            modal.classList.add('show');
-        }
-
-        function closeModal() {
-            modal.classList.remove('show');
-            videoPlayer.src = "";
-        }
-
-        window.onclick = function(event) {
-            if (event.target == modal) {
-                closeModal();
-            }
-        }
-
-        document.addEventListener('DOMContentLoaded', populateVideos);
-
-        // Ensure menu-open class is removed on page load
-        document.body.classList.remove('menu-open');
+        });
     </script>
 
 </body>

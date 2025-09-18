@@ -1,0 +1,36 @@
+.paper-list {
+    list-style: none;
+    padding: 0;
+}
+.paper-item {
+    background-color: var(--card-background);
+    border: 1px solid var(--card-border-color);
+    border-radius: 8px;
+    padding: 1rem 1.5rem;
+    margin-bottom: 1rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    transition: background-color 0.3s ease, border-color 0.3s ease;
+}
+.paper-item:hover {
+    background-color: rgba(77, 171, 247, 0.1);
+    border-color: var(--primary-color);
+}
+.paper-name {
+    font-weight: 600;
+    font-size: 1.1rem;
+}
+.download-btn {
+    display: inline-block;
+    padding: 0.5rem 1.2rem;
+    background-color: var(--primary-color);
+    color: #0A2342;
+    text-decoration: none;
+    border-radius: 5px;
+    font-weight: bold;
+    transition: background-color 0.3s ease;
+}
+.download-btn:hover {
+    background-color: var(--primary-hover-color);
+}

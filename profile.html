@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Profile | Competitive Success</title>
+    <link rel="icon" href="/success.png" type="image/png">
+    <link rel="stylesheet" href="/video-page.css">
+    <style>
+        .profile-container {
+            background-color: var(--card-background);
+            border: 1px solid var(--card-border-color);
+            border-radius: 12px;
+            padding: 2rem;
+            max-width: 700px;
+            margin: 2rem auto;
+        }
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: var(--secondary-text-color);
+            font-weight: 600;
+        }
+        .form-group input {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid var(--card-border-color);
+            background: rgba(0,0,0,0.2);
+            color: var(--text-color);
+            border-radius: 5px;
+            box-sizing: border-box;
+            font-size: 1rem;
+        }
+        .form-group input:focus {
+            outline: none;
+            border-color: var(--primary-color);
+        }
+        .btn {
+            display: inline-block;
+            padding: 0.75rem 1.5rem;
+            background-color: var(--primary-color);
+            color: #0A2342;
+            border: none;
+            border-radius: 5px;
+            font-size: 1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+        .btn:hover {
+            background-color: var(--primary-hover-color);
+        }
+        .message {
+            text-align: center;
+            margin-top: 1rem;
+            padding: 0.75rem;
+            border-radius: 5px;
+            display: none;
+        }
+        .message.success { background-color: #d4edda; color: #155724; display: block; }
+        .message.error { background-color: #f8d7da; color: #721c24; display: block; }
+    </style>
+</head>
+<body>
+    <main class="main-container">
+        <div class="back-to-home">
+            <a href="/home.html">← Back to Home</a>
+        </div>
+        <div class="page-header">
+            <h1>My Profile</h1>
+            <p>View and update your account details.</p>
+        </div>
+
+        <div class="profile-container">
+            <form id="profileForm">
+                <div class="form-group">
+                    <label for="contactInfo">Email or Mobile Number</label>
+                    <input type="text" id="contactInfo" required>
+                </div>
+                <button type="submit" class="btn">Save Changes</button>
+                <div id="message" class="message"></div>
+            </form>
+        </div>
+    </main>
+
+    <script>
+        const safeStorage = (() => {
+            try {
+                const storage = window.localStorage;
+                storage.setItem('__test__', '1');
+                storage.removeItem('__test__');
+                return storage;
+            } catch (e) {
+                const memoryStore = {};
+                return { setItem: (k, v) => { memoryStore[k] = v; }, getItem: (k) => memoryStore[k] || null, removeItem: (k) => { delete memoryStore[k]; } };
+            }
+        })();
+
+        const userId = safeStorage.getItem('sessionToken');
+        const contactInfoInput = document.getElementById('contactInfo');
+        const messageDiv = document.getElementById('message');
+
+        document.addEventListener('DOMContentLoaded', async () => {
+            if (!userId) {
+                window.location.replace('/login.html');
+                return;
+            }
+            // Fetch and display current user data
+            const response = await fetch(`/user/${userId}`);
+            const user = await response.json();
+            if (user) {
+                contactInfoInput.value = user.contactInfo;
+            }
+        });
+
+        document.getElementById('profileForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const updatedContactInfo = contactInfoInput.value;
+
+            const response = await fetch(`/user/${userId}`, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ contactInfo: updatedContactInfo })
+            });
+
+            const result = await response.json();
+            messageDiv.textContent = result.message;
+            messageDiv.className = `message ${response.ok ? 'success' : 'error'}`;
+
+            if (response.ok) {
+                safeStorage.setItem('userName', updatedContactInfo);
+            }
+        });
+    </script>
+</body>
+</html>
