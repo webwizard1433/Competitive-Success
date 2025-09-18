@@ -157,12 +157,21 @@
 
             videoPlayer.src = embedUrl;
             modal.classList.add('show');
+
+            // Store the currently playing video ID in session storage
+            if (window.sessionStorage) {
+                sessionStorage.setItem('activeVideo', JSON.stringify(video));
+            }
         }
 
         // Function to close the modal and stop the video
         function closeModal() {
             modal.classList.remove('show');
             videoPlayer.src = ""; // Stop the video by clearing the src
+            // Remove the video from session storage
+            if (window.sessionStorage) {
+                sessionStorage.removeItem('activeVideo');
+            }
         }
 
         // Close the modal if the user clicks outside of the video content
