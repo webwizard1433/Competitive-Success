@@ -43,7 +43,10 @@
 
         body {
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-            background-color: var(--background-color);
+            /* New modern background using the suggested colors */
+            background-color: #f5f5dc; /* Soft Beige as a fallback */
+            background-image: radial-gradient(at 0% 0%, hsla(0,0%,5%,1) 0px, transparent 50%), 
+                              radial-gradient(at 98% 1%, hsla(0,0%,100%,1) 0px, transparent 50%);
             display: flex;
             flex-direction: column;
             justify-content: center;
@@ -54,10 +57,12 @@
         }
 
         .container {
-            background-color: var(--form-background);
+            /* Changed to a gradient for a more modern look */
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
             padding: 2rem 3rem;
             border-radius: 10px;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
             width: 100%;
             max-width: 450px;
             margin: auto; /* Center the container */
@@ -66,14 +71,14 @@
         }
 
         h1 {
-            color: var(--text-color);
+            color: #f5f5dc; /* Soft Beige */
             text-align: center;
             margin-bottom: 0.5rem;
         }
 
         .header-text {
             text-align: center;
-            color: var(--text-color);
+            color: #e0e0e0; /* Lighter gray for contrast */
             margin-bottom: 2rem;
         }
 
@@ -89,7 +94,7 @@
         .form-group label {
             display: block;
             margin-bottom: 0.5rem;
-            color: var(--text-color);
+            color: #f5f5dc; /* Soft Beige */
             font-weight: 600;
         }
 
@@ -97,14 +102,17 @@
             width: 100%;
             padding: 0.75rem;
             border: 1px solid var(--input-border-color);
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
             border-radius: 5px;
             box-sizing: border-box;
             font-size: 1rem;
+            border-color: rgba(255, 255, 255, 0.2);
         }
 
         .form-group input:focus {
             outline: none;
-            border-color: var(--primary-color);
+            border-color: #FFC107; /* Gold accent on focus */
             box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.25);
             background-color: #fdf6e8; /* Lighter tan for input focus */
         }
@@ -126,8 +134,8 @@
         .btn {
             width: 100%;
             padding: 0.85rem;
-            background-color: var(--text-color);
-            color: white;
+            background-color: #f5f5dc; /* Soft Beige */
+            color: #111; /* Jet Black text */
             border: none;
             border-radius: 5px;
             font-size: 1.1rem;
@@ -137,7 +145,7 @@
         }
 
         .btn:hover {
-            background-color: #001a33; /* Darken the blue on hover */
+            background-color: #e0e0e0; /* Slightly darker beige on hover */
         }
 
         .message {
@@ -154,10 +162,10 @@
         .form-footer {
             text-align: center;
             margin-top: 1.5rem;
-            color: var(--text-color);
+            color: #e0e0e0;
         }
         .form-footer a {
-            color: var(--primary-color);
+            color: #FFC107; /* Gold for links */
             text-decoration: none;
             font-weight: 600;
         }

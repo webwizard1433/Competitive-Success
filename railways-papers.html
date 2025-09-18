@@ -3,40 +3,61 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" href="/success.png" type="image/png">
     <title>Railways Previous Year Papers | Competitive Success</title>
     <style>
-        :root { --primary-color: #007bff; --secondary-color: #6c757d; --background-color: #f4f7f6; --card-background: #ffffff; --text-color: #333; --header-height: 70px; }
-        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif; background-color: var(--background-color); margin: 0; color: var(--text-color); }
-        .back-link { padding: 1rem 2rem; text-align: right; }
-        .back-link a { color: var(--primary-color); text-decoration: none; font-weight: 600; font-size: 1.1rem; }
-        .main-container { padding: 0 2rem 2rem 2rem; max-width: 1200px; margin: auto; }
+        :root {
+            --primary-color: #FFC107;
+            --card-background: rgba(255, 255, 255, 0.05);
+            --card-border-color: rgba(255, 255, 255, 0.2);
+            --text-color: #F5F5DC;
+            --secondary-text-color: #adb5bd;
+        }
+        body {
+            background: linear-gradient(135deg, rgb(10, 35, 66) 0%, rgb(0, 26, 51) 100%);
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            margin: 0; color: var(--text-color);
+        }
+        .main-container { padding: 2rem; max-width: 1200px; margin: auto; }
         .page-header { text-align: center; margin-bottom: 2.5rem; }
         .page-header h1 { font-size: 3rem; color: var(--primary-color); margin: 0; }
-        .page-header p { font-size: 1.2rem; color: var(--secondary-color); }
+        .page-header p { font-size: 1.2rem; color: var(--text-color); }
+        .back-to-home { text-align: left; margin-bottom: 1.5rem; }
+        .back-to-home a { display: inline-block; padding: 0.5rem 1rem; background-color: var(--card-background); border: 1px solid var(--card-border-color); color: var(--primary-color); text-decoration: none; font-weight: bold; border-radius: 5px; transition: background-color 0.3s ease; }
+        .back-to-home a:hover { background-color: rgba(255, 255, 255, 0.1); }
         .folder-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 1.5rem; }
-        .folder { background-color: var(--card-background); border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.07); text-align: center; padding: 1.5rem; transition: transform 0.2s ease, box-shadow 0.2s ease; text-decoration: none; color: var(--text-color); display: flex; flex-direction: column; align-items: center; justify-content: center; }
-        .folder:hover { transform: translateY(-5px); box-shadow: 0 5px 15px rgba(0,0,0,0.1); }
-        .folder-icon { font-size: 4rem; color: #4285f4; }
+        .folder { background-color: var(--card-background); border: 1px solid var(--card-border-color); backdrop-filter: blur(5px); border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.07); text-align: center; padding: 1.5rem; transition: transform 0.2s ease, box-shadow 0.2s ease; text-decoration: none; color: var(--text-color); display: flex; flex-direction: column; align-items: center; justify-content: center; }
+        .folder:hover .folder-icon {
+            animation: wobble 0.8s ease-in-out;
+        }
+        @keyframes wobble {
+            0%, 100% { transform: rotate(0deg) scale(1); } 25% { transform: rotate(-5deg) scale(1.1); } 75% { transform: rotate(5deg) scale(1.1); }
+        }
+        .folder:hover { transform: translateY(-5px); box-shadow: 0 5px 15px rgba(0,0,0,0.15); }
+        .folder-icon { font-size: 4rem; color: #ffca28; }
         .folder-name { font-weight: 600; margin-top: 1rem; }
     </style>
 </head>
 <body>
     <main class="main-container">
+        <div class="back-to-home">
+            <a id="backToHomeLink" href="/home.html?exam=railways">← Back to Home</a>
+        </div>
         <div class="page-header">
             <h1>Railways Previous Year Papers</h1>
             <p>Browse question papers by year.</p>
         </div>
         <div class="folder-grid">
-            <a href="#" class="folder"><span class="folder-icon">📁</span><span class="folder-name">2023 Papers</span></a>
-            <a href="#" class="folder"><span class="folder-icon">📁</span><span class="folder-name">2022 Papers</span></a>
-            <a href="#" class="folder"><span class="folder-icon">📁</span><span class="folder-name">2021 Papers</span></a>
-            <a href="#" class="folder"><span class="folder-icon">📁</span><span class="folder-name">2020 Papers</span></a>
-            <a href="#" class="folder"><span class="folder-icon">📁</span><span class="folder-name">2019 Papers</span></a>
-            <a href="#" class="folder"><span class="folder-icon">📁</span><span class="folder-name">2018 Papers</span></a>
-            <a href="#" class="folder"><span class="folder-icon">📁</span><span class="folder-name">2017 Papers</span></a>
-            <a href="#" class="folder"><span class="folder-icon">📁</span><span class="folder-name">2016 Papers</span></a>
-            <a href="#" class="folder"><span class="folder-icon">📁</span><span class="folder-name">2015 Papers</span></a>
-            <a href="#" class="folder"><span class="folder-icon">📁</span><span class="folder-name">2014 Papers</span></a>
+            <a href="#" class="folder"><span class="folder-icon">📄</span><span class="folder-name">2023 Papers</span></a>
+            <a href="#" class="folder"><span class="folder-icon">📄</span><span class="folder-name">2022 Papers</span></a>
+            <a href="#" class="folder"><span class="folder-icon">📄</span><span class="folder-name">2021 Papers</span></a>
+            <a href="#" class="folder"><span class="folder-icon">📄</span><span class="folder-name">2020 Papers</span></a>
+            <a href="#" class="folder"><span class="folder-icon">📄</span><span class="folder-name">2019 Papers</span></a>
+            <a href="#" class="folder"><span class="folder-icon">📄</span><span class="folder-name">2018 Papers</span></a>
+            <a href="#" class="folder"><span class="folder-icon">📄</span><span class="folder-name">2017 Papers</span></a>
+            <a href="#" class="folder"><span class="folder-icon">📄</span><span class="folder-name">2016 Papers</span></a>
+            <a href="#" class="folder"><span class="folder-icon">📄</span><span class="folder-name">2015 Papers</span></a>
+            <a href="#" class="folder"><span class="folder-icon">📄</span><span class="folder-name">2014 Papers</span></a>
         </div>
     </main>
 </html>

@@ -63,9 +63,6 @@
             text-decoration: none;
             font-weight: bold;
         }
-        .content-wrapper { display: flex; flex-wrap: wrap; gap: 2rem; }
-        .content-wrapper > .resource-section { flex: 1; min-width: 300px; }
-        .section-title { font-size: 2rem; margin-bottom: 1.5rem; border-bottom: 3px solid var(--card-border-color); padding-bottom: 0.5rem; display: inline-block; }
         .grid-container { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 1.5rem; }
         .resource-card { background-color: var(--card-background); border: 1px solid var(--card-border-color); backdrop-filter: blur(5px); border-radius: 10px; box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08); overflow: hidden; transition: transform 0.3s ease, box-shadow 0.3s ease; display: flex; flex-direction: column; }
         .resource-card:hover { transform: translateY(-8px); box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15); }
@@ -103,7 +100,7 @@
 <body>
     <main class="main-container">
         <div class="back-to-home">
-            <a href="/home.html">← Back to Home</a>
+            <a id="backToHomeLink" href="/home.html">← Back to Home</a>
         </div>
         <div class="page-header">
             <h1>CDS Resources</h1>
@@ -119,46 +116,36 @@
             </div>
         </div>
 
-        <div class="content-wrapper">
-            <section class="resource-section">
-                <h2 class="section-title">Video Lectures</h2>
-                <div class="grid-container">
-                    <div class="resource-card" style="grid-column: 1 / -1;">
-                        <img class="card-thumbnail" src="https://images.unsplash.com/photo-1516321497487-e288fb19713f?q=80&w=2070" alt="Video lectures icon">
-                        <div class="card-content">
-                            <h3>All Video Lectures</h3>
-                            <p>Access topic-wise video playlists for all subjects.</p>
-                            <a href="/cds-videos.html" class="btn">Browse Videos</a>
-                        </div>
-                    </div>
+        <div class="grid-container">
+            <div class="resource-card">
+                <img class="card-thumbnail" src="https://images.unsplash.com/photo-1543286386-713bdd548da4?q=80&w=2070" alt="Video lectures icon">
+                <div class="card-content">
+                    <h3>Video Lectures</h3>
+                    <p>Access topic-wise video playlists for all subjects.</p>
+                    <a href="/cds-videos.html" class="btn">Browse Videos</a>
                 </div>
-            </section>
-            <section class="resource-section">
-                <h2 class="section-title">Previous Year Papers</h2>
-                <div class="grid-container">
-                    <div class="resource-card" style="grid-column: 1 / -1;">
-                        <img class="card-thumbnail" src="https://images.unsplash.com/photo-1583489794838-1b8f714759a2?q=80&w=2070" alt="Document icon">
-                        <div class="card-content">
-                            <h3>All Previous Year Papers</h3>
-                            <p>Download solved and unsolved papers from the last 10 years.</p>
-                            <a href="/cds-papers.html" class="btn">Browse Papers</a>
-                        </div>
-                    </div>
+            </div>
+            <div class="resource-card">
+                <img class="card-thumbnail" src="https://images.unsplash.com/photo-1456513080510-7bf3a84b82f8?q=80&w=1973" alt="Document icon">
+                <div class="card-content">
+                    <h3>Previous Year Papers</h3>
+                    <p>Download solved and unsolved papers from the last 10 years.</p>
+                    <a href="/cds-papers.html" class="btn">Browse Papers</a>
                 </div>
-            </section>
-            <section class="resource-section">
-                <h2 class="section-title">Recommended Books</h2>
-                <div class="grid-container">
-                    <div class="resource-card" style="grid-column: 1 / -1;">
-                        <img class="card-thumbnail" src="https://m.media-amazon.com/images/I/71b4p+p2jFL._AC_UF1000,1000_QL80_.jpg" alt="Book Cover">
-                        <div class="card-content">
-                            <h3>All Recommended Books</h3>
-                            <p>Find the best books for every subject, recommended by toppers.</p>
-                            <a href="/cds-books.html" class="btn">Browse Books</a>
-                        </div>
-                    </div>
+            </div>
+            <div class="resource-card">
+                <img class="card-thumbnail" src="https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?q=80&w=1974" alt="Book Cover">
+                <div class="card-content">
+                    <h3>Recommended Books</h3>
+                    <p>Find the best books for every subject, recommended by toppers.</p>
+                    <a href="/cds-books.html" class="btn">Browse Books</a>
                 </div>
-            </section>
+            </div>
         </div>
     </main>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            document.getElementById('backToHomeLink').href = `/home.html?exam=cds`;
+        });
+    </script>
 </html>

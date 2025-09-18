@@ -39,14 +39,32 @@
 
         body {
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-            background: linear-gradient(135deg, rgb(10, 35, 66) 0%, rgb(0, 26, 51) 100%);
+            /* New creative background */
+            background-color: #0a192f; /* Fallback color */
+            background-image: 
+                radial-gradient(at 80% 20%, hsla(212,40%,50%,0.3) 0px, transparent 50%),
+                radial-gradient(at 20% 80%, hsla(280,40%,50%,0.3) 0px, transparent 50%);
             margin: 0;
             color: var(--text-color);
-            padding-left: 0; /* Remove default padding */
             background-attachment: fixed; /* Prevents gradient from scrolling with content */
         }
 
         /* --- Header & Navigation --- */
+        .header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: var(--header-height);
+            display: flex;
+            align-items: center;
+            padding: 0 2rem;
+            box-sizing: border-box;
+            z-index: 1000;
+            background-color: rgba(10, 25, 47, 0.85);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid var(--card-border-color);
+        }
 
         .header-logo {
             display: flex;
@@ -111,7 +129,11 @@
             margin-right: 0.8rem; /* Space between icon and text */
             font-size: 1.2rem; /* Adjust icon size */
         }
-        .side-menu li a:hover, .side-menu li a.active { background-color: rgba(255, 255, 255, 0.2); }
+        .side-menu li a:hover { background-color: rgba(255, 255, 255, 0.2); }
+        .side-menu li a.active {
+            background-color: var(--primary-color);
+            color: #0A2342; /* Dark blue text for contrast on gold background */
+        }
 
         .logo {
             font-size: 1.5rem;
@@ -140,10 +162,15 @@
 
         /* --- Main Content --- */
         .main-container {
-            padding: 2rem;
+            padding: 1rem;
             margin: 0;
             width: 100%;
             box-sizing: border-box; /* Add for predictable sizing */
+            display: flex;
+            flex-direction: column; /* This will be the main flex container */
+            align-items: center;
+            justify-content: center;
+            min-height: calc(100vh - var(--header-height));
         }
 
         @media (max-width: 600px) {
@@ -152,16 +179,16 @@
 
         /* --- Exam Thumbnail Section --- */
         .section-header {
-            display: flex;
-            align-items: center;
-            justify-content: space-between; /* This will push items to the ends */
-            gap: 1rem;
-            margin-bottom: 1.5rem;
-            border-bottom: 2px solid var(--card-border-color);
-            padding-bottom: 0.5rem;
+            /* Styles moved to the new .header class */
+            flex-grow: 1; /* Allow the title to take up space */
         }
         .section-header h2 {
-            flex-grow: 1; /* Allow title to take up space */
+            text-align: center;
+            font-size: 1.5rem;
+            margin: 0;
+        }
+        .section-header h2 {
+            text-align: center; flex-grow: 1;
             font-size: 1.8rem;
             margin: 0;
         }
@@ -177,7 +204,7 @@
         /* --- Search Bar --- */
         .search-container {
             padding: 0 2rem 1.5rem;
-            max-width: 800px; /* Reverted to original width */
+            max-width: 600px;
             margin: 0 auto;
         }
         .search-bar {
@@ -190,13 +217,6 @@
             color: var(--secondary-text-color);
             box-sizing: border-box;
         }
-        .voice-search-btn.listening {
-            animation: pulse 1.5s infinite;
-        }
-        .voice-search-btn img {
-            width: 100%;
-            height: 100%;
-        }
 
         /* --- Search Popup --- */
         .search-popup {
@@ -205,12 +225,13 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background-color: rgba(10, 35, 66, 0.95);
-            backdrop-filter: blur(10px);
+            background-color: rgba(0, 0, 0, 0.6); /* Slightly darker overlay */
+            backdrop-filter: blur(5px);
             z-index: 2000;
             display: flex; /* Always flex, control visibility with opacity */
             flex-direction: column;
-            padding: 2rem;
+            align-items: center; /* Center horizontally */
+            padding-top: 2rem;
             box-sizing: border-box;
             /* Animation properties */
             opacity: 0;
@@ -219,26 +240,72 @@
         }
         @media (max-width: 600px) {
             .search-popup-input { font-size: 1.1rem; }
-            .search-popup {
-                padding: 1rem; /* Reduce padding on smaller screens */
-            }
+            .search-popup { padding-top: 1rem; }
         }
         .search-popup.show {
             opacity: 1;
             visibility: visible;
         }
+        .search-popup-input {
+            background: none;
+            border: none;
+            border-bottom: 2px solid var(--card-border-color);
+            color: var(--text-color);
+            font-size: 2rem;
+            font-weight: 300;
+            flex-grow: 1; /* Take available space */
+            padding: 0.5rem 1rem;
+            outline: none;
+            text-align: center;
+            transition: border-color 0.3s ease;
+        }
+        .search-popup-input:focus {
+            border-bottom-color: var(--primary-color);
+        }
+        @media (max-width: 600px) {
+            .search-popup-input { font-size: 1.5rem; }
+        }
         .search-results {
-            max-width: 700px;
             width: 100%;
             margin: 0 auto;
             overflow-y: auto;
+            max-height: 60vh; /* Limit the height of results */
+            background: var(--card-background);
+            border-radius: 8px;
         }
-        .search-popup .close-btn { position: absolute; top: 2rem; right: 2rem; font-size: 2.5rem; color: white; cursor: pointer; }
-        .search-results a { display: block; padding: 1rem; color: var(--text-color); text-decoration: none; border-bottom: 1px solid var(--card-border-color); }
+        .search-results a { display: block; padding: 1rem 1.5rem; color: var(--text-color); text-decoration: none; border-bottom: 1px solid var(--card-border-color); }
+        /* Remove border from the last result item */
+        .search-results a:last-child { border-bottom: none; }
         .search-results a:hover { background-color: rgba(255, 255, 255, 0.1); }
         .search-results a.active {
             background-color: var(--primary-color);
             color: #0A2342;
+        }
+        .search-input-container {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            width: 100%;
+            margin-bottom: 1.5rem;
+        }
+        .voice-search-btn {
+            background: none;
+            border: none;
+            cursor: pointer;
+            padding: 0;
+        }
+        .voice-search-btn img {
+            width: 32px;
+            height: 32px;
+            opacity: 0.7;
+            transition: opacity 0.3s ease, transform 0.3s ease;
+        }
+        .voice-search-btn:hover img {
+            opacity: 1;
+            transform: scale(1.1);
+        }
+        .voice-search-btn.listening img {
+            animation: pulse 1.5s infinite;
         }
 
         .search-results .no-results {
@@ -246,14 +313,6 @@
             color: var(--secondary-text-color);
             text-align: center;
             font-style: italic;
-        }
-
-        .center-content {
-            display: flex; /* Changed to flex */
-            flex-wrap: wrap; /* Allow wrapping on smaller screens */
-            justify-content: center; /* Center items horizontally */
-            align-items: center; /* Align items vertically */
-            gap: 2rem; /* Add space between card and description */
         }
 
         .thumbnail-card {
@@ -265,8 +324,8 @@
             overflow: hidden;
             display: flex;
             flex-direction: column;
-            width: 100%;
-            max-width: 350px;
+            width: 90%;
+            max-width: 800px; /* Make the card wider */
             box-sizing: border-box; /* Add for predictable sizing */
             transition: transform 0.3s ease, box-shadow 0.3s ease;
         }
@@ -278,7 +337,7 @@
 
         .thumbnail-card img {
             width: 100%;
-            height: 200px;
+            height: 300px; /* Taller image */
             object-fit: cover;
         }
 
@@ -289,12 +348,16 @@
         .thumbnail-content h3 {
             margin: 0 0 0.5rem;
             font-size: 1.5rem;
-            text-transform: uppercase;
+            color: var(--primary-color);
         }
 
         .thumbnail-content p {
             margin: 0 0 1.5rem;
             color: var(--secondary-text-color);
+            max-width: 60ch; /* Improve readability */
+            line-height: 1.6;
+            text-align: left;
+            align-self: flex-start;
         }
 
         .btn {
@@ -307,23 +370,6 @@
             font-weight: bold;
             text-align: center;
             transition: background-color 0.3s ease;
-        }
-
-        .description-box {
-            background-color: var(--card-background);
-            border: 1px solid var(--card-border-color);
-            border-radius: 10px;
-            padding: 1.5rem 2rem; /* Removed margin-top */
-            backdrop-filter: blur(5px);
-            max-width: 550px;
-        }
-        .description-box h2 {
-            color: var(--primary-color);
-            margin-top: 0;
-        }
-        #description-text {
-            color: white;
-            font-weight: bold;
         }
 
         .website-link-box {
@@ -379,36 +425,34 @@
 
     <div class="overlay" id="menuOverlay" onclick="toggleSideMenu()"></div>
 
+    <header class="header">
+        <div class="menu-toggle" onclick="toggleSideMenu()">&#9776;</div>
+        <div class="section-header">
+            <h2>Competitive Success</h2>
+        </div>
+        <div class="header-logo">
+            <img src="https://st4.depositphotos.com/1842549/20934/i/450/depositphotos_209344954-stock-photo-success-icon-internet-button-white.jpg" alt="Competitive Success Logo">
+        </div>
+    </header>
+
     <main class="main-container" id="mainContainer">
         <section class="content-section">
-            <div class="section-header">
-                <div class="menu-toggle" onclick="toggleSideMenu()">&#9776;</div>
-                <h2>Competitive Success</h2>
-                <div class="header-logo">
-                    <img src="https://st4.depositphotos.com/1842549/20934/i/450/depositphotos_209344954-stock-photo-success-icon-internet-button-white.jpg" alt="Competitive Success Logo">
-                </div>
-            </div>
             <!-- Search Bar -->
             <div class="search-container">
                 <div class="search-bar" onclick="handleSearchClick(event)">
                     &#x1F50D; Search for any exam or subject...
                 </div>
+                <!-- Search bar is now part of the header flow -->
             </div>
-            <div class="center-content">
-                    <div class="thumbnail-card">
-                        <!-- The image and text would be dynamically set based on the user's selected exam -->
-                        <img id="examImage" src="https://images.unsplash.com/photo-1523240795612-9a054b0db644?q=80&w=2070" alt="Exam Thumbnail">
-                        <div class="thumbnail-content">
-                            <h3 id="examName">Your Exam</h3>
-                            <p>All the free content for your selected exam is just one click away.</p>
-                            <a href="#" class="btn" id="startLearningBtn">Start Learning</a>
-                        </div>
-                    </div>
-        
-                    <!-- Description Box -->
-                    <div class="description-box">
-                        <h2 id="description-title">About the Exam</h2>
-                        <p id="description-text">Select an exam from the menu to see a brief description here.</p>
+
+            <!-- Main Content Card -->
+            <div class="thumbnail-card">
+                <img id="examImage" src="https://images.unsplash.com/photo-1523240795612-9a054b0db644?q=80&w=2070" alt="Exam Thumbnail">
+                <div class="thumbnail-content" style="align-items: flex-start; text-align: left;">
+                    <h3 id="examName">Your Exam</h3>
+                    <p id="description-text">Select an exam from the menu to see a brief description here.</p>
+                    <a href="#" class="btn" id="startLearningBtn">Start Learning</a>
+                    <div id="website-box" style="display: none; width: 100%; box-sizing: border-box;">
                         <div id="website-box" style="display: none;"></div>
                     </div>
             </div>
@@ -417,8 +461,16 @@
 
     <!-- Search Popup -->
     <div id="searchPopup" class="search-popup">
-        <input type="text" id="searchInput" class="search-popup-input" placeholder="Type to search...">
-        <div id="searchResults" class="search-results"></div>
+        <!-- Wrapper for modern layout -->
+        <div class="search-content-wrapper" style="width: 90%; max-width: 600px;">
+            <div class="search-input-container">
+                <input type="text" id="searchInput" class="search-popup-input" placeholder="Type or speak to search...">
+                <button class="voice-search-btn" onclick="startVoiceSearch()">
+                    <img src="https://play-lh.googleusercontent.com/C3oTVtjw9Xl3icZ9XAT1-U8QBEEXX9rXZbC26-DL9lwstzC3RIKwLeQMT57CZbS4QA" alt="Voice Search">
+                </button>
+            </div>
+            <div id="searchResults" class="search-results"></div>
+        </div>
     </div>
 
     <button onclick="scrollToTop()" id="backToTopBtn" title="Go to top">↑</button>
@@ -432,17 +484,17 @@
         ];
 
         const examData = {
-            upsc: { name: "UPSC", icon: "🏛️", image: "https://images.unsplash.com/photo-1523240795612-9a054b0db644?q=80&w=2070", page: "/upsc.html",
+            upsc: { name: "UPSC", icon: "🏛️", image: "https://static.langimg.com/photo/imgsize-243395,msid-75116780/navbharat-times.jpg", page: "/upsc.html",
                 description: "The Civil Service Examination (CSE) is a nationwide competitive examination in India conducted by the Union Public Service Commission (UPSC) for recruitment to various Civil Services, including IAS, IFS, and IPS.", website: "https://upsconline.nic.in" },
-            cds: { name: "CDS", icon: "🎖️", image: "https://images.unsplash.com/photo-1566665797739-1674de7a421a?q=80&w=1974", page: "/cds.html",
+            cds: { name: "CDS", icon: "🎖️", image: "https://images.hindustantimes.com/rf/image_size_960x540/HT/p2/2017/12/08/Pictures/chetwode-santosh-hindustan-dehradun-india-dehradun-building_8a7bb420-dc2d-11e7-8585-db66518b106f.jpg", page: "/cds.html",
                 description: "The Combined Defence Services (CDS) Examination is conducted by the UPSC for recruitment of Commissioned Officers into the Indian Military Academy, Officers Training Academy, Indian Naval Academy, and Indian Air Force Academy.", website: "https://upsc.gov.in/" },
-            nda: { name: "NDA", icon: "✈️", image: "https://images.unsplash.com/photo-1517842645767-c6f90405774b?q=80&w=2070", page: "/nda.html",
+            nda: { name: "NDA", icon: "✈️", image: "https://media.assettype.com/freepressjournal/2023-11/b10c10ad-3a34-44c1-8d4a-724ed02ceffe/homepage_image_1627112141278.jpg", page: "/nda.html",
                 description: "The National Defence Academy (NDA) exam is conducted by the UPSC for admission to the Army, Navy, and Air Force wings of the NDA. It is the gateway for candidates looking to join the Defence Forces as commissioned officers right after the 10+2 level.", website: "https://upsc.gov.in/" },
-            'ssc-cgl': { name: "SSC-CGL", icon: "💼", image: "https://images.unsplash.com/photo-1521791136064-7986c2920216?q=80&w=2070", page: "/ssc-cgl.html",
+            'ssc-cgl': { name: "SSC-CGL", icon: "💼", image: "https://blog.numbernagar.com/wp-content/uploads/2019/11/Study.jpg", page: "/ssc-cgl.html",
                 description: "The SSC Combined Graduate Level (CGL) is a national-level exam conducted to recruit candidates for Group 'B' and 'C' posts in various ministries, departments, and organizations of the Government of India.", website: "https://ssc.gov.in/" },
-            banking: { name: "Banking", icon: "🏦", image: "https://images.unsplash.com/photo-1553729459-efe14ef6055d?q=80&w=2070", page: "/banking.html",
+            banking: { name: "Banking", icon: "🏦", image: "https://www.idfcfirstbank.com/content/dam/idfcfirstbank/images/blog/mobile-banking/how-new-age-banking-is-transforming-the-banking-industry-717x404.jpg", page: "/banking.html",
                 description: "Banking exams like IBPS PO, IBPS Clerk, SBI PO, and RBI Assistant are conducted for recruitment to various officer and clerical posts in public sector banks across India.", website: "https://www.ibps.in/" },
-            railways: { name: "Railways", icon: "🚂", image: "https://images.unsplash.com/photo-1603189549925-a869e9a34019?q=80&w=2070", page: "/railways.html",
+            railways: { name: "Railways", icon: "🚂", image: "https://www.euroschoolindia.com/blogs/wp-content/uploads/2023/10/indian-railway-project.jpg", page: "/railways.html",
                 description: "Railway Recruitment Boards (RRBs) conduct exams like RRB NTPC and RRB Group D to recruit a wide range of staff for the Indian Railways, one of the largest employers in the country.", website: "https://indianrailways.gov.in/railwayboard/view_section.jsp?lang=0&id=0,4,1244" },
             other: { name: "Other", icon: "📚", image: "https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?q=80&w=2070", page: "#" }
         };
@@ -454,8 +506,7 @@
             document.getElementById('examName').textContent = exam.name;
             document.getElementById('examImage').src = exam.image;
             document.getElementById('startLearningBtn').href = exam.page;
-            document.getElementById('description-title').textContent = `About ${exam.name}`;
-            document.getElementById('description-text').textContent = exam.description || "No description available for this selection.";
+            document.getElementById('description-text').textContent = exam.description || "Select an exam from the menu to see a brief description here.";
 
             // Handle the website link
             const websiteBox = document.getElementById('website-box');
@@ -535,7 +586,37 @@
             openSearch();
         }
         function startVoiceSearch() {
-            // Voice search functionality removed
+            const voiceSearchBtn = document.querySelector('.voice-search-btn');
+            const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+
+            if (!SpeechRecognition) {
+                alert('Sorry, your browser does not support voice search.');
+                return;
+            }
+
+            const recognition = new SpeechRecognition();
+            recognition.lang = 'en-IN'; // Set language to Indian English
+            recognition.interimResults = false;
+            recognition.maxAlternatives = 1;
+
+            recognition.onstart = () => {
+                voiceSearchBtn.classList.add('listening');
+            };
+
+            recognition.onspeechend = () => {
+                recognition.stop();
+                voiceSearchBtn.classList.remove('listening');
+            };
+
+            recognition.onresult = (event) => {
+                const speechResult = event.results[0][0].transcript;
+                openSearch(); // Open the search popup
+                searchInput.value = speechResult;
+                // Trigger the input event to filter results
+                searchInput.dispatchEvent(new Event('input'));
+            };
+
+            recognition.start();
         }
 
         function closeSearch() {
@@ -694,8 +775,12 @@
 
         // On page load, check for a saved choice and update the dashboard
         document.addEventListener('DOMContentLoaded', () => {
-            // Default to UPSC every time, as caching is disabled.
-            const userExam = 'upsc';
+            // Check for an exam in the URL, otherwise default to 'upsc'
+            const urlParams = new URLSearchParams(window.location.search);
+            const examFromUrl = urlParams.get('exam');
+            const userExam = examData[examFromUrl] ? examFromUrl : 'upsc';
+
+            // Populate menu and update dashboard with the determined exam
             populateExamMenu(userExam);
             updateDashboard(userExam);
 
