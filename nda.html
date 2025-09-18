@@ -146,5 +146,10 @@
         </div>
     </main>
     <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const safeStorage = window.localStorage || {};
+            const userExam = safeStorage.getItem('userExamChoice') || 'nda';
+            document.getElementById('backToHomeLink').href = `/home.html`;
+        });
     </script>
 </html>

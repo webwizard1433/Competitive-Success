@@ -165,15 +165,25 @@
     <script>
         // --- Safe Storage Utility ---
         const safeStorage = (() => {
+            const getStorage = (storageType) => {
+                try {
+                    const storage = window[storageType];
+                    storage.setItem('__test__', '1');
+                    storage.removeItem('__test__');
+                    return storage;
+                } catch (e) {
+                    return null;
+                }
+            };
+            // Prioritize localStorage for persistence, fallback to sessionStorage
+            const storage = getStorage('localStorage') || getStorage('sessionStorage');
             try {
-                const storage = window.sessionStorage; // Use sessionStorage for login tokens
-                storage.setItem('__test__', '1');
-                storage.removeItem('__test__');
-                return storage;
+                if (storage) return storage;
             } catch (e) {
-                const memoryStore = {};
-                return { setItem: (k, v) => { memoryStore[k] = v; }, getItem: (k) => memoryStore[k] || null, removeItem: (k) => { delete memoryStore[k]; } };
+                console.warn("Storage is not available. Using in-memory fallback.");
             }
+            const memoryStore = {};
+            return { setItem: (k, v) => { memoryStore[k] = v; }, getItem: (k) => memoryStore[k] || null, removeItem: (k) => { delete memoryStore[k]; } };
         })();
 
         // --- Tab Switching Logic ---

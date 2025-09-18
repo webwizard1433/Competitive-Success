@@ -332,7 +332,9 @@
         }
 
         document.addEventListener('DOMContentLoaded', () => {
-            document.getElementById('backToHomeLink').href = `/home.html?exam=upsc`;
+            const safeStorage = window.localStorage || {};
+            const userExam = safeStorage.getItem('userExamChoice') || 'upsc';
+            document.getElementById('backToHomeLink').href = `/home.html`;
         });
     </script>
 

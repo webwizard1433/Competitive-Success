@@ -34,18 +34,9 @@
 
     <script>
         // --- Page-Specific Data ---
-        const videoData = [
-            { id: '1vEVT0mXZg9VpZig4j4ZZOEOeQQfostCi', title: 'History Lecture 1', type: 'gdrive' }, // Updated to Google Drive
-            ...Array.from({ length: 46 }, (_, i) => ({
-                id: `placeholder_${i + 2}`, // Placeholder ID
-                title: `History Lecture ${i + 2}`
-            }))
-        ];
+        let videoData = []; // This will be fetched from the API
         const defaultThumbnails = {
             gdrive: "https://images.unsplash.com/photo-1598257006624-980a25028048?q=80&w=2070",
-            ancient: "https://i0.wp.com/detechter.com/wp-content/uploads/2018/02/Ancient-India.jpg?resize=662%2C446&ssl=1",
-            medieval: "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEixT8Oe-GVYl5M_oXCMXS7Qt9B-i1tkSjwVGrbGnY13VrZZQcAoT58rQdbtHfedj4mjhUnWqlX5rpOA4NDd5P3_XK6E3dRoRw_hyphenhyphenGDTV8uA5n8hix4xgOlyANcsF_skwuk7X5GulIKl/s400/Medieval-India.jpg",
-            modern: "https://i0.wp.com/iasmania.com/wp-content/uploads/2022/11/Modern-India-History.jpg",
             placeholder: 'https://via.placeholder.com/320x180.png?text=History+Lecture'
         };
     </script>
@@ -53,10 +44,16 @@
     <script>
         // --- Page Initialization ---
         document.addEventListener('DOMContentLoaded', async () => {
-            // Fetch user data first to know progress and favorites
-            await fetchUserData();
-
-            populateVideos(videoData, defaultThumbnails);
+            const videoGrid = document.getElementById('videoGrid');
+            try {
+                const response = await fetch('/api/videos?category=upsc-history');
+                videoData = await response.json();
+                await fetchUserData(); // Fetch user data for progress
+                populateVideos(videoData, defaultThumbnails);
+            } catch (error) {
+                console.error("Failed to load videos:", error);
+                videoGrid.innerHTML = '<p>Could not load videos. Please try again later.</p>';
+            }
 
             // Restore video state on reload
             if (window.sessionStorage) {

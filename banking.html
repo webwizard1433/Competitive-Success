@@ -135,7 +135,9 @@
     </main>
     <script>
         document.addEventListener('DOMContentLoaded', () => {
-            document.getElementById('backToHomeLink').href = `/home.html?exam=banking`;
+            const safeStorage = window.localStorage || {};
+            const userExam = safeStorage.getItem('userExamChoice') || 'banking';
+            document.getElementById('backToHomeLink').href = `/home.html`;
         });
     </script>
 </html>

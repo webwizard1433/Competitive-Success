@@ -47,6 +47,7 @@
             try {
                 const response = await fetch('/api/videos?category=ssc-cgl-quant');
                 videoData = await response.json(); // Set the global videoData
+                await fetchUserData(); // Fetch user data for progress and favorites
                 populateVideos(videoData, defaultThumbnails);
             } catch (error) {
                 console.error("Failed to load videos:", error);

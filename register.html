@@ -100,6 +100,34 @@
             pointer-events: none;
         }
 
+        .input-wrapper > select + .input-wrapper::after, .input-wrapper > select::after {
+            content: '▼';
+            position: absolute;
+            right: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--secondary-text-color);
+            pointer-events: none; /* Allows clicks to pass through to the select element */
+            font-size: 0.8rem;
+        }
+
+        /* --- Password Strength Meter --- */
+        .strength-meter {
+            display: flex;
+            gap: 0.5rem;
+            margin-top: 0.5rem;
+        }
+        .strength-meter div {
+            flex: 1;
+            height: 5px;
+            background-color: var(--card-border-color);
+            border-radius: 5px;
+            transition: background-color 0.3s ease;
+        }
+        .strength-meter div.weak { background-color: #e03131; }
+        .strength-meter div.medium { background-color: #fcc419; }
+        .strength-meter div.strong { background-color: #2f9e44; }
+
         .form-group input:focus {
             outline: none;
             border-color: var(--primary-color);
@@ -145,8 +173,8 @@
             font-weight: 600;
         }
         #examChoice option {
-            background: #f0f0f0; /* A light background for the options */
-            color: black; /* Black text color for the options */
+            background: var(--card-background);
+            color: var(--text-color);
         }
     </style>
 </head>
@@ -179,21 +207,15 @@
                     <span class="input-icon">🔒</span>
                     <input type="password" id="password" required>
                 </div>
+                <div class="strength-meter" id="password-strength-meter">
+                    <div></div><div></div><div></div><div></div>
+                </div>
             </div>
             <div class="form-group">
                 <label for="confirmPassword">Confirm Password</label>
                 <div class="input-wrapper">
                     <span class="input-icon">🔒</span>
                     <input type="password" id="confirmPassword" required>
-                </div>
-            </div>
-            <div class="form-group">
-                <label for="examChoice">Primary Exam Goal</label>
-                <div class="input-wrapper">
-                    <span class="input-icon">🎯</span>
-                    <select id="examChoice" required style="width: 100%; padding: 0.75rem 0.75rem 0.75rem 2.5rem; border: 1px solid rgba(255, 255, 255, 0.2); background: rgba(0,0,0,0.2); color: var(--text-color); border-radius: 5px; box-sizing: border-box; font-size: 1rem; -webkit-appearance: none; -moz-appearance: none; appearance: none;">
-                        <!-- Options will be populated by JS -->
-                    </select>
                 </div>
             </div>
             <button type="submit" class="btn">Register</button>
@@ -209,14 +231,39 @@
         // Note: This is a simplified list. A real app might fetch this from a config.
         const exams = { upsc: "UPSC", cds: "CDS", nda: "NDA", 'ssc-cgl': "SSC-CGL", banking: "Banking", railways: "Railways" };
 
+        const passwordInput = document.getElementById('password');
+        const strengthMeter = document.getElementById('password-strength-meter');
+        const strengthMeterBars = strengthMeter.querySelectorAll('div');
+
+        passwordInput.addEventListener('input', () => {
+            const password = passwordInput.value;
+            let score = 0;
+            if (password.length >= 8) score++;
+            if (/[A-Z]/.test(password)) score++;
+            if (/[a-z]/.test(password)) score++;
+            if (/[0-9]/.test(password)) score++;
+            // A simple check for special characters
+            if (/[^A-Za-z0-9]/.test(password)) score++; 
+
+            strengthMeterBars.forEach((bar, index) => {
+                if (index < score) {
+                    if (score <= 2) bar.className = 'weak';
+                    else if (score <= 4) bar.className = 'medium';
+                    else bar.className = 'strong';
+                } else {
+                    bar.className = '';
+                }
+            });
+        });
+
         const form = document.getElementById('registerForm');
         form.addEventListener('submit', async function(e) {
             e.preventDefault();
             const submitButton = form.querySelector('button[type="submit"]');
             const messageDiv = document.getElementById('message');
-            const { fullName, contactInfo, password, confirmPassword, examChoice } = form.elements;
+            const { fullName, contactInfo, password, confirmPassword } = form.elements;
 
-            if (!fullName.value || !contactInfo.value || !password.value || !confirmPassword.value || !examChoice.value) {
+            if (!fullName.value || !contactInfo.value || !password.value || !confirmPassword.value) {
                 messageDiv.textContent = 'Please fill out all fields.';
                 messageDiv.className = 'message error';
                 return;
@@ -225,6 +272,12 @@
             if (password.value !== confirmPassword.value) {
                 messageDiv.textContent = 'Passwords do not match. Please try again.';
                 messageDiv.className = 'message error';
+                return;
+            }
+
+            // Check password strength before submitting
+            if (password.value.length < 8) {
+                messageDiv.textContent = 'Password must be at least 8 characters long.';
                 return;
             }
 
@@ -252,7 +305,7 @@
                 }
 
                 // 2. Add the new user to the list
-                const newUser = { fullName: fullName.value, contactInfo: contactInfo.value, password: password.value, examChoice: examChoice.value, registeredAt: new Date().toISOString() };
+                const newUser = { fullName: fullName.value, contactInfo: contactInfo.value, password: password.value, examChoice: 'upsc', registeredAt: new Date().toISOString() };
                 users.push(newUser);
 
                 // 3. Post the updated list back to npoint
@@ -282,17 +335,6 @@
             }
         });
 
-        // Populate exam dropdown on page load
-        document.addEventListener('DOMContentLoaded', () => {
-            const examSelect = document.getElementById('examChoice');
-            examSelect.innerHTML = '<option value="" disabled selected>-- Select an Exam --</option>'; // Placeholder
-            for (const key in exams) {
-                const option = document.createElement('option');
-                option.value = key;
-                option.textContent = exams[key];
-                examSelect.appendChild(option);
-            }
-        });
     </script>
 </body>
 </html>

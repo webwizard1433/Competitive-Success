@@ -2,7 +2,16 @@ const modal = document.getElementById('videoModal');
 const videoPlayer = document.getElementById('videoPlayer');
 const videoGrid = document.getElementById('videoGrid');
 let currentExamKey = 'upsc'; // Default exam
-let userData = { progress: {}, favorites: [] };
+
+// --- Automatically determine the current exam from the URL or title ---
+const path = window.location.pathname.toLowerCase();
+if (path.includes('ssc-cgl')) currentExamKey = 'ssc-cgl';
+else if (path.includes('cds')) currentExamKey = 'cds';
+else if (path.includes('nda')) currentExamKey = 'nda';
+else if (path.includes('banking')) currentExamKey = 'banking';
+else if (path.includes('railways')) currentExamKey = 'railways';
+
+let userData = { progress: {}, favorites: {} };
 let currentVideoIndex = -1; // To track the current video in the modal
 
 // --- User Data Management ---
@@ -56,9 +65,9 @@ async function fetchUserData() {
             // Ensure progress and favorites properties exist
             // The top-level object will now hold exam-specific data
             userData = {
-                ...currentUser,
-                progress: currentUser.progress || {},
-                favorites: currentUser.favorites || {}
+                ...currentUser, // Copy existing user data
+                progress: currentUser.progress || {}, // Ensure progress object exists
+                favorites: currentUser.favorites || {} // Ensure favorites object exists
             };
         }
     } catch (error) {
@@ -85,7 +94,7 @@ function populateVideos(videoData, defaultThumbnails) {
 
         // Special thumbnail logic for history page, which has multiple thumbnails.
         // This will only run if the `ancient` thumbnail is defined.
-        if (defaultThumbnails.ancient) {
+        if (defaultThumbnails.ancient && path.includes('upsc-history')) {
             if (index < 9) thumbnailUrl = defaultThumbnails.ancient;
             else if (index >= 9 && index < 14) thumbnailUrl = defaultThumbnails.medieval;
             else if (index >= 14 && index < 47) thumbnailUrl = defaultThumbnails.modern;

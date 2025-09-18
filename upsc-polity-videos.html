@@ -34,11 +34,7 @@
 
     <script>
         // --- Page-Specific Data ---
-        // Generate 41 placeholder videos
-        const videoData = Array.from({ length: 41 }, (_, i) => ({
-            id: `placeholder_${i + 1}`, // Placeholder ID
-            title: `Polity Lecture ${i + 1}`
-        }));
+        let videoData = []; // This will be fetched from the API
         const defaultThumbnails = {
             placeholder: "https://images.unsplash.com/photo-1588196749597-9ff075ee6b5b?q=80&w=1974"
         };
@@ -46,8 +42,17 @@
     <script src="/video-page.js"></script>
     <script>
         // --- Page Initialization ---
-        document.addEventListener('DOMContentLoaded', () => {
-            populateVideos(videoData, defaultThumbnails);
+        document.addEventListener('DOMContentLoaded', async () => {
+            const videoGrid = document.getElementById('videoGrid');
+            try {
+                const response = await fetch('/api/videos?category=upsc-polity');
+                videoData = await response.json();
+                await fetchUserData(); // Fetch user data for progress
+                populateVideos(videoData, defaultThumbnails);
+            } catch (error) {
+                console.error("Failed to load videos:", error);
+                videoGrid.innerHTML = '<p>Could not load videos. Please try again later.</p>';
+            }
 
             // Restore video state on reload
             if (window.sessionStorage) {

@@ -52,6 +52,22 @@
             outline: none;
             border-color: var(--primary-color);
         }
+        /* --- Password Strength Meter --- */
+        .strength-meter {
+            display: flex;
+            gap: 0.5rem;
+            margin-top: 0.5rem;
+        }
+        .strength-meter div {
+            flex: 1;
+            height: 5px;
+            background-color: var(--card-border-color);
+            border-radius: 5px;
+            transition: background-color 0.3s ease;
+        }
+        .strength-meter div.weak { background-color: #e03131; }
+        .strength-meter div.medium { background-color: #fcc419; }
+        .strength-meter div.strong { background-color: #2f9e44; }
         .btn {
             display: inline-block;
             padding: 0.75rem 1.5rem;
@@ -89,7 +105,10 @@
     </style>
     <style>
         /* Style for dropdown options */
-        #examChoice option { background: #f0f0f0; color: black; }
+        #examChoice option {
+            background: var(--card-background);
+            color: var(--text-color);
+        }
     </style>
 </head>
 <body>
@@ -113,14 +132,11 @@
                     <input type="text" id="contactInfo" readonly style="background-color: rgba(0,0,0,0.4); cursor: not-allowed;">
                 </div>
                 <div class="form-group">
-                    <label for="examChoice">Primary Exam Goal</label>
-                    <select id="examChoice" required style="width: 100%; padding: 0.75rem; border: 1px solid var(--card-border-color); background: rgba(0,0,0,0.2); color: var(--text-color); border-radius: 5px; box-sizing: border-box; font-size: 1rem; -webkit-appearance: none; -moz-appearance: none; appearance: none;">
-                        <!-- Options will be populated by JS -->
-                    </select>
-                </div>
-                <div class="form-group">
                     <label for="password">New Password (optional)</label>
                     <input type="password" id="password" placeholder="Leave blank to keep current password">
+                    <div class="strength-meter" id="password-strength-meter">
+                        <div></div><div></div><div></div><div></div>
+                    </div>
                 </div>
 
                 <button type="submit" class="btn">Save Changes</button>
@@ -150,21 +166,37 @@
         const form = document.getElementById('profileForm');
         const contactInfoInput = document.getElementById('contactInfo');
         const fullNameInput = document.getElementById('fullName');
-        const examChoiceSelect = document.getElementById('examChoice');
         const messageDiv = document.getElementById('message');
+        const passwordInput = document.getElementById('password');
+        const strengthMeter = document.getElementById('password-strength-meter');
+        const strengthMeterBars = strengthMeter.querySelectorAll('div');
+
+        passwordInput.addEventListener('input', () => {
+            const password = passwordInput.value;
+            let score = 0;
+            if (!password) { // Hide meter if input is empty
+                strengthMeterBars.forEach(bar => bar.className = '');
+                return;
+            }
+            if (password.length >= 8) score++;
+            if (/[A-Z]/.test(password)) score++;
+            if (/[a-z]/.test(password)) score++;
+            if (/[0-9]/.test(password)) score++;
+            if (/[^A-Za-z0-9]/.test(password)) score++;
+
+            strengthMeterBars.forEach((bar, index) => {
+                if (index < score) {
+                    if (score <= 2) bar.className = 'weak';
+                    else if (score <= 4) bar.className = 'medium';
+                    else bar.className = 'strong';
+                } else { bar.className = ''; }
+            });
+        });
 
         document.addEventListener('DOMContentLoaded', async () => {
             if (!userId) {
                 window.location.replace('/login.html');
                 return;
-            }
-
-            // Populate exam dropdown
-            for (const key in exams) {
-                const option = document.createElement('option');
-                option.value = key;
-                option.textContent = exams[key];
-                examChoiceSelect.appendChild(option);
             }
 
             // Fetch all users to find the current one (insecure demo method)
@@ -176,11 +208,22 @@
                 if (currentUser) {
                     contactInfoInput.value = currentUser.contactInfo;
                     fullNameInput.value = (currentUser.fullName && currentUser.fullName !== 'undefined') ? currentUser.fullName : 'User';
-                    examChoiceSelect.value = currentUser.examChoice || 'upsc';
                 }
             } catch (error) {
                 messageDiv.textContent = 'Failed to load profile data.';
                 messageDiv.className = 'message error';
+            }
+
+            // Dynamically set the back link
+            const backLink = document.querySelector('.back-to-home a');
+            if (backLink) backLink.href = `/home.html`;
+        });
+
+        // Add a pageshow event listener to re-check authentication
+        // This prevents users from accessing the page via browser back/forward after logout
+        window.addEventListener('pageshow', function(event) {
+            if (!userId) { // userId is derived from safeStorage
+                window.location.href = '/login.html';
             }
         });
 
@@ -188,8 +231,14 @@
             e.preventDefault();
             const npointUrl = 'https://api.npoint.io/628bf2833503e69fb337';
             
-            const updatedExamChoice = examChoiceSelect.value;
             const newPassword = document.getElementById('password').value;
+
+            // Validate password strength only if a new password is provided
+            if (newPassword && newPassword.length < 8) {
+                messageDiv.textContent = 'New password must be at least 8 characters long.';
+                messageDiv.className = 'message error';
+                return;
+            }
 
             try {
                 // 1. Get the current list of users
@@ -199,7 +248,7 @@
                 // 2. Find and update the current user's data
                 const userIndex = users.findIndex(u => u.contactInfo === userId);
                 if (userIndex > -1) {
-                    users[userIndex].examChoice = updatedExamChoice;
+                    users[userIndex].fullName = fullNameInput.value; // Ensure fullName is preserved
                     if (newPassword) {
                         users[userIndex].password = newPassword; // Insecure: for demo only
                     }
@@ -215,7 +264,7 @@
                 if (!postResponse.ok) throw new Error('Failed to save changes.');
 
                 // Update local storage and show success
-                safeStorage.setItem('userExamChoice', updatedExamChoice);
+                safeStorage.setItem('userName', users[userIndex].fullName); // Also update username in case it was missing
                 messageDiv.textContent = 'Profile updated successfully!';
                 messageDiv.className = 'message success';
 

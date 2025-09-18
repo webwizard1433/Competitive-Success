@@ -199,14 +199,14 @@
     <script>
         // --- Safe Storage & User ID ---
         const safeStorage = (() => { // Prioritize sessionStorage for mobile stability
-            const getStorage = (storageType) => {
+            const getStorage = (storageType) => { // Use localStorage for better persistence
                 try {
                     const storage = window[storageType];
                     storage.setItem('__test__', '1');
                     storage.removeItem('__test__');
                     return storage;
                 } catch (e) {
-                    return null;
+                    return null; // Fallback if storage is disabled
                 }
             };
 
@@ -222,7 +222,7 @@
         })();
 
         const userId = safeStorage.getItem('sessionToken');
-        let userData = { progress: {}, favorites: [], mockTestHistory: [] };
+        let userData = { progress: {}, favorites: {}, mockTestHistory: [] };
 
         // --- Dashboard Population ---
         document.addEventListener('DOMContentLoaded', async () => {
@@ -237,7 +237,7 @@
                 const response = await fetch('https://api.npoint.io/628bf2833503e69fb337');
                 const users = await response.json();
                 const currentUser = users.find(u => u.contactInfo === userId);
-                userData = currentUser || { progress: {}, favorites: [], mockTestHistory: [] };
+                userData = currentUser || { progress: {}, favorites: {}, mockTestHistory: [] };
 
                 // --- This is a placeholder for total video counts per exam ---
                 // In a real app, this data would come from a database or a shared config file.
@@ -247,12 +247,12 @@
                 const userExam = safeStorage.getItem('userExamChoice') || 'upsc';
 
                 // Populate Favorites
-                populateFavorites(userExam);
+                populateDashboardItems(userExam);
 
                 // Populate Progress Bar
                 const totalVideos = totalVideosPerExam[userExam] || 0;
-                const completedVideosForExam = userData.progress ? (userData.progress[userExam] || {}) : {};
-                const completedCount = Object.keys(completedVideosForExam).length;
+                const completedForExam = userData.progress ? (userData.progress[userExam] || {}) : {};
+                const completedCount = Object.keys(completedForExam).length;
                 const percentage = totalVideos > 0 ? Math.round((completedCount / totalVideos) * 100) : 0;
 
                 const progressBar = document.getElementById('progressBar');
@@ -272,7 +272,51 @@
                 document.getElementById('favoritesEmpty').style.display = 'block';
                 document.getElementById('recentEmpty').style.display = 'block';
             }
+
+            // Dynamically set the back link
+            const backLink = document.querySelector('.back-to-home a');
+            if (backLink) backLink.href = `/home.html`;
         });
+
+        // Add a pageshow event listener to re-check authentication
+        // This prevents users from accessing the page via browser back/forward after logout
+        window.addEventListener('pageshow', function(event) {
+            if (!userId) { // userId is derived from safeStorage
+                window.location.href = '/login.html';
+            }
+        });
+
+        function populateDashboardItems(examKey) {
+            const favoritesForExam = (userData.favorites && userData.favorites[examKey]) || [];
+            const favoritesGrid = document.getElementById('favoritesGrid');
+            const favoritesEmpty = document.getElementById('favoritesEmpty');
+
+            if (favoritesForExam.length > 0) {
+                favoritesGrid.innerHTML = '';
+                favoritesForExam.forEach(video => {
+                    const card = createVideoCard(video, examKey);
+                    favoritesGrid.appendChild(card);
+                });
+                favoritesEmpty.style.display = 'none';
+            } else {
+                favoritesEmpty.style.display = 'block';
+            }
+
+            // Recently Watched (This is a simplified implementation)
+            // A more robust solution would store recent videos per exam.
+            const recentVideosRaw = safeStorage.getItem('recentlyWatched');
+            const recentVideos = recentVideosRaw ? JSON.parse(recentVideosRaw) : [];
+            const recentGrid = document.getElementById('recentGrid');
+            const recentEmpty = document.getElementById('recentEmpty');
+
+            if (recentVideos.length > 0) {
+                recentGrid.innerHTML = '';
+                recentVideos.forEach(video => recentGrid.appendChild(createVideoCard(video, examKey)));
+                recentEmpty.style.display = 'none';
+            } else {
+                recentEmpty.style.display = 'block';
+            }
+        }
 
         function populateTestHistory() {
             const history = userData.mockTestHistory || [];
@@ -326,11 +370,10 @@
             });
         }
 
-        function createVideoCard(video) {
+        function createVideoCard(video, examKey) {
             const card = document.createElement('div');
             card.className = 'resource-card'; // Use the same class as video-page.js
-            const userExam = safeStorage.getItem('userExamChoice') || 'upsc';
-            const isCompleted = userData.progress && userData.progress[userExam] && userData.progress[userExam][video.id];
+            const isCompleted = userData.progress && userData.progress[examKey] && userData.progress[examKey][video.id];
 
             const thumbnailUrl = video.type === 'gdrive' 
                 ? 'https://images.unsplash.com/photo-1598257006624-980a25028048?q=80&w=2070' 

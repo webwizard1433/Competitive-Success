@@ -33,10 +33,7 @@
 
     <script>
         // --- Page-Specific Data ---
-        const videoData = Array.from({ length: 6 }, (_, i) => ({
-            id: `placeholder_${i + 1}`,
-            title: `Post Independence Lecture ${i + 1}`
-        }));
+        let videoData = []; // This will be fetched from the API
         const defaultThumbnails = {
             placeholder: "https://images.unsplash.com/photo-1621955964393-6597f9b5c695?q=80&w=2070"
         };
@@ -44,15 +41,16 @@
     <script src="/video-page.js"></script>
     <script>
         // --- Page Initialization ---
-        document.addEventListener('DOMContentLoaded', () => {
-            populateVideos(videoData, defaultThumbnails);
-
-            // Restore video state on reload
-            if (window.sessionStorage) {
-                const activeVideoJson = sessionStorage.getItem('activeVideo');
-                if (activeVideoJson) {
-                    try { openModal(JSON.parse(activeVideoJson)); } catch (e) { console.error(e); }
-                }
+        document.addEventListener('DOMContentLoaded', async () => {
+            const videoGrid = document.getElementById('videoGrid');
+            try {
+                const response = await fetch('/api/videos?category=upsc-post-independence');
+                videoData = await response.json();
+                await fetchUserData(); // Fetch user data for progress
+                populateVideos(videoData, defaultThumbnails);
+            } catch (error) {
+                console.error("Failed to load videos:", error);
+                videoGrid.innerHTML = '<p>Could not load videos. Please try again later.</p>';
             }
         });
     </script>

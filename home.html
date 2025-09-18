@@ -8,24 +8,21 @@
     <link rel="icon" href="/success.png" type="image/png">
     <script>
         // --- Safe Storage Utility ---
-        const safeStorage = (() => { // Prioritize sessionStorage for mobile stability
+        const safeStorage = (() => {
             const getStorage = (storageType) => {
                 try {
                     const storage = window[storageType];
                     storage.setItem('__test__', '1');
                     storage.removeItem('__test__');
                     return storage;
-                } catch (e) {
-                    return null;
-                }
+                } catch (e) { return null; }
             };
-
-            const storage = getStorage('sessionStorage') || getStorage('localStorage');
-
+            // Prioritize localStorage for persistence, fallback to sessionStorage
+            const storage = getStorage('localStorage') || getStorage('sessionStorage');
             try {
                 if (storage) return storage;
             } catch (e) {
-                console.warn("localStorage is not available. Using in-memory fallback.");
+                console.warn("Storage is not available. Using in-memory fallback.");
             }
             const memoryStore = {};
             return { setItem: (k, v) => { memoryStore[k] = v; }, getItem: (k) => memoryStore[k] || null, removeItem: (k) => { delete memoryStore[k]; } };
@@ -72,11 +69,6 @@
             border-bottom: 1px solid var(--card-border-color);
         }
 
-        .user-greeting {
-            color: var(--secondary-text-color);
-            margin-right: 1.5rem;
-        }
-
         .header-logo {
             display: flex;
             align-items: center;
@@ -108,6 +100,12 @@
             /* Flexbox for layout */
             display: flex;
             flex-direction: column;
+        }
+        
+        .side-menu .user-greeting {
+            text-align: center;
+            margin-bottom: 1.5rem;
+            font-size: 1.1rem;
         }
 
         .side-menu.open {
@@ -466,6 +464,9 @@
 <body>
 
     <aside class="side-menu" id="examMenu">
+        <div class="user-greeting">
+            <span id="userName"></span>
+        </div>
         <h2>Select Exam</h2>
         <ul id="examList">
             <!-- Exam links will be populated by JavaScript -->
@@ -483,9 +484,6 @@
         <div class="menu-toggle" onclick="toggleSideMenu()">&#9776;</div>
         <div class="section-header">
             <h2>Competitive Success</h2>
-        </div>
-        <div class="user-greeting">
-            <span id="userName"></span>
         </div>
         <div class="header-logo">
             <img src="https://st4.depositphotos.com/1842549/20934/i/450/depositphotos_209344954-stock-photo-success-icon-internet-button-white.jpg" alt="Competitive Success Logo">
@@ -593,6 +591,11 @@
         menuOverlay.style.position = 'fixed';
         menuOverlay.style.inset = '0';
 
+        // Prevent clicks inside the menu from closing it by stopping event propagation
+        document.getElementById('examMenu').addEventListener('click', function(event) {
+            event.stopPropagation();
+        });
+
         function toggleSideMenu() {
             document.getElementById('examMenu').classList.toggle('open');
             document.body.classList.toggle('menu-open');
@@ -619,6 +622,7 @@
         function logout() {
             safeStorage.removeItem('sessionToken');
             safeStorage.removeItem('userName');
+            safeStorage.removeItem('userExamChoice');
             // Reload the home page in a logged-out state
             window.location.href = '/login.html';
         }
@@ -626,16 +630,20 @@
         function populateExamMenu(currentExam) {
             const examList = document.getElementById('examList');
             examList.innerHTML = ''; // Clear existing items
-            
-            // Only show the user's selected exam in the menu
-            const userExamKey = safeStorage.getItem('userExamChoice') || 'upsc';
-            const exam = examData[userExamKey];
-            if (exam) {
+
+            // Populate with all exams
+            for (const key in examData) {
+                const exam = examData[key];
                 const listItem = document.createElement('li');
-                const link = document.createElement('a');                link.href = '#';
-                link.innerHTML = `<span class="icon">${exam.icon || '📄'}</span> ${exam.name}`;                link.dataset.exam = userExamKey;
-                link.classList.add('active'); // It will always be the active one
-                listItem.appendChild(link); // This was incorrect, it should be listItem.appendChild(link)
+                const link = document.createElement('a');
+                link.href = '#';
+                link.innerHTML = `<span class="icon">${exam.icon || '📄'}</span> ${exam.name}`;
+                link.dataset.exam = key;
+                if (key === currentExam) {
+                    link.classList.add('active');
+                }
+                link.onclick = () => selectExam(key);
+                listItem.appendChild(link);
                 examList.appendChild(listItem);
             }
         }
@@ -865,26 +873,39 @@
 
         // On page load, check for a saved choice and update the dashboard
         document.addEventListener('DOMContentLoaded', () => {
-            // Check for an exam in the URL, otherwise default to 'upsc'
-            const urlParams = new URLSearchParams(window.location.search);
-            const examFromUrl = urlParams.get('exam') || safeStorage.getItem('userExamChoice');
-            const userExam = examData[examFromUrl] ? examFromUrl : 'upsc'; // Default to upsc if nothing is set
+            // First, ensure the user is logged in.
+            const sessionToken = safeStorage.getItem('sessionToken');
+            if (!sessionToken) {
+                window.location.href = '/login.html';
+                return; // Stop execution if not logged in
+            }
 
-            // Populate menu and update dashboard with the determined exam
-            populateExamMenu(userExam);
-            updateDashboard(userExam);
+            // Now that we know the user is logged in, proceed with loading their data.
+            const savedExam = safeStorage.getItem('userExamChoice'); // Get the saved exam
+            const userName = safeStorage.getItem('userName'); // Get the saved name
 
-            // Build the search index
-            buildSearchIndex();
+            // Determine the correct exam to display, defaulting to 'upsc' if something is wrong.
+            const userExam = examData[savedExam] ? savedExam : 'upsc';
 
-            // Display user's name
-            const userName = safeStorage.getItem('userName');
+            // Populate the page with the correct data
+            populateExamMenu(userExam); // Build the side menu
+            updateDashboard(userExam); // Update the main content card
+            buildSearchIndex(); // Prepare the search functionality
+
             if (userName && userName !== 'undefined') {
                 document.getElementById('userName').textContent = `Hi, ${userName}`;
             } else {
                 document.getElementById('userName').textContent = `Hi, User`;
             }
 
+        });
+
+        // Add a pageshow event listener to re-check authentication
+        // This prevents users from accessing the page via browser back/forward after logout
+        window.addEventListener('pageshow', function(event) {
+            if (!safeStorage.getItem('sessionToken')) {
+                window.location.href = '/login.html';
+            }
         });
 
         // --- Back to Top Button Logic ---
