@@ -170,7 +170,7 @@
             flex-direction: column; /* This will be the main flex container */
             align-items: center;
             justify-content: center;
-            min-height: calc(100vh - var(--header-height));
+            padding-top: var(--header-height); /* Add padding to push content below fixed header */
         }
 
         @media (max-width: 600px) {
@@ -327,7 +327,12 @@
             width: 90%;
             max-width: 800px; /* Make the card wider */
             box-sizing: border-box; /* Add for predictable sizing */
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            transition: transform 0.3s ease, box-shadow 0.3s ease, opacity 0.2s ease-in-out;
+        }
+
+        .thumbnail-card.updating {
+            opacity: 0;
+            transform: scale(0.98);
         }
 
         .thumbnail-card:hover {
@@ -500,23 +505,32 @@
         };
 
         function updateDashboard(examKey) {
+            const card = document.querySelector('.thumbnail-card');
             const exam = examData[examKey];
             if (!exam) return;
 
-            document.getElementById('examName').textContent = exam.name;
-            document.getElementById('examImage').src = exam.image;
-            document.getElementById('startLearningBtn').href = exam.page;
-            document.getElementById('description-text').textContent = exam.description || "Select an exam from the menu to see a brief description here.";
+            // 1. Add class to start fade-out animation
+            card.classList.add('updating');
 
-            // Handle the website link
-            const websiteBox = document.getElementById('website-box');
-            if (exam.website) {
-                websiteBox.innerHTML = `<div class="website-link-box"><a href="${exam.website}" target="_blank" rel="noopener noreferrer">Website Link</a></div>`;
-                websiteBox.style.display = 'block';
-            } else {
-                websiteBox.style.display = 'none';
-                websiteBox.innerHTML = '';
-            }
+            // 2. Wait for the fade-out to be visible, then update content and fade back in
+            setTimeout(() => {
+                document.getElementById('examName').textContent = exam.name;
+                document.getElementById('examImage').src = exam.image;
+                document.getElementById('startLearningBtn').href = exam.page;
+                document.getElementById('description-text').textContent = exam.description || "Select an exam from the menu to see a brief description here.";
+
+                // Handle the website link
+                const websiteBox = document.getElementById('website-box');
+                if (exam.website) {
+                    websiteBox.innerHTML = `<div class="website-link-box"><a href="${exam.website}" target="_blank" rel="noopener noreferrer">Website Link</a></div>`;
+                    websiteBox.style.display = 'block';
+                } else {
+                    websiteBox.style.display = 'none';
+                    websiteBox.innerHTML = '';
+                }
+                // 3. Remove class to trigger fade-in animation
+                card.classList.remove('updating');
+            }, 200); // This delay should match the transition duration
         }
         
         const menuOverlay = document.getElementById('menuOverlay');
