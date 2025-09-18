@@ -41,7 +41,7 @@
 <body>
     <main class="main-container">
         <div class="back-to-home">
-            <a id="backToHomeLink" href="/home.html">← Back to Home</a>
+            <a href="/home.html?exam=railways">← Back to Dashboard</a>
         </div>
         <div class="page-header">
             <h1>Railways Video Lectures</h1>
@@ -68,8 +68,5 @@
                 document.body.classList.remove('menu-open');
             }
         }, true);
-        document.addEventListener('DOMContentLoaded', () => {
-            document.getElementById('backToHomeLink').href = `/home.html?exam=railways`;
-        });
     </script>
 </html>
