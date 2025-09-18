@@ -296,6 +296,18 @@ function closeModal() {
     currentVideoIndex = -1; // Reset index when modal is closed
 }
 
+function toggleFocusMode() {
+    const modal = document.getElementById('videoModal');
+    const btn = document.getElementById('focusModeBtn');
+    modal.classList.toggle('focus-active');
+
+    if (modal.classList.contains('focus-active')) {
+        btn.textContent = 'Exit Focus';
+    } else {
+        btn.textContent = 'Focus Mode';
+    }
+}
+
 // --- Doubt Forum Logic ---
 async function loadDoubtForum(videoId) {
     const forumContainer = document.getElementById('doubtForum');
@@ -399,6 +411,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const modalContent = modal.querySelector('.modal-content');
         if (modalContent) {
             modalContent.insertAdjacentHTML('beforeend', '<button id="prevVideoBtn" class="modal-nav prev" onclick="navigateVideo(-1)">&#10094;</button>');
+            modalContent.insertAdjacentHTML('beforeend', '<button id="focusModeBtn" class="focus-mode-btn" onclick="toggleFocusMode()">Focus Mode</button>');
             modalContent.insertAdjacentHTML('beforeend', '<button id="nextVideoBtn" class="modal-nav next" onclick="navigateVideo(1)">&#10095;</button>');
         }
     }

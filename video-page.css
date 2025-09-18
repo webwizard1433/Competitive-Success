@@ -129,6 +129,28 @@ body {
 }
 .video-container iframe { position: absolute; top: 0; left: 0; width: 100%; height: 100%; }
 
+/* --- Focus Mode --- */
+.focus-mode-btn {
+    position: absolute;
+    top: -30px;
+    right: 50px; /* Position next to the close button */
+    background: none;
+    border: 1px solid var(--secondary-text-color);
+    color: var(--secondary-text-color);
+    padding: 5px 10px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: all 0.3s ease;
+}
+.focus-mode-btn:hover {
+    color: var(--primary-color);
+    border-color: var(--primary-color);
+}
+.modal.focus-active .close-button, .modal.focus-active #doubtForum {
+    display: none;
+}
+
 /* --- Back to Top Button --- */
 #backToTopBtn {
     display: none;

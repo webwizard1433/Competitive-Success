@@ -148,6 +148,10 @@
                 <a href="/home.html" onclick="sessionStorage.removeItem('adminToken')" class="btn btn-danger">Logout</a>
             </div>
         </div>
+        <div class="form-group" style="margin-bottom: 1.5rem; max-width: 400px;">
+            <label for="videoSearchInput">Search Videos</label>
+            <input type="text" id="videoSearchInput" onkeyup="filterTable('video')" placeholder="Search by category, title, or ID...">
+        </div>
         <div class="table-container">
             <table class="data-table">
                 <thead>
@@ -192,6 +196,10 @@
             <div class="actions">
                 <button id="deleteSelectedUsersBtn" class="btn btn-danger" style="display: none;" onclick="deleteSelectedUsers()">Delete Selected</button>
             </div>
+        </div>
+        <div class="form-group" style="margin-bottom: 1.5rem; max-width: 400px;">
+            <label for="userSearchInput">Search Users</label>
+            <input type="text" id="userSearchInput" onkeyup="filterTable('user')" placeholder="Search by name or contact info...">
         </div>
         <div class="table-container">
             <table class="data-table">
@@ -329,6 +337,31 @@
             }
         }
 
+        function filterTable(type) {
+            let input, filter, table, tr, td, i, txtValue;
+            if (type === 'video') {
+                input = document.getElementById("videoSearchInput");
+                table = document.getElementById("videoTableBody");
+            } else {
+                input = document.getElementById("userSearchInput");
+                table = document.getElementById("userTableBody");
+            }
+            filter = input.value.toUpperCase();
+            tr = table.getElementsByTagName("tr");
+
+            for (i = 0; i < tr.length; i++) {
+                // Search all cells except the first (checkbox) and last (actions)
+                td = Array.from(tr[i].getElementsByTagName("td")).slice(1, -1);
+                if (td.length > 0) {
+                    const rowText = td.map(cell => cell.textContent || cell.innerText).join(' ');
+                    if (rowText.toUpperCase().indexOf(filter) > -1) {
+                        tr[i].style.display = "";
+                    } else {
+                        tr[i].style.display = "none";
+                    }
+                }
+            }
+        }
 
         function openAddModal() {
             videoForm.reset();
