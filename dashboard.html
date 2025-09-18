@@ -26,12 +26,18 @@
         .dashboard-section {
             margin-bottom: 3rem;
         }
-        .dashboard-section h2 {
+        .section-header-draggable {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
             font-size: 1.8rem;
             color: var(--primary-color);
             border-bottom: 2px solid var(--card-border-color);
             padding-bottom: 0.5rem;
             margin-bottom: 1.5rem;
+        }
+        .drag-handle {
+            cursor: grab; color: var(--secondary-text-color); font-size: 1.5rem;
         }
         .empty-state p {
             font-size: 1.1rem;
@@ -109,77 +115,79 @@
             <p>Your progress, favorites, and recently watched videos.</p>
         </div>
 
-        <!-- Overall Progress Section -->
-        <section class="dashboard-section">
-            <h2>Overall Progress</h2>
-            <div class="progress-summary">
-                <div class="progress-bar-container">
-                    <div id="progressBar" class="progress-bar"></div>
+        <div id="dashboard-container">
+            <!-- Overall Progress Section -->
+            <section class="dashboard-section" data-id="progress">
+                <div class="section-header-draggable"><span class="drag-handle">☰</span><h2>Overall Progress</h2></div>
+                <div class="progress-summary">
+                    <div class="progress-bar-container">
+                        <div id="progressBar" class="progress-bar"></div>
+                    </div>
+                    <p id="progressText" class="progress-text">Calculating...</p>
                 </div>
-                <p id="progressText" class="progress-text">Calculating...</p>
-            </div>
-        </section>
+            </section>
 
-        <!-- Study Plan Section -->
-        <section class="dashboard-section">
-            <h2>Study Planner</h2>
-            <div class="resource-card" style="cursor: pointer;" onclick="window.location.href='/study-plan.html'">
-                <div class="card-content">
-                    <h3>Create a Custom Study Plan</h3>
-                    <p>Select your subjects, set a target date, and get a personalized day-by-day schedule to guide your learning journey.</p>
-                    <a href="/study-plan.html" class="btn" style="margin-top: auto; display: block; text-align: center; color: white; font-weight: bold;">Create Plan</a>
+            <!-- Study Plan Section -->
+            <section class="dashboard-section" data-id="planner">
+                <div class="section-header-draggable"><span class="drag-handle">☰</span><h2>Study Planner</h2></div>
+                <div class="resource-card" style="cursor: pointer;" onclick="window.location.href='/study-plan.html'">
+                    <div class="card-content">
+                        <h3>Create a Custom Study Plan</h3>
+                        <p>Select your subjects, set a target date, and get a personalized day-by-day schedule to guide your learning journey.</p>
+                        <a href="/study-plan.html" class="btn" style="margin-top: auto; display: block; text-align: center; color: white; font-weight: bold;">Create Plan</a>
+                    </div>
                 </div>
-            </div>
-        </section>
+            </section>
 
-        <!-- Mock Test Section -->
-        <section class="dashboard-section">
-            <h2>Mock Tests</h2>
-            <div class="resource-card" style="cursor: pointer;" onclick="window.location.href='/mock-test.html'">
-                <div class="card-content">
-                    <h3>Take a Full-Length Mock Test</h3>
-                    <p>Simulate real exam conditions with timed practice tests. Get scored and review your performance to identify strengths and weaknesses.</p>
-                    <a href="/mock-test.html" class="btn" style="margin-top: auto; display: block; text-align: center; color: white; font-weight: bold;">View Tests</a>
+            <!-- Mock Test Section -->
+            <section class="dashboard-section" data-id="mock-test">
+                <div class="section-header-draggable"><span class="drag-handle">☰</span><h2>Mock Tests</h2></div>
+                <div class="resource-card" style="cursor: pointer;" onclick="window.location.href='/mock-test.html'">
+                    <div class="card-content">
+                        <h3>Take a Full-Length Mock Test</h3>
+                        <p>Simulate real exam conditions with timed practice tests. Get scored and review your performance to identify strengths and weaknesses.</p>
+                        <a href="/mock-test.html" class="btn" style="margin-top: auto; display: block; text-align: center; color: white; font-weight: bold;">View Tests</a>
+                    </div>
                 </div>
-            </div>
-        </section>
+            </section>
 
-        <!-- Mock Test History Section -->
-        <section class="dashboard-section">
-            <h2>Mock Test History</h2>
-            <div id="testHistoryContainer">
-                <div class="progress-summary" style="margin-bottom: 1.5rem;">
-                    <canvas id="testProgressChart"></canvas>
+            <!-- Recently Watched Section -->
+            <section class="dashboard-section" data-id="recent">
+                <div class="section-header-draggable"><span class="drag-handle">☰</span><h2>Recently Watched</h2></div>
+                <div id="recentGrid" class="grid-container" style="grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));">
+                    <!-- Recently watched videos will be populated here -->
                 </div>
-                <div class="history-table-container">
-                    <table class="history-table">
-                        <thead><tr><th>Test Name</th><th>Score</th><th>Percentage</th><th>Date</th></tr></thead>
-                        <tbody id="testHistoryTableBody"></tbody>
-                    </table>
+                <div id="recentEmpty" class="empty-state" style="display: none;">
+                    <p>You haven't watched any videos yet. <a href="/home.html">Start learning now!</a></p>
                 </div>
-                <div id="testHistoryEmpty" class="empty-state" style="display: none;"><p>You haven't completed any mock tests yet. <a href="/mock-test.html">Take a test</a> to start tracking your progress!</p></div>
-            </div>
-        </section>
+            </section>
 
-        <!-- Recently Watched Section -->
-        <section class="dashboard-section">
-            <h2>Recently Watched</h2>
-            <div id="recentGrid" class="grid-container" style="grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));">
-                <!-- Recently watched videos will be populated here -->
-            </div>
-            <div id="recentEmpty" class="empty-state" style="display: none;">
-                <p>You haven't watched any videos yet. <a href="/home.html">Start learning now!</a></p>
-            </div>
-        </section>
+            <!-- Favorites Section -->
+            <section class="dashboard-section" data-id="favorites">
+                <div class="section-header-draggable"><span class="drag-handle">☰</span><h2>My Favorites</h2></div>
+                <div id="favoritesGrid" class="grid-container" style="grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));">
+                    <!-- Favorite videos will be populated here -->
+                </div>
+                <div id="favoritesEmpty" class="empty-state" style="display: none;">
+                    <p>You haven't favorited any videos yet. Look for the ⭐ icon on video cards.</p>
+                </div>
+            </section>
 
-        <!-- Favorites Section -->
-        <section class="dashboard-section">
-            <h2>My Favorites</h2>
-            <div id="favoritesGrid" class="grid-container" style="grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));">
-                <!-- Favorite videos will be populated here -->
-            </div>
-            <div id="favoritesEmpty" class="empty-state" style="display: none;">
-                <p>You haven't favorited any videos yet. Look for the ⭐ icon on video cards.</p>
+            <!-- Mock Test History Section -->
+            <section class="dashboard-section" data-id="history">
+                <div class="section-header-draggable"><span class="drag-handle">☰</span><h2>Mock Test History</h2></div>
+                <div id="testHistoryContainer">
+                    <div class="progress-summary" style="margin-bottom: 1.5rem;">
+                        <canvas id="testProgressChart"></canvas>
+                    </div>
+                    <div class="history-table-container">
+                        <table class="history-table">
+                            <thead><tr><th>Test Name</th><th>Score</th><th>Percentage</th><th>Date</th></tr></thead>
+                            <tbody id="testHistoryTableBody"></tbody>
+                        </table>
+                    </div>
+                    <div id="testHistoryEmpty" class="empty-state" style="display: none;"><p>You haven't completed any mock tests yet. <a href="/mock-test.html">Take a test</a> to start tracking your progress!</p></div>
+                </div>
             </div>
         </section>
 
@@ -196,6 +204,7 @@
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sortablejs@latest/Sortable.min.js"></script>
     <script>
         // --- Safe Storage & User ID ---
         const safeStorage = (() => { // Prioritize sessionStorage for mobile stability
@@ -230,6 +239,9 @@
                 window.location.href = '/login.html';
                 return;
             }
+
+            // Restore section order from localStorage
+            restoreSectionOrder();
 
             try {
                 // This is a placeholder. In a real app, you'd fetch user data.
@@ -276,6 +288,9 @@
             // Dynamically set the back link
             const backLink = document.querySelector('.back-to-home a');
             if (backLink) backLink.href = `/home.html`;
+
+            // Initialize SortableJS for drag-and-drop
+            initializeSortable();
         });
 
         // Add a pageshow event listener to re-check authentication
@@ -368,6 +383,30 @@
                     maintainAspectRatio: false
                 }
             });
+        }
+
+        // --- SortableJS Logic for Customization ---
+        function initializeSortable() {
+            const container = document.getElementById('dashboard-container');
+            new Sortable(container, {
+                animation: 150,
+                handle: '.drag-handle', // Restrict dragging to the handle
+                onEnd: function (evt) {
+                    const order = Array.from(container.children).map(el => el.dataset.id);
+                    safeStorage.setItem('dashboardOrder', JSON.stringify(order));
+                }
+            });
+        }
+
+        function restoreSectionOrder() {
+            const container = document.getElementById('dashboard-container');
+            const savedOrder = JSON.parse(safeStorage.getItem('dashboardOrder'));
+            if (savedOrder && savedOrder.length) {
+                savedOrder.forEach(id => {
+                    const section = container.querySelector(`[data-id="${id}"]`);
+                    if (section) container.appendChild(section);
+                });
+            }
         }
 
         function createVideoCard(video, examKey) {

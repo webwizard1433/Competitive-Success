@@ -94,7 +94,7 @@ function populateVideos(videoData, defaultThumbnails) {
 
         // Special thumbnail logic for history page, which has multiple thumbnails.
         // This will only run if the `ancient` thumbnail is defined.
-        if (defaultThumbnails.ancient && path.includes('upsc-history')) {
+        if (defaultThumbnails.ancient && path.includes('upsc-history-videos')) {
             if (index < 9) thumbnailUrl = defaultThumbnails.ancient;
             else if (index >= 9 && index < 14) thumbnailUrl = defaultThumbnails.medieval;
             else if (index >= 14 && index < 47) thumbnailUrl = defaultThumbnails.modern;
@@ -271,6 +271,7 @@ function openModal(video) {
     currentVideoIndex = videoData.findIndex(v => v.id === video.id);
     updateNavButtons();
 
+    loadDoubtForum(video.id);
     // Store the currently playing video ID in session storage
     try {
         if (window.sessionStorage) {
@@ -293,6 +294,80 @@ function closeModal() {
     modal.classList.remove('show');
     videoPlayer.src = "";
     currentVideoIndex = -1; // Reset index when modal is closed
+}
+
+// --- Doubt Forum Logic ---
+async function loadDoubtForum(videoId) {
+    const forumContainer = document.getElementById('doubtForum');
+    if (!forumContainer) return;
+
+    // Add form to ask a question
+    forumContainer.innerHTML = `
+        <h2>Doubts & Discussions</h2>
+        <form id="doubtForm" class="doubt-form">
+            <textarea id="doubtQuestion" placeholder="Have a question about this video? Ask here..." required></textarea>
+            <button type="submit" class="btn">Post Question</button>
+        </form>
+        <div id="doubtList" class="doubt-list"></div>
+    `;
+
+    document.getElementById('doubtForm').addEventListener('submit', (e) => {
+        e.preventDefault();
+        postDoubt(videoId);
+    });
+
+    // Fetch and display existing doubts
+    try {
+        const response = await fetch(`/api/doubts?videoId=${videoId}`);
+        const doubts = await response.json();
+        const doubtList = document.getElementById('doubtList');
+        doubtList.innerHTML = ''; // Clear previous doubts
+        if (doubts.length === 0) {
+            doubtList.innerHTML = '<p>No questions have been asked for this video yet. Be the first!</p>';
+        } else {
+            doubts.forEach(doubt => {
+                const doubtEl = document.createElement('div');
+                doubtEl.className = 'doubt-item';
+                doubtEl.innerHTML = `
+                    <div class="doubt-header">
+                        <span class="author">${doubt.userName}</span>
+                        <span class="date">${new Date(doubt.createdAt).toLocaleDateString()}</span>
+                    </div>
+                    <p class="doubt-question">${doubt.question}</p>
+                    <div class="replies-container">
+                        ${doubt.replies.map(reply => `
+                            <div class="reply-item">
+                                <div class="doubt-header" style="margin-bottom: 0.5rem;">
+                                    <span class="author">${reply.userName}</span>
+                                    <span class="date">${new Date(reply.createdAt).toLocaleDateString()}</span>
+                                </div>
+                                <p>${reply.reply}</p>
+                            </div>
+                        `).join('')}
+                    </div>
+                `;
+                doubtList.appendChild(doubtEl);
+            });
+        }
+    } catch (error) {
+        console.error('Failed to load doubts:', error);
+    }
+}
+
+async function postDoubt(videoId) {
+    const question = document.getElementById('doubtQuestion').value;
+    const userName = safeStorage.getItem('userName');
+    if (!question.trim() || !userName) return;
+
+    await fetch('/api/doubts', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ videoId, question, userName, userId })
+    });
+
+    // Refresh the forum
+    document.getElementById('doubtQuestion').value = '';
+    loadDoubtForum(videoId);
 }
 
 // Close the modal if the user clicks outside of the video content
@@ -327,4 +402,4 @@ document.addEventListener('DOMContentLoaded', () => {
             modalContent.insertAdjacentHTML('beforeend', '<button id="nextVideoBtn" class="modal-nav next" onclick="navigateVideo(1)">&#10095;</button>');
         }
     }
-}
+});

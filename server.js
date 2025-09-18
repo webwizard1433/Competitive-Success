@@ -114,6 +114,155 @@ app.post('/api/videos/reorder', async (req, res) => {
     res.status(200).json({ message: 'Order updated successfully' });
 });
 
+// POST to bulk upload videos from CSV
+app.post('/api/videos/bulk', async (req, res) => {
+    const { csvData } = req.body;
+    if (!csvData) {
+        return res.status(400).send('CSV data is required.');
+    }
+
+    try {
+        const videos = await readVideos();
+        let maxOrder = videos.reduce((max, v) => Math.max(max, v.order || 0), 0);
+
+        // Simple CSV parsing (assumes format: category,title,id,type)
+        const rows = csvData.trim().split('\n');
+        rows.forEach(row => {
+            const [category, title, id, type] = row.split(',').map(s => s.trim());
+            if (category && title && id && type) {
+                maxOrder++;
+                videos.push({
+                    _id: `vid${Date.now()}${Math.random()}`,
+                    category, title, id, type,
+                    order: maxOrder
+                });
+            }
+        });
+
+        await writeVideos(videos);
+        res.status(201).json({ message: `${rows.length} videos processed.` });
+    } catch (error) {
+        res.status(500).json({ message: 'Error processing bulk upload.' });
+    }
+});
+
+// --- API Routes for Doubts/Forum ---
+const DOUBTS_PATH = path.join(__dirname, 'doubts.json');
+
+// Helper function to read doubts
+const readDoubts = async () => {
+    try {
+        const data = await fs.readFile(DOUBTS_PATH, 'utf-8');
+        return JSON.parse(data);
+    } catch (error) {
+        if (error.code === 'ENOENT') return []; // Return empty array if file doesn't exist
+        throw error;
+    }
+};
+
+// Helper function to write doubts
+const writeDoubts = async (doubts) => {
+    await fs.writeFile(DOUBTS_PATH, JSON.stringify(doubts, null, 2), 'utf-8');
+};
+
+// GET all doubts for a specific video
+app.get('/api/doubts', async (req, res) => {
+    const { videoId } = req.query;
+    if (!videoId) return res.status(400).json({ message: 'videoId is required' });
+
+    const doubts = await readDoubts();
+    const videoDoubts = doubts.filter(d => d.videoId === videoId).sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+    res.json(videoDoubts);
+});
+
+// POST a new doubt
+app.post('/api/doubts', async (req, res) => {
+    const { videoId, question, userName, userId } = req.body;
+    if (!videoId || !question || !userName || !userId) {
+        return res.status(400).json({ message: 'Missing required fields.' });
+    }
+    const doubts = await readDoubts();
+    const newDoubt = {
+        _id: `doubt${Date.now()}`,
+        videoId,
+        question,
+        userName,
+        userId,
+        createdAt: new Date().toISOString(),
+        replies: []
+    };
+    doubts.push(newDoubt);
+    await writeDoubts(doubts);
+    res.status(201).json(newDoubt);
+});
+
+// POST a reply to a doubt
+app.post('/api/doubts/:doubtId/replies', async (req, res) => {
+    const { doubtId } = req.params;
+    const { reply, userName, userId } = req.body;
+    const doubts = await readDoubts();
+    const doubt = doubts.find(d => d._id === doubtId);
+    if (!doubt) return res.status(404).json({ message: 'Doubt not found.' });
+
+    doubt.replies.push({ _id: `reply${Date.now()}`, reply, userName, userId, createdAt: new Date().toISOString() });
+    await writeDoubts(doubts);
+    res.status(201).json(doubt);
+});
+
+// --- API Routes for Users ---
+const USERS_PATH = 'https://api.npoint.io/628bf2833503e69fb337'; // Using npoint as a mock DB
+
+// GET all users
+app.get('/api/users', async (req, res) => {
+    try {
+        // In a real app, you'd fetch from a database. Here we fetch from npoint.
+        const response = await fetch(USERS_PATH);
+        if (!response.ok) throw new Error('Failed to fetch users from npoint.');
+        const users = await response.json();
+        res.json(users);
+    } catch (error) {
+        console.error('Error fetching users:', error);
+        res.status(500).json({ message: 'Could not fetch users.' });
+    }
+});
+
+// DELETE a user by contactInfo
+app.delete('/api/users/:contactInfo', async (req, res) => {
+    const { contactInfo } = req.params;
+    try {
+        const response = await fetch(USERS_PATH);
+        let users = await response.json();
+        const updatedUsers = users.filter(u => u.contactInfo !== contactInfo);
+
+        await fetch(USERS_PATH, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(updatedUsers)
+        });
+        res.status(204).send();
+    } catch (error) {
+        console.error('Error deleting user:', error);
+        res.status(500).json({ message: 'Could not delete user.' });
+    }
+});
+
+// PUT (update) a user's role
+app.put('/api/users/:contactInfo/role', async (req, res) => {
+    const { contactInfo } = req.params;
+    const { role } = req.body;
+    try {
+        const response = await fetch(USERS_PATH);
+        let users = await response.json();
+        const user = users.find(u => u.contactInfo === contactInfo);
+        if (user) user.role = role;
+
+        await fetch(USERS_PATH, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(users) });
+        res.status(200).json(user);
+    } catch (error) {
+        res.status(500).json({ message: 'Could not update user role.' });
+    }
+});
+
 // --- Root Route ---
 
 // This will serve your home page as the main entry point.

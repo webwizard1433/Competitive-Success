@@ -6,51 +6,118 @@
     <title>Admin Dashboard | Competitive Success</title>
     <link rel="icon" href="/success.png" type="image/png">
     <style>
-        :root { --primary-color: #FFC107; --card-background: rgba(255, 255, 255, 0.05); --card-border-color: rgba(255, 255, 255, 0.2); --text-color: #F5F5DC; --secondary-text-color: #adb5bd; --error-color: #e03131; --success-color: #2f9e44; }
+        :root {
+            --primary-color: #4dabf7;
+            --primary-hover-color: #74c0fc;
+            --background-start: #101113;
+            --background-end: #1d1e20;
+            --card-background: #25262b;
+            --card-border-color: #343a40;
+            --text-color: #e9ecef;
+            --secondary-text-color: #adb5bd;
+            --error-color: #e03131;
+            --success-color: #2f9e44;
+        }
         body {
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-            background-color: #0a192f; margin: 0; color: var(--text-color);
+            background: linear-gradient(-45deg, var(--background-start), var(--background-end));
+            margin: 0; color: var(--text-color);
+            min-height: 100vh;
         }
-        .main-container { padding: 2rem; max-width: 1400px; margin: auto; }
-        .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem; }
+        .main-container { padding: 2rem; max-width: 1400px; margin: 0 auto; }
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2.5rem;
+            padding-bottom: 1.5rem;
+            border-bottom: 1px solid var(--card-border-color);
+        }
         .header h1 { font-size: 2.5rem; color: var(--primary-color); margin: 0; }
-        .btn { padding: 0.6rem 1.2rem; background-color: var(--primary-color); color: #000; border: none; border-radius: 5px; font-size: 1rem; font-weight: bold; cursor: pointer; transition: background-color 0.3s ease; text-decoration: none; }
-        .btn:hover { background-color: #DAA520; }
-        .btn-success { background-color: var(--success-color); color: white; }
-        .btn-danger { background-color: var(--error-color); color: white; }
+        .header .actions { display: flex; gap: 1rem; }
 
-        .video-table-container { overflow-x: auto; }
+        .btn {
+            padding: 0.75rem 1.5rem;
+            background-color: var(--primary-color);
+            color: #0A2342;
+            border: none;
+            border-radius: 5px;
+            font-size: 1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background-color 0.3s ease, transform 0.2s ease;
+            text-decoration: none;
+        }
+        .btn:hover { background-color: var(--primary-hover-color); transform: translateY(-2px); }
+        .btn-success { background-color: var(--success-color); color: white; }
+        .btn-success:hover { background-color: #37b24d; }
+        .btn-danger { background-color: var(--error-color); color: white; }
+        .btn-danger:hover { background-color: #f03e3e; }
+
+        .video-table-container {
+            overflow-x: auto;
+            background-color: var(--card-background);
+            border-radius: 8px;
+            border: 1px solid var(--card-border-color);
+            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.2);
+        }
         .video-table { width: 100%; border-collapse: collapse; }
-        .video-table th, .video-table td { padding: 0.75rem; text-align: left; border-bottom: 1px solid var(--card-border-color); }
+        .video-table th, .video-table td { padding: 1rem 1.25rem; text-align: left; border-bottom: 1px solid var(--card-border-color); }
+        .video-table tr:last-child td { border-bottom: none; }
         .video-table th { color: var(--primary-color); }
-        .video-table td input { width: 95%; background: rgba(0,0,0,0.3); border: 1px solid var(--card-border-color); color: var(--text-color); padding: 0.5rem; border-radius: 4px; }
+        .video-table tbody tr { transition: background-color 0.2s ease; }
+        .video-table tbody tr:hover { background-color: rgba(255, 255, 255, 0.03); }
         .video-table tbody tr { cursor: grab; }
         .video-table tbody tr:active { cursor: grabbing; }
-        .video-table .dragging { opacity: 0.5; background: var(--primary-color); }
+        .video-table .dragging { opacity: 0.5; background: var(--primary-color); color: #000; }
         .video-table .drag-over { border-top: 2px solid var(--primary-color); }
 
-        .video-table td .btn { padding: 0.4rem 0.8rem; font-size: 0.9rem; }
+        .video-table td .btn { padding: 0.5rem 1rem; font-size: 0.9rem; }
+        .video-table td .actions { display: flex; gap: 0.75rem; }
 
         /* Modal Styles */
-        .modal { display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.7); justify-content: center; align-items: center; }
+        .modal {
+            display: none; position: fixed; z-index: 1000; left: 0; top: 0;
+            width: 100%; height: 100%;
+            background-color: rgba(0,0,0,0.7);
+            backdrop-filter: blur(5px);
+            justify-content: center; align-items: center;
+        }
         .modal.show { display: flex; }
-        .modal-content { background-color: #0a192f; border: 1px solid var(--card-border-color); padding: 2rem; border-radius: 8px; width: 90%; max-width: 500px; }
+        .modal-content {
+            background-color: var(--card-background);
+            border: 1px solid var(--card-border-color);
+            padding: 2rem; border-radius: 8px;
+            width: 90%; max-width: 500px;
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3);
+        }
+        .form-group textarea {
+            width: 100%; padding: 0.75rem; border: 1px solid var(--card-border-color);
+            background: rgba(0,0,0,0.2); color: var(--text-color); border-radius: 5px;
+            box-sizing: border-box; font-size: 1rem; min-height: 150px; resize: vertical;
+        }
         .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; }
         .modal-header h2 { margin: 0; color: var(--primary-color); }
         .close-button { font-size: 1.5rem; cursor: pointer; background: none; border: none; color: var(--text-color); }
         .form-group { margin-bottom: 1rem; }
-        .form-group label { display: block; margin-bottom: 0.5rem; }
-        .form-group input { width: 100%; padding: 0.75rem; border: 1px solid var(--card-border-color); background: rgba(0,0,0,0.2); color: var(--text-color); border-radius: 5px; box-sizing: border-box; }
+        .form-group label { display: block; margin-bottom: 0.5rem; color: var(--secondary-text-color); }
+        .form-group input {
+            width: 100%; padding: 0.75rem; border: 1px solid var(--card-border-color);
+            background: rgba(0,0,0,0.2); color: var(--text-color);
+            border-radius: 5px; box-sizing: border-box; font-size: 1rem;
+        }
+        .form-group input:focus { outline: none; border-color: var(--primary-color); }
     </style>
 </head>
 <body>
     <main class="main-container">
         <div class="header">
             <h1>Video Content Management</h1>
-            <div>
+            <div class="actions">
                 <button class="btn btn-success" onclick="openAddModal()">Add New Video</button>
-                <button id="saveOrderBtn" class="btn" style="display: none; margin-left: 1rem;">Save Order</button>
-                <a href="/home.html" onclick="sessionStorage.removeItem('adminToken')" class="btn btn-danger" style="margin-left: 1rem;">Logout</a>
+                <button class="btn" onclick="openBulkUploadModal()">Bulk Upload</button>
+                <button id="saveOrderBtn" class="btn" style="display: none;">Save Order</button>
+                <a href="/home.html" onclick="sessionStorage.removeItem('adminToken')" class="btn btn-danger">Logout</a>
             </div>
         </div>
         <div class="video-table-container">
@@ -102,16 +169,37 @@
         </div>
     </div>
 
+    <!-- Bulk Upload Modal -->
+    <div id="bulkUploadModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Bulk Upload Videos</h2>
+                <button class="close-button" onclick="closeBulkUploadModal()">&times;</button>
+            </div>
+            <form id="bulkUploadForm">
+                <div class="form-group">
+                    <label for="csvData">Paste CSV Data</label>
+                    <textarea id="csvData" placeholder="Format: category,title,id,type (one per line)"></textarea>
+                    <small style="color: var(--secondary-text-color);">Example: upsc-history,History Lecture 3,video_id_3,youtube</small>
+                </div>
+                <button type="submit" class="btn btn-success">Upload Videos</button>
+            </form>
+        </div>
+    </div>
+
     <script>
         // Basic security check
         if (sessionStorage.getItem('adminToken') !== 'true') {
             window.location.href = '/login.html';
         }
 
+        // --- DOM Elements ---
         const tableBody = document.getElementById('videoTableBody');
         const modal = document.getElementById('videoModal');
         const videoForm = document.getElementById('videoForm');
         const saveOrderBtn = document.getElementById('saveOrderBtn');
+        const bulkUploadModal = document.getElementById('bulkUploadModal');
+        const bulkUploadForm = document.getElementById('bulkUploadForm');
 
         async function fetchAndRenderVideos() {
             try {
@@ -126,7 +214,7 @@
                         <td>${video.title}</td>
                         <td>${video.id}</td>
                         <td>${video.type || 'youtube'}</td>
-                        <td>
+                        <td class="actions">
                             <button class="btn" onclick="openEditModal('${video._id}')">Edit</button>
                             <button class="btn btn-danger" onclick="deleteVideo('${video._id}')">Delete</button>
                         </td>
@@ -139,6 +227,17 @@
                 tableBody.innerHTML = '<tr><td colspan="6">Error loading videos.</td></tr>';
             }
         }
+
+        function openBulkUploadModal() {
+            bulkUploadForm.reset();
+            bulkUploadModal.classList.add('show');
+        }
+
+        function closeBulkUploadModal() {
+            bulkUploadModal.classList.remove('show');
+        }
+
+
 
         function openAddModal() {
             videoForm.reset();
