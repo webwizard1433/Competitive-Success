@@ -68,7 +68,7 @@
 <body>
     <main class="main-container">
         <div class="back-to-home">
-            <a href="/home.html">← Back to Home</a>
+            <a id="backToHomeLink" href="/home.html">← Back to Home</a>
         </div>
         <div class="page-header">
             <h1>History Lectures</h1>
@@ -175,6 +175,9 @@
         // Populate the grid when the page loads
         document.addEventListener('DOMContentLoaded', populateVideos);
 
+        document.addEventListener('DOMContentLoaded', () => {
+            document.getElementById('backToHomeLink').href = `/home.html?exam=upsc`;
+        });
     </script>
 
 </body>

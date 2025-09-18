@@ -350,6 +350,7 @@
 
         .thumbnail-content {
             padding: 1.5rem;
+            text-align: center;
         }
 
         .thumbnail-content h3 {
@@ -363,15 +364,14 @@
             color: var(--secondary-text-color);
             max-width: 60ch; /* Improve readability */
             line-height: 1.6;
-            text-align: left;
-            align-self: flex-start;
+            text-align: center;
         }
 
         .btn {
             display: inline-block;
             padding: 0.75rem 1.5rem;
             background-color: var(--primary-color);
-            color: white;
+            color: #000000; /* Changed to black */
             text-decoration: none;
             border-radius: 5px;
             font-weight: bold;
@@ -456,7 +456,7 @@
             <!-- Main Content Card -->
             <div class="thumbnail-card">
                 <img id="examImage" src="https://images.unsplash.com/photo-1523240795612-9a054b0db644?q=80&w=2070" alt="Exam Thumbnail">
-                <div class="thumbnail-content" style="align-items: flex-start; text-align: left;">
+                <div class="thumbnail-content">
                     <h3 id="examName">Your Exam</h3>
                     <p id="description-text">Select an exam from the menu to see a brief description here.</p>
                     <a href="#" class="btn" id="startLearningBtn">Start Learning</a>

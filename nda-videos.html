@@ -41,7 +41,7 @@
 <body>
     <main class="main-container">
         <div class="back-to-home">
-            <a href="/home.html">← Back to Home</a>
+            <a id="backToHomeLink" href="/home.html">← Back to Home</a>
         </div>
         <div class="page-header">
             <h1>NDA Video Lectures</h1>
@@ -67,6 +67,9 @@
             if (e.target.closest('a')) {
                 document.body.classList.remove('menu-open');
             }
-        }, true); // Use capture phase to catch the event early
+        }, true);
+        document.addEventListener('DOMContentLoaded', () => {
+            document.getElementById('backToHomeLink').href = `/home.html?exam=nda`;
+        });
     </script>
 </html>
