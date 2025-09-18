@@ -97,6 +97,30 @@
             </div>
         </section>
 
+        <!-- Study Plan Section -->
+        <section class="dashboard-section">
+            <h2>Study Planner</h2>
+            <div class="resource-card" style="cursor: pointer;" onclick="window.location.href='/study-plan.html'">
+                <div class="card-content">
+                    <h3>Create a Custom Study Plan</h3>
+                    <p>Select your subjects, set a target date, and get a personalized day-by-day schedule to guide your learning journey.</p>
+                    <a href="/study-plan.html" class="btn" style="margin-top: auto; display: block; text-align: center; color: white; font-weight: bold;">Create Plan</a>
+                </div>
+            </div>
+        </section>
+
+        <!-- Mock Test Section -->
+        <section class="dashboard-section">
+            <h2>Mock Tests</h2>
+            <div class="resource-card" style="cursor: pointer;" onclick="window.location.href='/mock-test.html'">
+                <div class="card-content">
+                    <h3>Take a Full-Length Mock Test</h3>
+                    <p>Simulate real exam conditions with timed practice tests. Get scored and review your performance to identify strengths and weaknesses.</p>
+                    <a href="/mock-test.html" class="btn" style="margin-top: auto; display: block; text-align: center; color: white; font-weight: bold;">View Tests</a>
+                </div>
+            </div>
+        </section>
+
         <!-- Recently Watched Section -->
         <section class="dashboard-section">
             <h2>Recently Watched</h2>
@@ -170,23 +194,7 @@
                 const userExam = safeStorage.getItem('userExamChoice') || 'upsc';
 
                 // Populate Favorites
-                const favoritesGrid = document.getElementById('favoritesGrid');
-                const favoriteVideos = userData.favorites ? (userData.favorites[userExam] || []) : [];
-                if (favoriteVideos.length > 0) {
-                    favoriteVideos.forEach(video => favoritesGrid.appendChild(createVideoCard(video)));
-                } else {
-                    document.getElementById('favoritesEmpty').style.display = 'block';
-                }
-
-                // Populate Recently Watched (from sessionStorage for simplicity)
-                const recentGrid = document.getElementById('recentGrid');
-                const recentVideosJson = window.sessionStorage.getItem('recentlyWatched');
-                const recentVideos = recentVideosJson ? JSON.parse(recentVideosJson) : [];
-                if (recentVideos.length > 0) {
-                    recentVideos.forEach(video => recentGrid.appendChild(createVideoCard(video)));
-                } else {
-                     document.getElementById('recentEmpty').style.display = 'block';
-                }
+                populateFavorites(userExam);
 
                 // Populate Progress Bar
                 const totalVideos = totalVideosPerExam[userExam] || 0;
@@ -197,7 +205,7 @@
                 const progressBar = document.getElementById('progressBar');
                 const progressText = document.getElementById('progressText');
 
-                // Animate the progress bar
+                // Animate the progress bar after a short delay for a better visual effect
                 setTimeout(() => {
                     progressBar.style.width = `${percentage}%`;
                 }, 100); // Small delay for animation to be visible

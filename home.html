@@ -103,6 +103,32 @@
             display: flex;
             flex-direction: column;
         }
+        .side-menu.compact {
+            width: 80px;
+        }
+        .side-menu.compact h2,
+        .side-menu.compact .side-menu li a span:not(.icon) {
+            display: none;
+        }
+        .side-menu.compact li a {
+            justify-content: center;
+        }
+        .side-menu.compact .user-menu {
+            padding-top: 0;
+            border-top: none;
+        }
+        .collapse-btn {
+            background: none; border: 1px solid var(--card-border-color); color: var(--secondary-text-color);
+            cursor: pointer; padding: 0.5rem; border-radius: 5px; margin-top: 1rem;
+            transition: background-color 0.3s;
+        }
+        .collapse-btn:hover {
+            background-color: rgba(255, 255, 255, 0.1);
+        }
+        body.light-mode .collapse-btn {
+            color: var(--text-color);
+            border-color: var(--card-border-color);
+        }
 
         .side-menu.open {
             transform: translateX(0);

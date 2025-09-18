@@ -67,6 +67,16 @@
         .btn:hover {
             background-color: var(--primary-hover-color);
         }
+        .btn-danger {
+            background-color: transparent;
+            color: var(--error-color);
+            border: 1px solid var(--error-color);
+            margin-left: 1rem;
+        }
+        .btn-danger:hover {
+            background-color: rgba(224, 49, 49, 0.1);
+            color: #ff6b6b;
+        }
         .message {
             text-align: center;
             margin-top: 1rem;
@@ -114,6 +124,7 @@
                 </div>
 
                 <button type="submit" class="btn">Save Changes</button>
+                <button type="button" id="deleteAccountBtn" class="btn btn-danger">Delete Account</button>
                 <div id="message" class="message"></div>
             </form>
         </div>
@@ -210,6 +221,44 @@
 
             } catch (error) {
                 messageDiv.textContent = error.message || 'An error occurred.';
+                messageDiv.className = 'message error';
+            }
+        });
+
+        document.getElementById('deleteAccountBtn').addEventListener('click', async () => {
+            const confirmation = confirm("Are you sure you want to delete your account? This action is irreversible.");
+
+            if (!confirmation) {
+                return;
+            }
+
+            const npointUrl = 'https://api.npoint.io/628bf2833503e69fb337';
+
+            try {
+                // 1. Get the current list of users
+                const getResponse = await fetch(npointUrl);
+                let users = await getResponse.json();
+
+                // 2. Filter out the current user
+                const updatedUsers = users.filter(u => u.contactInfo !== userId);
+
+                // 3. Post the updated list back
+                const postResponse = await fetch(npointUrl, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(updatedUsers)
+                });
+
+                if (!postResponse.ok) throw new Error('Failed to delete account.');
+
+                // 4. Log out the user and redirect
+                safeStorage.removeItem('sessionToken');
+                safeStorage.removeItem('userName');
+                safeStorage.removeItem('userExamChoice');
+                window.location.replace('/register.html'); // Redirect to registration page
+
+            } catch (error) {
+                messageDiv.textContent = error.message || 'An error occurred while deleting the account.';
                 messageDiv.className = 'message error';
             }
         });

@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Answer Review | Competitive Success</title>
+    <link rel="icon" href="/success.png" type="image/png">
+    <style>
+        :root { --primary-color: #FFC107; --card-background: rgba(255, 255, 255, 0.05); --card-border-color: rgba(255, 255, 255, 0.2); --text-color: #F5F5DC; --secondary-text-color: #adb5bd; --error-color: #e03131; --success-color: #2f9e44; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            background-color: #0a192f;
+            background-image: radial-gradient(at 80% 20%, hsla(212,40%,50%,0.3) 0px, transparent 50%), radial-gradient(at 20% 80%, hsla(280,40%,50%,0.3) 0px, transparent 50%);
+            margin: 0; color: var(--text-color); min-height: 100vh; background-attachment: fixed;
+        }
+        .main-container { padding: 2rem; max-width: 900px; margin: auto; }
+        .page-header { text-align: center; margin-bottom: 2.5rem; }
+        .page-header h1 { font-size: 3rem; color: var(--primary-color); margin: 0; }
+        .page-header p { font-size: 1.2rem; color: var(--secondary-text-color); }
+        .back-to-home { margin-bottom: 1.5rem; }
+        .back-to-home a { display: inline-block; padding: 0.5rem 1rem; background-color: var(--card-background); border: 1px solid var(--card-border-color); color: var(--primary-color); text-decoration: none; font-weight: bold; border-radius: 5px; transition: background-color 0.3s ease; }
+        .back-to-home a:hover { background-color: rgba(255, 255, 255, 0.1); }
+
+        .review-question {
+            background-color: var(--card-background);
+            border: 1px solid var(--card-border-color);
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+        .question-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid var(--card-border-color);
+        }
+        .question-header .number { font-size: 1.2rem; font-weight: bold; }
+        .question-header .status { font-weight: bold; padding: 0.3rem 0.7rem; border-radius: 5px; }
+        .status.correct { background-color: rgba(47, 158, 68, 0.2); color: var(--success-color); }
+        .status.incorrect { background-color: rgba(224, 49, 49, 0.2); color: var(--error-color); }
+        .status.unanswered { background-color: rgba(255, 255, 255, 0.1); color: var(--secondary-text-color); }
+
+        .question-text { font-size: 1.1rem; line-height: 1.6; margin-bottom: 1.5rem; }
+        .options-list { list-style: none; padding: 0; }
+        .option-item {
+            padding: 0.8rem;
+            border-radius: 8px;
+            margin-bottom: 0.5rem;
+            border: 2px solid transparent;
+        }
+        .option-item.correct-answer {
+            background-color: rgba(47, 158, 68, 0.15);
+            border-color: var(--success-color);
+        }
+        .option-item.incorrect-choice {
+            background-color: rgba(224, 49, 49, 0.15);
+            border-color: var(--error-color);
+            text-decoration: line-through;
+        }
+    </style>
+</head>
+<body>
+    <main class="main-container">
+        <div class="back-to-home">
+            <a href="/mock-test-results.html">← Back to Results</a>
+        </div>
+        <div class="page-header">
+            <h1 id="testName">Answer Review</h1>
+            <p>Review your performance question by question.</p>
+        </div>
+        <div id="reviewContainer">
+            <!-- Review content will be loaded here -->
+        </div>
+    </main>
+
+    <script>
+        // This data needs to be available on this page to render the review.
+        // It's the same data from the exam page. In a real app, this would be in a shared JS file or fetched.
+        const testData = {
+            upsc_gs1: { name: 'UPSC General Studies - Mock Test 1', questions: Array.from({ length: 100 }, (_, i) => ({ text: `This is question number ${i + 1} for the UPSC GS Paper. What is the capital of France?`, options: ['Berlin', 'Madrid', 'Paris', 'Rome'], correct: 2 })) },
+            ssc_tier1_1: { name: 'SSC-CGL Tier 1 - Mock Test 1', questions: Array.from({ length: 100 }, (_, i) => ({ text: `This is question number ${i + 1} for the SSC CGL Tier 1 paper. Solve for x: 2x + 5 = 15.`, options: ['3', '4', '5', '6'], correct: 2 })) },
+            cds_gk1: { name: 'CDS General Knowledge - Mock Test 1', questions: Array.from({ length: 120 }, (_, i) => ({ text: `This is question number ${i + 1} for the CDS General Knowledge paper. Who is known as the 'Father of the Indian Constitution'?`, options: ['Mahatma Gandhi', 'Jawaharlal Nehru', 'Dr. B.R. Ambedkar', 'Sardar Patel'], correct: 2 })) },
+            nda_math1: { name: 'NDA Mathematics - Mock Test 1', questions: Array.from({ length: 120 }, (_, i) => ({ text: `This is question number ${i + 1} for the NDA Mathematics paper. What is the derivative of sin(x)?`, options: ['cos(x)', '-sin(x)', 'tan(x)', '-cos(x)'], correct: 0 })) },
+            banking_prelim1: { name: 'Banking Prelims (IBPS/SBI) - Mock Test 1', questions: Array.from({ length: 100 }, (_, i) => ({ text: `This is question number ${i + 1} for a Banking Prelims mock test. If a boat travels 10 km upstream in 2 hours, what is its speed in still water if the stream speed is 1 km/hr?`, options: ['4 km/hr', '5 km/hr', '6 km/hr', '7 km/hr'], correct: 2 })) }
+        };
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const results = JSON.parse(sessionStorage.getItem('mockTestResults'));
+
+            if (!results || !results.testId || !results.userAnswers) {
+                document.getElementById('reviewContainer').innerHTML = '<h1>No review data found.</h1><p>Please complete a test first.</p>';
+                return;
+            }
+
+            const test = testData[results.testId];
+            if (!test) {
+                document.getElementById('reviewContainer').innerHTML = '<h1>Could not load test data for review.</h1>';
+                return;
+            }
+
+            document.getElementById('testName').textContent = `Review: ${test.name}`;
+            const reviewContainer = document.getElementById('reviewContainer');
+            reviewContainer.innerHTML = ''; // Clear any previous content
+
+            test.questions.forEach((question, index) => {
+                const userAnswer = results.userAnswers[index];
+                const correctAnswer = question.correct;
+                const isCorrect = userAnswer === correctAnswer;
+
+                const questionDiv = document.createElement('div');
+                questionDiv.className = 'review-question';
+
+                let statusText, statusClass;
+                if (userAnswer === null) {
+                    statusText = 'Unanswered';
+                    statusClass = 'unanswered';
+                } else if (isCorrect) {
+                    statusText = 'Correct';
+                    statusClass = 'correct';
+                } else {
+                    statusText = 'Incorrect';
+                    statusClass = 'incorrect';
+                }
+
+                const optionsHtml = question.options.map((option, i) => {
+                    let optionClass = 'option-item';
+                    if (i === correctAnswer) {
+                        optionClass += ' correct-answer';
+                    } else if (i === userAnswer && !isCorrect) {
+                        optionClass += ' incorrect-choice';
+                    }
+                    return `<li class="${optionClass}">${option}</li>`;
+                }).join('');
+
+                questionDiv.innerHTML = `
+                    <div class="question-header">
+                        <span class="number">Question ${index + 1}</span>
+                        <span class="status ${statusClass}">${statusText}</span>
+                    </div>
+                    <p class="question-text">${question.text}</p>
+                    <ul class="options-list">
+                        ${optionsHtml}
+                    </ul>
+                `;
+
+                reviewContainer.appendChild(questionDiv);
+            });
+
+            // It's good practice to clear the session storage after the review is generated
+            // or when the user navigates away from the results/review flow.
+            // For simplicity, we'll leave it, but in a real app, you'd manage this state carefully.
+        });
+    </script>
+</body>
+</html>

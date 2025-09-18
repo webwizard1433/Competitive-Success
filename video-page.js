@@ -225,7 +225,7 @@ async function handleFavoriteUpdate(video, button) {
 // Function to open the modal and play the video
 function openModal(video) {
     if (!video || !video.id) return;
-
+    
     let embedUrl = '';
 
     if (video.type === 'gdrive') {
@@ -252,16 +252,6 @@ function openModal(video) {
         }
     } catch(e) {
         console.error("Could not update recently watched list:", e);
-    }
-}
-
-// Function to close the modal and stop the video
-function closeModal() {
-    modal.classList.remove('show');
-    videoPlayer.src = ""; // Stop the video by clearing the src
-    // Remove the video from session storage
-    if (window.sessionStorage) {
-        sessionStorage.removeItem('activeVideo');
     }
 }
 

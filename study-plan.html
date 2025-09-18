@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Study Planner | Competitive Success</title>
+    <link rel="icon" href="/success.png" type="image/png">
+    <style>
+        /* --- "Cosmic Gold" Theme (from home.html) --- */
+        :root { --primary-color: #FFC107; --primary-hover-color: #DAA520; --card-background: rgba(255, 255, 255, 0.05); --card-border-color: rgba(255, 255, 255, 0.2); --text-color: #F5F5DC; --secondary-text-color: #adb5bd; --error-color: #e03131; --success-color: #2f9e44; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            background-color: #0a192f;
+            background-image: radial-gradient(at 80% 20%, hsla(212,40%,50%,0.3) 0px, transparent 50%), radial-gradient(at 20% 80%, hsla(280,40%,50%,0.3) 0px, transparent 50%);
+            margin: 0; color: var(--text-color); min-height: 100vh; background-attachment: fixed;
+        }
+        .main-container { padding: 2rem; max-width: 1200px; margin: auto; width: 100%; box-sizing: border-box; }
+        .page-header { text-align: center; margin-bottom: 2.5rem; }
+        .page-header h1 { font-size: 3rem; color: var(--primary-color); margin: 0; }
+        .page-header p { font-size: 1.2rem; color: var(--secondary-text-color); }
+        .back-to-home { margin-bottom: 1.5rem; }
+        .back-to-home a { display: inline-block; padding: 0.5rem 1rem; background-color: var(--card-background); border: 1px solid var(--card-border-color); color: var(--primary-color); text-decoration: none; font-weight: bold; border-radius: 5px; transition: background-color 0.3s ease; }
+        .back-to-home a:hover { background-color: rgba(255, 255, 255, 0.1); }
+        
+        .planner-container {
+            background-color: var(--card-background);
+            border: 1px solid var(--card-border-color);
+            border-radius: 12px;
+            padding: 2rem;
+            max-width: 800px;
+            margin: 2rem auto;
+        }
+        .form-group { margin-bottom: 1.5rem; }
+        .form-group label { display: block; margin-bottom: 0.5rem; color: var(--secondary-text-color); font-weight: 600; }
+        .form-group input, .form-group select {
+            width: 100%; padding: 0.75rem; border: 1px solid var(--card-border-color); background: rgba(0,0,0,0.2); color: var(--text-color); border-radius: 5px; box-sizing: border-box; font-size: 1rem;
+        }
+        .btn {
+            display: inline-block; padding: 0.75rem 1.5rem; background-color: var(--primary-color); color: #000000; border: none; border-radius: 5px; font-size: 1rem; font-weight: bold; cursor: pointer; transition: background-color 0.3s ease;
+        }
+        .btn:hover { background-color: var(--primary-hover-color); }
+        #planResult { margin-top: 2rem; }
+        .plan-day {
+            background-color: rgba(0,0,0,0.2);
+            border-left: 4px solid var(--primary-color);
+            padding: 1rem;
+            margin-bottom: 1rem;
+            border-radius: 0 8px 8px 0;
+        }
+        .plan-day h3 { margin: 0 0 0.5rem; color: var(--primary-color); }
+    </style>
+</head>
+<body>
+    <main class="main-container">
+        <div class="back-to-home">
+            <a href="/dashboard.html">← Back to Dashboard</a>
+        </div>
+        <div class="page-header">
+            <h1>Study Planner</h1>
+            <p>Create a personalized study schedule.</p>
+        </div>
+
+        <div class="planner-container">
+            <form id="planForm">
+                <div class="form-group">
+                    <label for="targetDate">Target Exam Date</label>
+                    <input type="date" id="targetDate" required>
+                </div>
+                <div class="form-group">
+                    <label>Subjects to Include</label>
+                    <div id="subjectCheckboxes">
+                        <!-- Checkboxes will be populated by JS -->
+                        <p>Loading subjects for your exam...</p>
+                    </div>
+                </div>
+                <button type="submit" class="btn">Generate Plan</button>
+            </form>
+            <div id="planResult">
+                <!-- Generated plan will appear here -->
+            </div>
+        </div>
+    </main>
+
+    <script>
+        const safeStorage = (() => {
+            try {
+                const storage = window.localStorage;
+                storage.setItem('__test__', '1'); storage.removeItem('__test__');
+                return storage;
+            } catch (e) {
+                const memoryStore = {};
+                return { setItem: (k, v) => { memoryStore[k] = v; }, getItem: (k) => memoryStore[k] || null, removeItem: (k) => { delete memoryStore[k]; } };
+            }
+        })();
+
+        // A simple map of subjects per exam. In a real app, this would be more robust.
+        const examSubjects = {
+            upsc: ['History', 'Geography', 'Polity', 'Economy', 'Science & Tech', 'Environment', 'Current Affairs'],
+            cds: ['English', 'General Knowledge', 'Elementary Mathematics'],
+            nda: ['Mathematics', 'GAT - English', 'GAT - General Knowledge'],
+            'ssc-cgl': ['Quantitative Aptitude', 'Reasoning', 'English', 'General Awareness'],
+            banking: ['Quantitative Aptitude', 'Reasoning', 'English', 'General/Banking Awareness'],
+            railways: ['Mathematics', 'General Intelligence & Reasoning', 'General Awareness', 'General Science']
+        };
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const userExam = safeStorage.getItem('userExamChoice') || 'upsc';
+            const subjects = examSubjects[userExam] || [];
+            const checkboxContainer = document.getElementById('subjectCheckboxes');
+            
+            if (subjects.length > 0) {
+                checkboxContainer.innerHTML = subjects.map(subject => `
+                    <label style="display: block; margin-bottom: 0.5rem;">
+                        <input type="checkbox" name="subjects" value="${subject}" checked> ${subject}
+                    </label>
+                `).join('');
+            } else {
+                checkboxContainer.innerHTML = '<p>No subjects found for your selected exam.</p>';
+            }
+
+            // Set min date for date picker to today
+            const today = new Date().toISOString().split('T')[0];
+            document.getElementById('targetDate').setAttribute('min', today);
+        });
+
+        document.getElementById('planForm').addEventListener('submit', (e) => {
+            e.preventDefault();
+            const targetDate = new Date(document.getElementById('targetDate').value);
+            const today = new Date();
+            today.setHours(0, 0, 0, 0); // Normalize today's date
+
+            if (targetDate <= today) {
+                alert('Please select a future date for your target.');
+                return;
+            }
+
+            const selectedSubjects = Array.from(document.querySelectorAll('input[name="subjects"]:checked')).map(cb => cb.value);
+
+            if (selectedSubjects.length === 0) {
+                alert('Please select at least one subject.');
+                return;
+            }
+
+            const diffTime = Math.abs(targetDate - today);
+            const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+
+            const planResultDiv = document.getElementById('planResult');
+            planResultDiv.innerHTML = '<h2>Your Study Plan</h2>';
+
+            for (let i = 0; i < diffDays; i++) {
+                const dayDiv = document.createElement('div');
+                dayDiv.className = 'plan-day';
+                const dayDate = new Date(today);
+                dayDate.setDate(today.getDate() + i);
+                
+                // Simple rotation of subjects
+                const subjectForToday = selectedSubjects[i % selectedSubjects.length];
+                const subjectForTomorrow = selectedSubjects[(i + 1) % selectedSubjects.length];
+
+                dayDiv.innerHTML = `
+                    <h3>Day ${i + 1} (${dayDate.toLocaleDateString()})</h3>
+                    <p><strong>Focus:</strong> ${subjectForToday}</p>
+                    <p><strong>Revise:</strong> ${subjectForTomorrow}</p>
+                `;
+                planResultDiv.appendChild(dayDiv);
+            }
+        });
+    </script>
+</body>
+</html>

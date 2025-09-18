@@ -159,6 +159,11 @@
             color: var(--secondary-text-color);
         }
 
+        .forgot-password {
+            text-align: right;
+            margin-top: -0.75rem; /* Pull it up a bit */
+        }
+
         .btn {
             width: 100%;
             padding: 0.85rem;
@@ -223,6 +228,9 @@
                     <span class="input-icon">🔒</span>
                     <input type="password" id="password" name="password" required autocomplete="new-password">
                     <span class="toggle-password" onclick="togglePassword('password')">👁️</span>
+                </div>
+                <div class="forgot-password">
+                    <a href="/forgot-password.html">Forgot Password?</a>
                 </div>
             </div>
 
