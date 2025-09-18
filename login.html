@@ -255,26 +255,36 @@
             submitButton.textContent = 'Logging in...';
 
             try {
-                // IMPORTANT: Replace 'YOUR_COMPUTER_IP' with your actual local IP address (e.g., 192.168.1.5)
-                // Make sure your computer and mobile device are on the same Wi-Fi network. 
-                // I've removed the hardcoded IP and replaced it with a placeholder for you.
-                const response = await fetch('http://YOUR_COMPUTER_IP:3000/login', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ contactInfo, password })
-                });
-
-                const result = await response.json();
+                // --- Insecure Demo Login Logic ---
+                // IMPORTANT: This logic is for demonstration only and is NOT secure.
+                // It fetches all users to the client, which should never be done in production.
+                // Replace 'YOUR_NPOINT_ID' with the same ID you used in register.html.
+                const response = await fetch('https://api.npoint.io/628bf2833503e69fb337');
 
                 if (!response.ok) {
-                    throw new Error(result.message || 'Login failed. Please check your credentials.');
+                    throw new Error('Could not fetch user data. Please try again.');
                 }
 
-                showMessage('Login successful! Redirecting...', 'success');
-                // Store user info from server
-                safeStorage.setItem('sessionToken', result.user.id); // Use user ID as a simple token
-                safeStorage.setItem('userName', result.user.contactInfo);
+                let users = await response.json();
 
+                // Ensure `users` is an array, even if npoint returns a single object
+                if (!Array.isArray(users)) {
+                    users = [users];
+                }
+
+                // Find a user that matches the login credentials
+                const foundUser = users.find(user => user.contactInfo === contactInfo && user.password === password);
+
+                if (!foundUser) {
+                    throw new Error('Invalid email/mobile or password.');
+                }
+
+                // --- Login Success ---
+                showMessage('Login successful! Redirecting...', 'success');
+                
+                // Store user info (using contactInfo as a simple token/ID for this demo)
+                safeStorage.setItem('sessionToken', foundUser.contactInfo); 
+                safeStorage.setItem('userName', foundUser.contactInfo);
 
                 // Redirect to the user's dashboard
                 setTimeout(() => { window.location.replace('/home.html'); }, 1500);
