@@ -41,10 +41,19 @@ const lazyLoadObserver = new IntersectionObserver((entries, observer) => {
 
 async function fetchUserData() {
     if (!userId) return;
+    // Using npoint.io as the data source
     try {
-        const response = await fetch(`/user/${userId}`);
-        if (response.ok) {
-            userData = await response.json();
+        const response = await fetch('https://api.npoint.io/628bf2833503e69fb337');
+        if (!response.ok) {
+            console.error("Failed to fetch user data from npoint");
+            return;
+        }
+        const users = await response.json();
+        const currentUser = users.find(u => u.contactInfo === userId);
+        if (currentUser) {
+            // Ensure progress and favorites properties exist
+            userData.progress = currentUser.progress || {};
+            userData.favorites = currentUser.favorites || [];
         }
     } catch (error) {
         console.error("Could not fetch user data", error);
@@ -107,6 +116,21 @@ function populateVideos(videoData, defaultThumbnails) {
         // Observe the image for lazy loading
         const img = card.querySelector('img');
         lazyLoadObserver.observe(img);
+
+        // --- Event Listeners for Controls ---
+        const favoriteBtn = card.querySelector('.favorite-btn');
+        if (favoriteBtn) {
+            favoriteBtn.addEventListener('click', (e) => {
+                e.stopPropagation(); // Prevent the card's click event from firing
+                handleFavoriteUpdate(video, favoriteBtn);
+            });
+        }
+
+        const progressCheckbox = card.querySelector('.progress-checkbox');
+        if (progressCheckbox) {
+            progressCheckbox.addEventListener('click', (e) => e.stopPropagation()); // Prevent card click
+            progressCheckbox.addEventListener('change', (e) => handleProgressUpdate(video.id, e.target.checked));
+        }
     });
 }
 
@@ -116,32 +140,63 @@ function isFavorited(videoId) {
 
 async function handleProgressUpdate(videoId, isCompleted) {
     if (!userId) return;
-    await fetch(`/user/${userId}/progress`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ videoId, completed: isCompleted })
-    });
+    const npointUrl = 'https://api.npoint.io/628bf2833503e69fb337';
+    try {
+        // 1. Get the current list of users
+        const getResponse = await fetch(npointUrl);
+        let users = await getResponse.json();
+
+        // 2. Find and update the current user's progress
+        const userIndex = users.findIndex(u => u.contactInfo === userId);
+        if (userIndex > -1) {
+            if (!users[userIndex].progress) users[userIndex].progress = {};
+            if (isCompleted) {
+                users[userIndex].progress[videoId] = true;
+            } else {
+                delete users[userIndex].progress[videoId];
+            }
+        }
+
+        // 3. Post the entire updated list back
+        await fetch(npointUrl, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(users)
+        });
+    } catch (error) {
+        console.error("Failed to update progress:", error);
+    }
 }
 
 async function handleFavoriteUpdate(video, button) {
     if (!userId) return;
+    const npointUrl = 'https://api.npoint.io/628bf2833503e69fb337';
     const isCurrentlyFavorited = button.classList.contains('favorited');
     const newFavoritedStatus = !isCurrentlyFavorited;
 
-    const response = await fetch(`/user/${userId}/favorite`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ video, favorited: newFavoritedStatus })
-    });
+    try {
+        // 1. Get the current list of users
+        const getResponse = await fetch(npointUrl);
+        let users = await getResponse.json();
 
-    if (response.ok) {
-        button.classList.toggle('favorited', newFavoritedStatus);
-        // Update local user data to match
-        if (newFavoritedStatus) {
-            userData.favorites.push(video);
-        } else {
-            userData.favorites = userData.favorites.filter(v => v.id !== video.id);
+        // 2. Find and update the current user's favorites
+        const userIndex = users.findIndex(u => u.contactInfo === userId);
+        if (userIndex > -1) {
+            if (!users[userIndex].favorites) users[userIndex].favorites = [];
+            if (newFavoritedStatus) {
+                users[userIndex].favorites.push(video);
+            } else {
+                users[userIndex].favorites = users[userIndex].favorites.filter(v => v.id !== video.id);
+            }
         }
+
+        // 3. Post the entire updated list back
+        const postResponse = await fetch(npointUrl, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(users) });
+        if (!postResponse.ok) throw new Error('Failed to save favorite status.');
+
+        button.classList.toggle('favorited', newFavoritedStatus);
+    } catch (error) {
+        console.error("Failed to update favorites:", error);
     }
 }
 

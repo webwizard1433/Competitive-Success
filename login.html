@@ -284,7 +284,8 @@
                 
                 // Store user info (using contactInfo as a simple token/ID for this demo)
                 safeStorage.setItem('sessionToken', foundUser.contactInfo); 
-                safeStorage.setItem('userName', foundUser.contactInfo);
+                safeStorage.setItem('userName', foundUser.fullName); // Store the full name
+                safeStorage.setItem('userExamChoice', foundUser.examChoice); // Store the exam choice
 
                 // Redirect to the user's dashboard
                 setTimeout(() => { window.location.replace('/home.html'); }, 1500);

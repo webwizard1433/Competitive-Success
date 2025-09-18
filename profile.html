@@ -5,8 +5,22 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>My Profile | Competitive Success</title>
     <link rel="icon" href="/success.png" type="image/png">
-    <link rel="stylesheet" href="/video-page.css">
     <style>
+        /* --- "Cosmic Gold" Theme (from home.html) --- */
+        :root { --primary-color: #FFC107; --primary-hover-color: #DAA520; --card-background: rgba(255, 255, 255, 0.05); --card-border-color: rgba(255, 255, 255, 0.2); --text-color: #F5F5DC; --secondary-text-color: #adb5bd; --error-color: #e03131; --success-color: #2f9e44; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            background-color: #0a192f;
+            background-image: radial-gradient(at 80% 20%, hsla(212,40%,50%,0.3) 0px, transparent 50%), radial-gradient(at 20% 80%, hsla(280,40%,50%,0.3) 0px, transparent 50%);
+            margin: 0; color: var(--text-color); min-height: 100vh; background-attachment: fixed;
+        }
+        .main-container { padding: 2rem; max-width: 1200px; margin: auto; width: 100%; box-sizing: border-box; }
+        .page-header { text-align: center; margin-bottom: 2.5rem; }
+        .page-header h1 { font-size: 3rem; color: var(--primary-color); margin: 0; }
+        .page-header p { font-size: 1.2rem; color: var(--secondary-text-color); }
+        .back-to-home { margin-bottom: 1.5rem; }
+        .back-to-home a { display: inline-block; padding: 0.5rem 1rem; background-color: var(--card-background); border: 1px solid var(--card-border-color); color: var(--primary-color); text-decoration: none; font-weight: bold; border-radius: 5px; transition: background-color 0.3s ease; }
+        .back-to-home a:hover { background-color: rgba(255, 255, 255, 0.1); }
         .profile-container {
             background-color: var(--card-background);
             border: 1px solid var(--card-border-color);
@@ -27,7 +41,7 @@
         .form-group input {
             width: 100%;
             padding: 0.75rem;
-            border: 1px solid var(--card-border-color);
+            border: 1px solid rgba(255, 255, 255, 0.2);
             background: rgba(0,0,0,0.2);
             color: var(--text-color);
             border-radius: 5px;
@@ -41,8 +55,8 @@
         .btn {
             display: inline-block;
             padding: 0.75rem 1.5rem;
-            background-color: var(--primary-color);
-            color: #0A2342;
+            background-color: var(--primary-color); 
+            color: #000000;
             border: none;
             border-radius: 5px;
             font-size: 1rem;
@@ -59,9 +73,13 @@
             padding: 0.75rem;
             border-radius: 5px;
             display: none;
-        }
-        .message.success { background-color: #d4edda; color: #155724; display: block; }
-        .message.error { background-color: #f8d7da; color: #721c24; display: block; }
+        }        
+        .message.success { background-color: rgba(47, 158, 68, 0.1); color: #2f9e44; display: block; }
+        .message.error { background-color: rgba(224, 49, 49, 0.1); color: #e03131; display: block; }
+    </style>
+    <style>
+        /* Style for dropdown options */
+        #examChoice option { background: #f0f0f0; color: black; }
     </style>
 </head>
 <body>
@@ -77,9 +95,24 @@
         <div class="profile-container">
             <form id="profileForm">
                 <div class="form-group">
-                    <label for="contactInfo">Email or Mobile Number</label>
-                    <input type="text" id="contactInfo" required>
+                    <label for="fullName">Full Name</label>
+                    <input type="text" id="fullName" readonly style="background-color: rgba(0,0,0,0.4); cursor: not-allowed;">
                 </div>
+                <div class="form-group">
+                    <label for="contactInfo">Email or Mobile Number</label>
+                    <input type="text" id="contactInfo" readonly style="background-color: rgba(0,0,0,0.4); cursor: not-allowed;">
+                </div>
+                <div class="form-group">
+                    <label for="examChoice">Primary Exam Goal</label>
+                    <select id="examChoice" required style="width: 100%; padding: 0.75rem; border: 1px solid var(--card-border-color); background: rgba(0,0,0,0.2); color: var(--text-color); border-radius: 5px; box-sizing: border-box; font-size: 1rem; -webkit-appearance: none; -moz-appearance: none; appearance: none;">
+                        <!-- Options will be populated by JS -->
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="password">New Password (optional)</label>
+                    <input type="password" id="password" placeholder="Leave blank to keep current password">
+                </div>
+
                 <button type="submit" class="btn">Save Changes</button>
                 <div id="message" class="message"></div>
             </form>
@@ -87,6 +120,9 @@
     </main>
 
     <script>
+        // Note: This is a simplified list. A real app might fetch this from a config.
+        const exams = { upsc: "UPSC", cds: "CDS", nda: "NDA", 'ssc-cgl': "SSC-CGL", banking: "Banking", railways: "Railways" };
+
         const safeStorage = (() => {
             try {
                 const storage = window.localStorage;
@@ -100,7 +136,10 @@
         })();
 
         const userId = safeStorage.getItem('sessionToken');
+        const form = document.getElementById('profileForm');
         const contactInfoInput = document.getElementById('contactInfo');
+        const fullNameInput = document.getElementById('fullName');
+        const examChoiceSelect = document.getElementById('examChoice');
         const messageDiv = document.getElementById('message');
 
         document.addEventListener('DOMContentLoaded', async () => {
@@ -108,30 +147,72 @@
                 window.location.replace('/login.html');
                 return;
             }
-            // Fetch and display current user data
-            const response = await fetch(`/user/${userId}`);
-            const user = await response.json();
-            if (user) {
-                contactInfoInput.value = user.contactInfo;
+
+            // Populate exam dropdown
+            for (const key in exams) {
+                const option = document.createElement('option');
+                option.value = key;
+                option.textContent = exams[key];
+                examChoiceSelect.appendChild(option);
+            }
+
+            // Fetch all users to find the current one (insecure demo method)
+            try {
+                const response = await fetch('https://api.npoint.io/628bf2833503e69fb337');
+                const users = await response.json();
+                const currentUser = users.find(u => u.contactInfo === userId);
+
+                if (currentUser) {
+                    contactInfoInput.value = currentUser.contactInfo;
+                    fullNameInput.value = currentUser.fullName || '';
+                    examChoiceSelect.value = currentUser.examChoice || 'upsc';
+                }
+            } catch (error) {
+                messageDiv.textContent = 'Failed to load profile data.';
+                messageDiv.className = 'message error';
             }
         });
 
-        document.getElementById('profileForm').addEventListener('submit', async (e) => {
+        form.addEventListener('submit', async (e) => {
             e.preventDefault();
-            const updatedContactInfo = contactInfoInput.value;
+            const npointUrl = 'https://api.npoint.io/628bf2833503e69fb337';
+            
+            const updatedExamChoice = examChoiceSelect.value;
+            const newPassword = document.getElementById('password').value;
 
-            const response = await fetch(`/user/${userId}`, {
-                method: 'PUT',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ contactInfo: updatedContactInfo })
-            });
+            try {
+                // 1. Get the current list of users
+                const getResponse = await fetch(npointUrl);
+                let users = await getResponse.json();
 
-            const result = await response.json();
-            messageDiv.textContent = result.message;
-            messageDiv.className = `message ${response.ok ? 'success' : 'error'}`;
+                // 2. Find and update the current user's data
+                const userIndex = users.findIndex(u => u.contactInfo === userId);
+                if (userIndex > -1) {
+                    
+                    users[userIndex].examChoice = updatedExamChoice;
+                    if (newPassword) {
+                        users[userIndex].password = newPassword; // Insecure: for demo only
+                    }
+                }
 
-            if (response.ok) {
-                safeStorage.setItem('userName', updatedContactInfo);
+                // 3. Post the entire updated list back
+                const postResponse = await fetch(npointUrl, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(users)
+                });
+
+                if (!postResponse.ok) throw new Error('Failed to save changes.');
+
+                // Update local storage and show success
+                
+                safeStorage.setItem('userExamChoice', updatedExamChoice);
+                messageDiv.textContent = 'Profile updated successfully!';
+                messageDiv.className = 'message success';
+
+            } catch (error) {
+                messageDiv.textContent = error.message || 'An error occurred.';
+                messageDiv.className = 'message error';
             }
         });
     </script>

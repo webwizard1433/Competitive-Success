@@ -66,6 +66,11 @@
             border-bottom: 1px solid var(--card-border-color);
         }
 
+        .user-greeting {
+            color: var(--secondary-text-color);
+            margin-right: 1.5rem;
+        }
+
         .header-logo {
             display: flex;
             align-items: center;
@@ -89,13 +94,14 @@
             height: 100%;
             background-color: var(--card-background);
             backdrop-filter: blur(10px);
-            border-right: 1px solid var(--card-border-color);
             padding: 1.5rem;
             padding-top: calc(var(--header-height) + 1rem); /* Space for header */
             box-sizing: border-box;
-            overflow-y: auto;
             z-index: 1100; /* Above header */
             transition: transform 0.3s ease-in-out;
+            /* Flexbox for layout */
+            display: flex;
+            flex-direction: column;
         }
 
         .side-menu.open {
@@ -115,6 +121,10 @@
             text-align: center;
         }
         .side-menu ul { list-style: none; padding: 0; margin: 0; }
+        #examList {
+            overflow-y: auto; /* Allow this list to scroll if needed */
+            flex-grow: 1; /* Allow it to take up available space */
+        }
         .side-menu li a {
             display: flex; /* Use flexbox for alignment */
             align-items: center;
@@ -448,6 +458,9 @@
         <div class="section-header">
             <h2>Competitive Success</h2>
         </div>
+        <div class="user-greeting">
+            <span id="userName"></span>
+        </div>
         <div class="header-logo">
             <img src="https://st4.depositphotos.com/1842549/20934/i/450/depositphotos_209344954-stock-photo-success-icon-internet-button-white.jpg" alt="Competitive Success Logo">
         </div>
@@ -569,6 +582,9 @@
                 link.classList.remove('active');
             });
             document.querySelector(`#examList a[data-exam="${examKey}"]`).classList.add('active');
+
+            // Save the selected exam to local storage for persistence
+            safeStorage.setItem('userExamChoice', examKey);
 
             // Always hide menu on selection
             toggleSideMenu();
@@ -806,8 +822,8 @@
         document.addEventListener('DOMContentLoaded', () => {
             // Check for an exam in the URL, otherwise default to 'upsc'
             const urlParams = new URLSearchParams(window.location.search);
-            const examFromUrl = urlParams.get('exam');
-            const userExam = examData[examFromUrl] ? examFromUrl : 'upsc';
+            const examFromUrl = urlParams.get('exam') || safeStorage.getItem('userExamChoice');
+            const userExam = examData[examFromUrl] ? examFromUrl : 'upsc'; // Default to upsc if nothing is set
 
             // Populate menu and update dashboard with the determined exam
             populateExamMenu(userExam);
@@ -815,6 +831,12 @@
 
             // Build the search index
             buildSearchIndex();
+
+            // Display user's name
+            const userName = safeStorage.getItem('userName');
+            if (userName) {
+                document.getElementById('userName').textContent = `Hi, ${userName}`;
+            }
 
         });
 
