@@ -6,6 +6,18 @@
     <title>UPSC History Videos | Competitive Success</title>
     <link rel="icon" href="/success.png" type="image/png">
     <link rel="stylesheet" href="/video-page.css">
+    <style>
+        .subject-section {
+            margin-bottom: 3rem;
+        }
+        .subject-header {
+            font-size: 2rem;
+            color: var(--primary-color);
+            border-bottom: 2px solid var(--card-border-color);
+            padding-bottom: 0.75rem;
+            margin-bottom: 1.5rem;
+        }
+    </style>
 </head>
 <body>
     <main class="main-container">
@@ -17,9 +29,25 @@
             <h1>History Lectures</h1>
             <p>Click on any video to play it instantly.</p>
         </div>
-        <div class="grid-container" id="videoGrid">
-            <!-- Video cards will be dynamically inserted here by JavaScript -->
-        </div>
+
+        <!-- Ancient History Section -->
+        <section class="subject-section">
+            <h2 class="subject-header">Ancient India History</h2>
+            <div class="grid-container" id="ancientHistoryGrid"></div>
+        </section>
+
+        <!-- Medieval History Section -->
+        <section class="subject-section">
+            <h2 class="subject-header">Medieval History</h2>
+            <div class="grid-container" id="medievalHistoryGrid"></div>
+        </section>
+
+        <!-- Modern History Section -->
+        <section class="subject-section">
+            <h2 class="subject-header">Modern India History</h2>
+            <div class="grid-container" id="modernHistoryGrid"></div>
+        </section>
+
         <div id="doubtForum" class="doubt-forum-container">
             <!-- Doubt forum will be loaded here by JS -->
         </div>
@@ -39,23 +67,55 @@
         // --- Page-Specific Data ---
         let videoData = []; // This will be fetched from the API
         const defaultThumbnails = {
-            gdrive: "https://images.unsplash.com/photo-1598257006624-980a25028048?q=80&w=2070",
-            placeholder: 'https://via.placeholder.com/320x180.png?text=History+Lecture'
+            ancient: "https://images.unsplash.com/photo-1604644399513-55f7128f4550?q=80&w=1974",
+            medieval: "https://images.unsplash.com/photo-1588509410931-628343b23673?q=80&w=1932",
+            modern: "https://images.unsplash.com/photo-1621955964393-6597f9b5c695?q=80&w=2070"
         };
     </script>
     <script src="/video-page.js"></script>
     <script>
         // --- Page Initialization ---
         document.addEventListener('DOMContentLoaded', async () => {
-            const videoGrid = document.getElementById('videoGrid');
+            const ancientGrid = document.getElementById('ancientHistoryGrid');
+            const medievalGrid = document.getElementById('medievalHistoryGrid');
+            const modernGrid = document.getElementById('modernHistoryGrid');
+
             try {
                 const response = await fetch('/api/videos?category=upsc-history');
                 videoData = await response.json();
-                await fetchUserData(); // Fetch user data for progress
-                populateVideos(videoData, defaultThumbnails);
+                await fetchUserData();
+
+                // Clear existing grids
+                ancientGrid.innerHTML = '';
+                medievalGrid.innerHTML = '';
+                modernGrid.innerHTML = '';
+
+                // --- Generate placeholders to ensure all thumbnails are visible ---
+                const generatePlaceholders = (count, titlePrefix, existingVideos) => {
+                    const videos = [];
+                    for (let i = 0; i < count; i++) {
+                        // Use existing video if available, otherwise create a placeholder
+                        if (existingVideos[i]) {
+                            videos.push(existingVideos[i]);
+                        } else {
+                            videos.push({ id: `placeholder_${titlePrefix}_${i}`, title: `${titlePrefix} ${i + 1}`, type: 'placeholder' });
+                        }
+                    }
+                    return videos;
+                };
+
+                const ancientVideos = generatePlaceholders(9, 'Ancient India History', videoData.slice(0, 9));
+                const medievalVideos = generatePlaceholders(5, 'Medieval India History', videoData.slice(9, 14));
+                const modernVideos = generatePlaceholders(33, 'Modern India History', videoData.slice(14, 47));
+                
+                // Populate each section with the correct videos and thumbnails
+                populateVideos(ancientVideos, { default: defaultThumbnails.ancient }, ancientGrid);
+                populateVideos(medievalVideos, { default: defaultThumbnails.medieval }, medievalGrid);
+                populateVideos(modernVideos, { default: defaultThumbnails.modern }, modernGrid);
+
             } catch (error) {
                 console.error("Failed to load videos:", error);
-                videoGrid.innerHTML = '<p>Could not load videos. Please try again later.</p>';
+                ancientGrid.innerHTML = '<p>Could not load videos. Please try again later.</p>';
             }
 
             // Restore video state on reload

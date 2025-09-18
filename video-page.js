@@ -76,38 +76,33 @@ async function fetchUserData() {
 }
 
 // Function to create and append video cards
-function populateVideos(videoData, defaultThumbnails) {
+function populateVideos(videoData, defaultThumbnails, targetGrid = null) {
+    const grid = targetGrid || document.getElementById('videoGrid');
     videoData.forEach((video, index) => {
         const card = document.createElement('div');
         card.className = 'resource-card';
         
-        let thumbnailUrl = '';
-        if (video.id && !video.id.startsWith('placeholder_')) { // Check for real YouTube ID first
-            // It's a real YouTube video. We'll use a picture element for WebP fallback.
-            // The `data-src` will be the fallback JPG, and we'll add a webp source.
-            thumbnailUrl = `https://img.youtube.com/vi/${video.id}/mqdefault.jpg`; 
-
-        } else if (video.type === 'gdrive') {
-            thumbnailUrl = defaultThumbnails.gdrive;
+        let thumbnailHtml = '';
+        const isYouTube = video.id && !video.id.startsWith('placeholder_') && video.type !== 'gdrive';
+        const defaultThumb = defaultThumbnails.placeholder || defaultThumbnails.default || 'https://via.placeholder.com/320x180.png?text=Video';
+        
+        if (isYouTube) {
+            // Use <picture> for WebP optimization for YouTube videos
+            thumbnailHtml = `
+                <picture>
+                    <source srcset="https://img.youtube.com/vi_webp/${video.id}/mqdefault.webp" type="image/webp">
+                    <img data-src="https://img.youtube.com/vi/${video.id}/mqdefault.jpg" alt="${video.title}">
+                </picture>
+            `;
         } else {
-            // It's a placeholder or another type, use the specific placeholder thumbnail or the default one as a fallback.
-            thumbnailUrl = defaultThumbnails.placeholder || defaultThumbnails.default || 'https://via.placeholder.com/320x180.png?text=Video';
-        }
-
-        // Special thumbnail logic for history page, which has multiple thumbnails.
-        // This will only run if the `ancient` thumbnail is defined.
-        if (defaultThumbnails.ancient && path.includes('upsc-history-videos')) {
-            if (index < 9) thumbnailUrl = defaultThumbnails.ancient;
-            else if (index >= 9 && index < 14) thumbnailUrl = defaultThumbnails.medieval;
-            else if (index >= 14 && index < 47) thumbnailUrl = defaultThumbnails.modern;
+            // Use a simple <img> for GDrive, placeholders, or custom URLs (like from Unsplash)
+            const thumbUrl = video.type === 'gdrive' ? defaultThumbnails.gdrive : defaultThumb;
+            thumbnailHtml = `<img data-src="${thumbUrl}" alt="${video.title}">`;
         }
 
         card.innerHTML = `
             <div class="card-thumbnail loading">
-                <picture>
-                    <source srcset="https://img.youtube.com/vi_webp/${video.id}/mqdefault.webp" type="image/webp">
-                    <img data-src="${thumbnailUrl}" alt="${video.title}">
-                </picture>
+                ${thumbnailHtml}
                 <span class="play-icon">▶</span>
             </div>
             <div class="card-content"> 
@@ -131,7 +126,7 @@ function populateVideos(videoData, defaultThumbnails) {
             card.onclick = () => openModal(video);
         }
 
-        videoGrid.appendChild(card);
+        grid.appendChild(card);
 
         // Observe the image for lazy loading
         const img = card.querySelector('img');
