@@ -182,10 +182,30 @@
         }
 
         // Populate the grid when the page loads
-        document.addEventListener('DOMContentLoaded', populateVideos);
-
         document.addEventListener('DOMContentLoaded', () => {
-            document.getElementById('backToHomeLink').href = `/home.html?exam=upsc`;
+            // 1. Populate the video cards on the page
+            populateVideos();
+
+            // 2. Check if a video was playing before a reload (like on screen rotation)
+            if (window.sessionStorage) {
+                const activeVideoJson = sessionStorage.getItem('activeVideo');
+                if (activeVideoJson) {
+                    try {
+                        const video = JSON.parse(activeVideoJson);
+                        // Re-open the modal for the video that was playing
+                        openModal(video);
+                    } catch (e) {
+                        console.error("Could not restore video state from session storage.", e);
+                        sessionStorage.removeItem('activeVideo');
+                    }
+                }
+            }
+
+            // 3. Set the back link
+            const backLink = document.getElementById('backToHomeLink');
+            if (backLink) {
+                backLink.href = `/home.html?exam=upsc`;
+            }
         });
     </script>
 
