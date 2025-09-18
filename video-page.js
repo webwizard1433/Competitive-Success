@@ -1,6 +1,7 @@
 const modal = document.getElementById('videoModal');
 const videoPlayer = document.getElementById('videoPlayer');
 const videoGrid = document.getElementById('videoGrid');
+let currentExamKey = 'upsc'; // Default exam
 let userData = { progress: {}, favorites: [] };
 
 // --- User Data Management ---
@@ -52,8 +53,12 @@ async function fetchUserData() {
         const currentUser = users.find(u => u.contactInfo === userId);
         if (currentUser) {
             // Ensure progress and favorites properties exist
-            userData.progress = currentUser.progress || {};
-            userData.favorites = currentUser.favorites || [];
+            // The top-level object will now hold exam-specific data
+            userData = {
+                ...currentUser,
+                progress: currentUser.progress || {},
+                favorites: currentUser.favorites || {}
+            };
         }
     } catch (error) {
         console.error("Could not fetch user data", error);
@@ -67,14 +72,14 @@ function populateVideos(videoData, defaultThumbnails) {
         card.className = 'resource-card';
         
         let thumbnailUrl = '';
-        if (video.type === 'gdrive') {
-            thumbnailUrl = defaultThumbnails.gdrive || `https://via.placeholder.com/320x180.png?text=Video`;
-        } else if (video.id && !video.id.startsWith('placeholder_')) {
-            // Use medium quality thumbnail for faster loading
+        if (video.id && !video.id.startsWith('placeholder_')) { // Check for real YouTube ID first
+            // It's a real YouTube video
             thumbnailUrl = `https://img.youtube.com/vi/${video.id}/mqdefault.jpg`;
+        } else if (video.type === 'gdrive') {
+            thumbnailUrl = defaultThumbnails.gdrive;
         } else {
-            // This is a placeholder video. Use the specific placeholder thumbnail if available.
-            thumbnailUrl = defaultThumbnails.placeholder || `https://via.placeholder.com/320x180.png?text=Video+Not+Found`;
+            // It's a placeholder or another type, use the specific placeholder thumbnail or the default one as a fallback.
+            thumbnailUrl = defaultThumbnails.placeholder || defaultThumbnails.default || 'https://via.placeholder.com/320x180.png?text=Video';
         }
 
         // Special thumbnail logic for history page, which has multiple thumbnails.
@@ -94,7 +99,7 @@ function populateVideos(videoData, defaultThumbnails) {
                 <h3>${video.title}</h3>
                 <div class="card-controls">
                     <div class="control-item">
-                        <input type="checkbox" id="progress-${video.id}" class="progress-checkbox" ${userData.progress[video.id] ? 'checked' : ''}>
+                        <input type="checkbox" id="progress-${video.id}" class="progress-checkbox" ${isCompleted(video.id) ? 'checked' : ''}>
                         <label for="progress-${video.id}">Completed</label>
                     </div>
                     <div class="control-item">
@@ -135,11 +140,28 @@ function populateVideos(videoData, defaultThumbnails) {
 }
 
 function isFavorited(videoId) {
-    return userData.favorites && userData.favorites.some(fav => fav.id === videoId);
+    // Check within the current exam's favorites
+    return userData.favorites && userData.favorites[currentExamKey] && userData.favorites[currentExamKey].some(fav => fav.id === videoId);
+}
+
+function isCompleted(videoId) {
+    // Check within the current exam's progress
+    return userData.progress && userData.progress[currentExamKey] && userData.progress[currentExamKey][videoId];
 }
 
 async function handleProgressUpdate(videoId, isCompleted) {
     if (!userId) return;
+
+    // --- Immediate UI and Local Data Update ---
+    // Ensure the exam-specific progress object exists
+    if (!userData.progress[currentExamKey]) userData.progress[currentExamKey] = {};
+
+    if (isCompleted) {
+        userData.progress[currentExamKey][videoId] = true;
+    } else {
+        delete userData.progress[currentExamKey][videoId];
+    }
+
     const npointUrl = 'https://api.npoint.io/628bf2833503e69fb337';
     try {
         // 1. Get the current list of users
@@ -149,12 +171,8 @@ async function handleProgressUpdate(videoId, isCompleted) {
         // 2. Find and update the current user's progress
         const userIndex = users.findIndex(u => u.contactInfo === userId);
         if (userIndex > -1) {
-            if (!users[userIndex].progress) users[userIndex].progress = {};
-            if (isCompleted) {
-                users[userIndex].progress[videoId] = true;
-            } else {
-                delete users[userIndex].progress[videoId];
-            }
+            // Overwrite the entire progress object with the updated local one
+            users[userIndex].progress = userData.progress;
         }
 
         // 3. Post the entire updated list back
@@ -171,8 +189,18 @@ async function handleProgressUpdate(videoId, isCompleted) {
 async function handleFavoriteUpdate(video, button) {
     if (!userId) return;
     const npointUrl = 'https://api.npoint.io/628bf2833503e69fb337';
-    const isCurrentlyFavorited = button.classList.contains('favorited');
-    const newFavoritedStatus = !isCurrentlyFavorited;
+
+    // --- Immediate UI and Local Data Update ---
+    // Ensure the exam-specific favorites array exists
+    if (!userData.favorites[currentExamKey]) userData.favorites[currentExamKey] = [];
+
+    const isCurrentlyFavorited = userData.favorites[currentExamKey].some(v => v.id === video.id);
+    if (!isCurrentlyFavorited) {
+        userData.favorites[currentExamKey].push(video);
+    } else {
+        userData.favorites[currentExamKey] = userData.favorites[currentExamKey].filter(v => v.id !== video.id);
+    }
+    button.classList.toggle('favorited', !isCurrentlyFavorited);
 
     try {
         // 1. Get the current list of users
@@ -182,19 +210,13 @@ async function handleFavoriteUpdate(video, button) {
         // 2. Find and update the current user's favorites
         const userIndex = users.findIndex(u => u.contactInfo === userId);
         if (userIndex > -1) {
-            if (!users[userIndex].favorites) users[userIndex].favorites = [];
-            if (newFavoritedStatus) {
-                users[userIndex].favorites.push(video);
-            } else {
-                users[userIndex].favorites = users[userIndex].favorites.filter(v => v.id !== video.id);
-            }
+            // Overwrite the entire favorites array with the updated local one
+            users[userIndex].favorites = userData.favorites;
         }
 
         // 3. Post the entire updated list back
         const postResponse = await fetch(npointUrl, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(users) });
         if (!postResponse.ok) throw new Error('Failed to save favorite status.');
-
-        button.classList.toggle('favorited', newFavoritedStatus);
     } catch (error) {
         console.error("Failed to update favorites:", error);
     }
@@ -216,8 +238,20 @@ function openModal(video) {
     modal.classList.add('show');
 
     // Store the currently playing video ID in session storage
-    if (window.sessionStorage) {
-        sessionStorage.setItem('activeVideo', JSON.stringify(video));
+    try {
+        if (window.sessionStorage) {
+            const recentVideosRaw = sessionStorage.getItem('recentlyWatched');
+            let recentVideos = recentVideosRaw ? JSON.parse(recentVideosRaw) : [];
+            // Remove the video if it's already in the list to avoid duplicates
+            recentVideos = recentVideos.filter(v => v.id !== video.id);
+            // Add the new video to the beginning of the list
+            recentVideos.unshift(video);
+            // Keep only the last 5 videos
+            const limitedRecent = recentVideos.slice(0, 5);
+            sessionStorage.setItem('recentlyWatched', JSON.stringify(limitedRecent));
+        }
+    } catch(e) {
+        console.error("Could not update recently watched list:", e);
     }
 }
 

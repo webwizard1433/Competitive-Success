@@ -24,10 +24,15 @@
             }
         })();
 
-        // Clear any existing session when the login page is loaded
-        safeStorage.removeItem('sessionToken');
-        safeStorage.removeItem('userExamChoice');
-        safeStorage.removeItem('userName');
+        // If a user is already logged in, redirect them to the home page.
+        // Otherwise, clear any stale session data.
+        if (safeStorage.getItem('sessionToken')) {
+            window.location.replace('/home.html');
+        } else {
+            safeStorage.removeItem('sessionToken');
+            safeStorage.removeItem('userExamChoice');
+            safeStorage.removeItem('userName');
+        }
     </script>
     <style>
        /* --- Modern Dark Theme --- */
@@ -198,7 +203,7 @@
 
     <div class="container">
         <div class="logo-container">
-            <img src="/success.png" alt="Logo">
+            <img src="https://st4.depositphotos.com/1842549/20934/i/450/depositphotos_209344954-stock-photo-success-icon-internet-button-white.jpg" alt="Logo">
         </div>
         <h1>Competitive Success</h1>
         <p class="header-text">Welcome back! Login to access your dashboard.</p>

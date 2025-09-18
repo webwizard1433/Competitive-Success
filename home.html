@@ -599,17 +599,15 @@
         function populateExamMenu(currentExam) {
             const examList = document.getElementById('examList');
             examList.innerHTML = ''; // Clear existing items
-
-            for (const key in examData) {
-                const exam = examData[key];
+            
+            // Only show the user's selected exam in the menu
+            const userExamKey = safeStorage.getItem('userExamChoice') || 'upsc';
+            const exam = examData[userExamKey];
+            if (exam) {
                 const listItem = document.createElement('li');
                 const link = document.createElement('a');                link.href = '#';
-                link.innerHTML = `<span class="icon">${exam.icon || '📄'}</span> ${exam.name}`;                link.dataset.exam = key;
-                if (key === currentExam) {                    link.classList.add('active');
-                }                link.onclick = (e) => {
-                    e.preventDefault();
-                    selectExam(key);
-                };
+                link.innerHTML = `<span class="icon">${exam.icon || '📄'}</span> ${exam.name}`;                link.dataset.exam = userExamKey;
+                link.classList.add('active'); // It will always be the active one
                 listItem.appendChild(link); // This was incorrect, it should be listItem.appendChild(link)
                 examList.appendChild(listItem);
             }
@@ -834,8 +832,10 @@
 
             // Display user's name
             const userName = safeStorage.getItem('userName');
-            if (userName) {
+            if (userName && userName !== 'undefined') {
                 document.getElementById('userName').textContent = `Hi, ${userName}`;
+            } else {
+                document.getElementById('userName').textContent = `Hi, User`;
             }
 
         });

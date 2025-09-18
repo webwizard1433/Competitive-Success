@@ -164,7 +164,7 @@
 
                 if (currentUser) {
                     contactInfoInput.value = currentUser.contactInfo;
-                    fullNameInput.value = currentUser.fullName || '';
+                    fullNameInput.value = (currentUser.fullName && currentUser.fullName !== 'undefined') ? currentUser.fullName : 'User';
                     examChoiceSelect.value = currentUser.examChoice || 'upsc';
                 }
             } catch (error) {
@@ -188,7 +188,6 @@
                 // 2. Find and update the current user's data
                 const userIndex = users.findIndex(u => u.contactInfo === userId);
                 if (userIndex > -1) {
-                    
                     users[userIndex].examChoice = updatedExamChoice;
                     if (newPassword) {
                         users[userIndex].password = newPassword; // Insecure: for demo only
@@ -205,7 +204,6 @@
                 if (!postResponse.ok) throw new Error('Failed to save changes.');
 
                 // Update local storage and show success
-                
                 safeStorage.setItem('userExamChoice', updatedExamChoice);
                 messageDiv.textContent = 'Profile updated successfully!';
                 messageDiv.className = 'message success';

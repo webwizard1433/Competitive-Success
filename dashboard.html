@@ -55,6 +55,25 @@
         .empty-state a:hover {
             text-decoration: underline;
         }
+        /* --- Progress Bar Styles --- */
+        .progress-bar-container { background-color: var(--card-border-color); border-radius: 20px; overflow: hidden; height: 20px; margin-bottom: 0.5rem; }
+        .progress-bar { background-color: var(--primary-color); height: 100%; width: 0; border-radius: 20px; transition: width 0.5s ease-in-out; }
+        .progress-text { text-align: right; font-weight: bold; color: var(--text-color); }
+        .progress-summary {
+            background-color: var(--card-background);
+            border: 1px solid var(--card-border-color);
+            border-radius: 12px;
+            padding: 1.5rem;
+        }
+        /* --- Modal Styles --- */
+        .modal { display: none; position: fixed; z-index: 2000; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.8); justify-content: center; align-items: center; }
+        .modal.show { display: flex; }
+        .modal-content { position: relative; width: 90%; max-width: 850px; }
+        .close-button { position: absolute; top: -30px; right: 0; color: #fff; font-size: 35px; font-weight: bold; cursor: pointer; }
+        .close-button:hover, .close-button:focus { color: var(--primary-color); text-decoration: none; }
+        .video-container { position: relative; padding-bottom: 56.25%; height: 0; }
+        .video-container iframe { position: absolute; top: 0; left: 0; width: 100%; height: 100%; }
+
     </style>
 </head>
 <body>
@@ -66,6 +85,17 @@
             <h1>My Dashboard</h1>
             <p>Your progress, favorites, and recently watched videos.</p>
         </div>
+
+        <!-- Overall Progress Section -->
+        <section class="dashboard-section">
+            <h2>Overall Progress</h2>
+            <div class="progress-summary">
+                <div class="progress-bar-container">
+                    <div id="progressBar" class="progress-bar"></div>
+                </div>
+                <p id="progressText" class="progress-text">Calculating...</p>
+            </div>
+        </section>
 
         <!-- Recently Watched Section -->
         <section class="dashboard-section">
@@ -132,23 +162,46 @@
                 const currentUser = users.find(u => u.contactInfo === userId);
                 userData = currentUser || { progress: {}, favorites: [] };
 
+                // --- This is a placeholder for total video counts per exam ---
+                // In a real app, this data would come from a database or a shared config file.
+                const totalVideosPerExam = { upsc: 250, cds: 150, nda: 150, 'ssc-cgl': 75, banking: 100, railways: 100 };
+
+                // Get the user's primary exam to show relevant stats
+                const userExam = safeStorage.getItem('userExamChoice') || 'upsc';
+
                 // Populate Favorites
                 const favoritesGrid = document.getElementById('favoritesGrid');
-                if (userData.favorites && userData.favorites.length > 0) {
-                    userData.favorites.forEach(video => favoritesGrid.appendChild(createVideoCard(video)));
+                const favoriteVideos = userData.favorites ? (userData.favorites[userExam] || []) : [];
+                if (favoriteVideos.length > 0) {
+                    favoriteVideos.forEach(video => favoritesGrid.appendChild(createVideoCard(video)));
                 } else {
                     document.getElementById('favoritesEmpty').style.display = 'block';
                 }
 
                 // Populate Recently Watched (from sessionStorage for simplicity)
                 const recentGrid = document.getElementById('recentGrid');
-                const recentVideoJson = window.sessionStorage.getItem('activeVideo');
-                if (recentVideoJson) {
-                    const recentVideo = JSON.parse(recentVideoJson);
-                    recentGrid.appendChild(createVideoCard(recentVideo));
+                const recentVideosJson = window.sessionStorage.getItem('recentlyWatched');
+                const recentVideos = recentVideosJson ? JSON.parse(recentVideosJson) : [];
+                if (recentVideos.length > 0) {
+                    recentVideos.forEach(video => recentGrid.appendChild(createVideoCard(video)));
                 } else {
                      document.getElementById('recentEmpty').style.display = 'block';
                 }
+
+                // Populate Progress Bar
+                const totalVideos = totalVideosPerExam[userExam] || 0;
+                const completedVideosForExam = userData.progress ? (userData.progress[userExam] || {}) : {};
+                const completedCount = Object.keys(completedVideosForExam).length;
+                const percentage = totalVideos > 0 ? Math.round((completedCount / totalVideos) * 100) : 0;
+
+                const progressBar = document.getElementById('progressBar');
+                const progressText = document.getElementById('progressText');
+
+                // Animate the progress bar
+                setTimeout(() => {
+                    progressBar.style.width = `${percentage}%`;
+                }, 100); // Small delay for animation to be visible
+                progressText.textContent = `${percentage}% Complete (${completedCount} / ${totalVideos} videos)`;
 
             } catch (error) {
                 console.error('Error loading dashboard:', error);
@@ -160,8 +213,9 @@
         function createVideoCard(video) {
             const card = document.createElement('div');
             card.className = 'resource-card'; // Use the same class as video-page.js
-            const isCompleted = userData.progress && userData.progress[video.id];
-            const isFav = userData.favorites && userData.favorites.some(fav => fav.id === video.id);
+            const userExam = safeStorage.getItem('userExamChoice') || 'upsc';
+            const isCompleted = userData.progress && userData.progress[userExam] && userData.progress[userExam][video.id];
+
             const thumbnailUrl = video.type === 'gdrive' 
                 ? 'https://images.unsplash.com/photo-1598257006624-980a25028048?q=80&w=2070' 
                 : `https://img.youtube.com/vi/${video.id}/mqdefault.jpg`;
@@ -181,7 +235,10 @@
                     </div>
                 </div>
             `;
-            card.onclick = () => openModal(video);
+            // The onclick event is disabled to prevent video popups on the dashboard.
+            // The card is no longer clickable.
+            card.style.cursor = 'default';
+
             return card;
         }
 
