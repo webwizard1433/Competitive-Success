@@ -14,6 +14,7 @@
             --card-background: #25262b;
             --card-border-color: #343a40;
             --text-color: #e9ecef;
+            --text-color-light: #f8f9fa;
             --secondary-text-color: #adb5bd;
             --error-color: #e03131;
             --success-color: #2f9e44;
@@ -24,13 +25,13 @@
             margin: 0; color: var(--text-color);
             min-height: 100vh;
         }
-        .main-container { padding: 2rem; max-width: 1400px; margin: 0 auto; }
+        .main-container { padding: 2rem; max-width: 1400px; margin: 0 auto; animation: fadeIn 0.5s ease-out; }
         .header {
             display: flex;
             justify-content: space-between;
             align-items: center;
             margin-bottom: 2.5rem;
-            padding-bottom: 1.5rem;
+            padding-bottom: 1rem;
             border-bottom: 1px solid var(--card-border-color);
         }
         .header h1 { font-size: 2.5rem; color: var(--primary-color); margin: 0; }
@@ -53,27 +54,54 @@
         .btn-success:hover { background-color: #37b24d; }
         .btn-danger { background-color: var(--error-color); color: white; }
         .btn-danger:hover { background-color: #f03e3e; }
-
-        .video-table-container {
+ 
+        .table-container {
             overflow-x: auto;
             background-color: var(--card-background);
             border-radius: 8px;
             border: 1px solid var(--card-border-color);
             box-shadow: 0 4px 30px rgba(0, 0, 0, 0.2);
         }
-        .video-table { width: 100%; border-collapse: collapse; }
-        .video-table th, .video-table td { padding: 1rem 1.25rem; text-align: left; border-bottom: 1px solid var(--card-border-color); }
-        .video-table tr:last-child td { border-bottom: none; }
-        .video-table th { color: var(--primary-color); }
-        .video-table tbody tr { transition: background-color 0.2s ease; }
-        .video-table tbody tr:hover { background-color: rgba(255, 255, 255, 0.03); }
-        .video-table tbody tr { cursor: grab; }
-        .video-table tbody tr:active { cursor: grabbing; }
-        .video-table .dragging { opacity: 0.5; background: var(--primary-color); color: #000; }
-        .video-table .drag-over { border-top: 2px solid var(--primary-color); }
+        .data-table { width: 100%; border-collapse: collapse; }
+        .data-table th, .data-table td { padding: 1rem 1.25rem; text-align: left; border-bottom: 1px solid var(--card-border-color); }
+        .data-table tr:last-child td { border-bottom: none; }
+        .data-table th { color: var(--primary-color); font-size: 0.9rem; text-transform: uppercase; letter-spacing: 0.5px; }
+        .data-table tbody tr { transition: background-color 0.2s ease; }
+        .data-table tbody tr:hover { background-color: rgba(255, 255, 255, 0.03); }
+        .data-table td { color: var(--text-color-light); }
+        .data-table td:first-child { width: 40px; }
+        .data-table td .btn { padding: 0.5rem 1rem; font-size: 0.9rem; }
+        .data-table td .actions { display: flex; gap: 0.75rem; }
+ 
+        /* Drag and Drop styles for video table */
+        #videoTableBody tr { cursor: grab; }
+        #videoTableBody tr:active { cursor: grabbing; }
+        .data-table .dragging { opacity: 0.5; background: var(--primary-color); color: #000; }
+        .data-table .drag-over { border-top: 2px solid var(--primary-color); }
 
-        .video-table td .btn { padding: 0.5rem 1rem; font-size: 0.9rem; }
-        .video-table td .actions { display: flex; gap: 0.75rem; }
+        /* --- Analytics Section --- */
+        .analytics-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+            margin-top: 2rem;
+        }
+        .analytics-card {
+            background-color: var(--card-background);
+            border: 1px solid var(--card-border-color);
+            border-radius: 8px;
+            padding: 1.5rem;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        .analytics-card:hover { transform: translateY(-4px); box-shadow: 0 8px 20px rgba(0,0,0,0.2); }
+        .analytics-card h3 {
+            margin-top: 0;
+            color: var(--primary-color);
+            border-bottom: 1px solid var(--card-border-color);
+            padding-bottom: 0.75rem;
+        }
+        .analytics-card ol { padding-left: 1.25rem; margin: 1rem 0 0; }
+        .analytics-card li { margin-bottom: 0.5rem; }
 
         /* Modal Styles */
         .modal {
@@ -91,11 +119,6 @@
             width: 90%; max-width: 500px;
             box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3);
         }
-        .form-group textarea {
-            width: 100%; padding: 0.75rem; border: 1px solid var(--card-border-color);
-            background: rgba(0,0,0,0.2); color: var(--text-color); border-radius: 5px;
-            box-sizing: border-box; font-size: 1rem; min-height: 150px; resize: vertical;
-        }
         .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; }
         .modal-header h2 { margin: 0; color: var(--primary-color); }
         .close-button { font-size: 1.5rem; cursor: pointer; background: none; border: none; color: var(--text-color); }
@@ -107,6 +130,12 @@
             border-radius: 5px; box-sizing: border-box; font-size: 1rem;
         }
         .form-group input:focus { outline: none; border-color: var(--primary-color); }
+
+        /* --- Animation --- */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
     </style>
 </head>
 <body>
@@ -115,15 +144,15 @@
             <h1>Video Content Management</h1>
             <div class="actions">
                 <button class="btn btn-success" onclick="openAddModal()">Add New Video</button>
-                <button class="btn" onclick="openBulkUploadModal()">Bulk Upload</button>
                 <button id="saveOrderBtn" class="btn" style="display: none;">Save Order</button>
                 <a href="/home.html" onclick="sessionStorage.removeItem('adminToken')" class="btn btn-danger">Logout</a>
             </div>
         </div>
-        <div class="video-table-container">
-            <table class="video-table">
+        <div class="table-container">
+            <table class="data-table">
                 <thead>
                     <tr>
+                        <th><input type="checkbox" id="selectAllVideos" onchange="toggleAllCheckboxes('videos')"></th>
                         <th>Order</th>
                         <th>Category</th>
                         <th>Title</th>
@@ -134,6 +163,49 @@
                 </thead>
                 <tbody id="videoTableBody">
                     <!-- Video rows will be populated here -->
+                </tbody>
+            </table>
+        </div>
+    </main>
+
+    <!-- Analytics Section -->
+    <main class="main-container" style="padding-top: 0;">
+        <div class="header" style="margin-top: 2rem;">
+            <h1>Video Analytics</h1>
+        </div>
+        <div class="analytics-container">
+            <div class="analytics-card">
+                <h3>Most Completed</h3>
+                <ol id="mostCompletedList"></ol>
+            </div>
+            <div class="analytics-card">
+                <h3>Most Favorited</h3>
+                <ol id="mostFavoritedList"></ol>
+            </div>
+        </div>
+    </main>
+
+    <!-- User Management Section -->
+    <main class="main-container" style="padding-top: 0;">
+        <div class="header" style="margin-top: 2rem;">
+            <h1>User Management</h1>
+            <div class="actions">
+                <button id="deleteSelectedUsersBtn" class="btn btn-danger" style="display: none;" onclick="deleteSelectedUsers()">Delete Selected</button>
+            </div>
+        </div>
+        <div class="table-container">
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th><input type="checkbox" id="selectAllUsers" onchange="toggleAllCheckboxes('users')"></th>
+                        <th>Full Name</th>
+                        <th>Contact Info</th>
+                        <th>Role</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="userTableBody">
+                    <!-- User rows will be populated here -->
                 </tbody>
             </table>
         </div>
@@ -169,37 +241,17 @@
         </div>
     </div>
 
-    <!-- Bulk Upload Modal -->
-    <div id="bulkUploadModal" class="modal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h2>Bulk Upload Videos</h2>
-                <button class="close-button" onclick="closeBulkUploadModal()">&times;</button>
-            </div>
-            <form id="bulkUploadForm">
-                <div class="form-group">
-                    <label for="csvData">Paste CSV Data</label>
-                    <textarea id="csvData" placeholder="Format: category,title,id,type (one per line)"></textarea>
-                    <small style="color: var(--secondary-text-color);">Example: upsc-history,History Lecture 3,video_id_3,youtube</small>
-                </div>
-                <button type="submit" class="btn btn-success">Upload Videos</button>
-            </form>
-        </div>
-    </div>
-
     <script>
         // Basic security check
         if (sessionStorage.getItem('adminToken') !== 'true') {
             window.location.href = '/login.html';
         }
 
-        // --- DOM Elements ---
         const tableBody = document.getElementById('videoTableBody');
         const modal = document.getElementById('videoModal');
         const videoForm = document.getElementById('videoForm');
         const saveOrderBtn = document.getElementById('saveOrderBtn');
-        const bulkUploadModal = document.getElementById('bulkUploadModal');
-        const bulkUploadForm = document.getElementById('bulkUploadForm');
+        const userTableBody = document.getElementById('userTableBody');
 
         async function fetchAndRenderVideos() {
             try {
@@ -210,6 +262,8 @@
                 videos.forEach(video => {
                     const row = tableBody.insertRow();
                     row.innerHTML = `
+                        <td><input type="checkbox" class="video-checkbox" value="${video._id}" onchange="updateDeleteButtonVisibility('videos')"></td>
+                        <td>${video.order || 'N/A'}</td>
                         <td>${video.category}</td>
                         <td>${video.title}</td>
                         <td>${video.id}</td>
@@ -224,19 +278,56 @@
                 });
             } catch (error) {
                 console.error('Failed to fetch videos:', error);
-                tableBody.innerHTML = '<tr><td colspan="6">Error loading videos.</td></tr>';
+                tableBody.innerHTML = '<tr><td colspan="7">Error loading videos.</td></tr>';
             }
         }
 
-        function openBulkUploadModal() {
-            bulkUploadForm.reset();
-            bulkUploadModal.classList.add('show');
+        async function fetchAndRenderAnalytics() {
+            try {
+                const response = await fetch('/api/analytics/videos');
+                const stats = await response.json();
+                const statsArray = Object.values(stats);
+
+                // Most Completed
+                const mostCompleted = statsArray.sort((a, b) => b.completions - a.completions).slice(0, 5);
+                document.getElementById('mostCompletedList').innerHTML = mostCompleted
+                    .map(v => `<li>${v.title} (${v.completions} completions)</li>`).join('');
+
+                // Most Favorited
+                const mostFavorited = statsArray.sort((a, b) => b.favorites - a.favorites).slice(0, 5);
+                document.getElementById('mostFavoritedList').innerHTML = mostFavorited
+                    .map(v => `<li>${v.title} (${v.favorites} favorites)</li>`).join('');
+
+            } catch (error) {
+                console.error('Failed to fetch analytics:', error);
+                document.getElementById('mostCompletedList').innerHTML = '<li>Error loading data.</li>';
+                document.getElementById('mostFavoritedList').innerHTML = '<li>Error loading data.</li>';
+            }
         }
 
-        function closeBulkUploadModal() {
-            bulkUploadModal.classList.remove('show');
-        }
 
+        async function fetchAndRenderUsers() {
+            try {
+                const response = await fetch('/api/users');
+                const users = await response.json(); // This was missing 'await'
+                userTableBody.innerHTML = '';
+                users.forEach(user => {
+                    const row = userTableBody.insertRow();
+                    row.innerHTML = `
+                        <td><input type="checkbox" class="user-checkbox" value="${user.contactInfo}" onchange="updateDeleteButtonVisibility('users')"></td>
+                        <td>${user.fullName}</td>
+                        <td>${user.contactInfo}</td>
+                        <td>${user.role || 'student'}</td>
+                        <td class="actions">
+                            <button class="btn btn-danger" onclick="deleteUser('${user.contactInfo}')">Delete</button>
+                        </td>
+                    `;
+                });
+            } catch (error) {
+                console.error('Failed to fetch users:', error);
+                userTableBody.innerHTML = '<tr><td colspan="5">Error loading users.</td></tr>';
+            }
+        }
 
 
         function openAddModal() {
@@ -307,6 +398,76 @@
             }
         }
 
+        function toggleAllCheckboxes(type) {
+            const masterCheckbox = document.getElementById(type === 'videos' ? 'selectAllVideos' : 'selectAllUsers');
+            const checkboxes = document.querySelectorAll(type === 'videos' ? '.video-checkbox' : '.user-checkbox');
+            checkboxes.forEach(checkbox => {
+                checkbox.checked = masterCheckbox.checked;
+            });
+            updateDeleteButtonVisibility(type);
+        }
+
+        function updateDeleteButtonVisibility(type) {
+            const checkboxes = document.querySelectorAll(type === 'videos' ? '.video-checkbox' : '.user-checkbox');
+            const deleteBtn = document.getElementById(type === 'videos' ? 'deleteSelectedVideosBtn' : 'deleteSelectedUsersBtn');
+            const selected = Array.from(checkboxes).some(cb => cb.checked);
+            deleteBtn.style.display = selected ? 'inline-block' : 'none';
+        }
+
+        async function deleteSelectedVideos() {
+            const selectedCheckboxes = document.querySelectorAll('.video-checkbox:checked');
+            if (selectedCheckboxes.length === 0) return;
+
+            const idsToDelete = Array.from(selectedCheckboxes).map(cb => cb.value);
+            if (!confirm(`Are you sure you want to delete ${idsToDelete.length} selected video(s)?`)) return;
+
+            try {
+                const response = await fetch('/api/videos', {
+                    method: 'DELETE',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ ids: idsToDelete })
+                });
+                if (!response.ok) throw new Error('Failed to delete selected videos');
+                fetchAndRenderVideos();
+            } catch (error) {
+                alert('Could not delete selected videos.');
+            }
+        }
+
+        async function deleteSelectedUsers() {
+            const selectedCheckboxes = document.querySelectorAll('.user-checkbox:checked');
+            if (selectedCheckboxes.length === 0) return;
+
+            const contactInfosToDelete = Array.from(selectedCheckboxes).map(cb => cb.value);
+            if (!confirm(`Are you sure you want to delete ${contactInfosToDelete.length} selected user(s)?`)) return;
+
+            try {
+                const response = await fetch('/api/users', {
+                    method: 'DELETE',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ contactInfos: contactInfosToDelete })
+                });
+                if (!response.ok) throw new Error('Failed to delete selected users');
+                fetchAndRenderUsers();
+            } catch (error) {
+                alert('Could not delete selected users.');
+            }
+        }
+
+        async function deleteUser(contactInfo) {
+            if (!confirm(`Are you sure you want to delete the user: ${contactInfo}?`)) return;
+
+            try {
+                const response = await fetch(`/api/users/${contactInfo}`, { method: 'DELETE' });
+                if (!response.ok) throw new Error('Failed to delete user');
+                fetchAndRenderUsers(); // Refresh the user list
+            } catch (error) {
+                console.error('Delete user error:', error);
+                alert('Could not delete user.');
+            }
+        }
+
+
         // --- Drag and Drop Reordering ---
         let draggedItem = null;
 
@@ -363,7 +524,13 @@
             }
         });
 
-        document.addEventListener('DOMContentLoaded', fetchAndRenderVideos);
+        document.addEventListener('DOMContentLoaded', () => {
+            fetchAndRenderVideos();
+            fetchAndRenderUsers();
+            fetchAndRenderAnalytics();
+            selectAllVideosCheckbox.checked = false;
+            selectAllUsersCheckbox.checked = false;
+        });
     </script>
 </body>
 </html>

@@ -98,6 +98,20 @@ app.delete('/api/videos/:id', async (req, res) => {
     res.status(204).send(); // No Content
 });
 
+// DELETE multiple videos
+app.delete('/api/videos', async (req, res) => {
+    const { ids } = req.body;
+    if (!Array.isArray(ids)) {
+        return res.status(400).send('Invalid data format. Expected an array of IDs.');
+    }
+    let videos = await readVideos();
+    const newVideos = videos.filter(v => !ids.includes(v._id));
+    if (videos.length === newVideos.length) {
+        return res.status(404).send('No matching videos found to delete.');
+    }
+    await writeVideos(newVideos);
+    res.status(204).send(); // No Content
+});
 // POST to reorder videos
 app.post('/api/videos/reorder', async (req, res) => {
     const { orderedIds } = req.body;
@@ -143,6 +157,55 @@ app.post('/api/videos/bulk', async (req, res) => {
         res.status(201).json({ message: `${rows.length} videos processed.` });
     } catch (error) {
         res.status(500).json({ message: 'Error processing bulk upload.' });
+    }
+});
+
+// --- API Route for Analytics ---
+app.get('/api/analytics/videos', async (req, res) => {
+    try {
+        const videos = await readVideos();
+        const doubts = await readDoubts();
+        // In a real app, you'd fetch from a database. Here we fetch from npoint.
+        const userResponse = await fetch('https://api.npoint.io/628bf2833503e69fb337');
+        if (!userResponse.ok) throw new Error('Failed to fetch users from npoint.');
+        const users = await userResponse.json();
+
+        const stats = {};
+
+        // Initialize stats for all videos
+        videos.forEach(v => {
+            stats[v.id] = { title: v.title, completions: 0, favorites: 0, doubts: 0 };
+        });
+
+        // Aggregate data from all users
+        users.forEach(user => {
+            if (user.progress) {
+                Object.values(user.progress).forEach(examProgress => {
+                    Object.keys(examProgress).forEach(videoId => {
+                        if (stats[videoId]) stats[videoId].completions++;
+                    });
+                });
+            }
+            if (user.favorites) {
+                Object.values(user.favorites).forEach(examFavorites => {
+                    // Ensure examFavorites is an array before trying to iterate
+                    if (Array.isArray(examFavorites)) {
+                        examFavorites.forEach(video => {
+                            if (stats[video.id]) stats[video.id].favorites++;
+                        });
+                    }
+                });
+            }
+        });
+
+        doubts.forEach(doubt => {
+            if(stats[doubt.videoId]) stats[doubt.videoId].doubts++;
+        });
+
+        res.json(stats);
+    } catch (error) {
+        console.error('Error fetching analytics:', error);
+        res.status(500).json({ message: 'Could not fetch analytics data.' });
     }
 });
 
@@ -210,15 +273,28 @@ app.post('/api/doubts/:doubtId/replies', async (req, res) => {
 });
 
 // --- API Routes for Users ---
-const USERS_PATH = 'https://api.npoint.io/628bf2833503e69fb337'; // Using npoint as a mock DB
+const USERS_PATH = path.join(__dirname, 'users.json');
+
+// Helper function to read users
+const readUsers = async () => {
+    try {
+        const data = await fs.readFile(USERS_PATH, 'utf-8');
+        return JSON.parse(data);
+    } catch (error) {
+        if (error.code === 'ENOENT') return []; // Return empty array if file doesn't exist
+        throw error;
+    }
+};
+
+// Helper function to write users
+const writeUsers = async (users) => {
+    await fs.writeFile(USERS_PATH, JSON.stringify(users, null, 2), 'utf-8');
+};
 
 // GET all users
 app.get('/api/users', async (req, res) => {
     try {
-        // In a real app, you'd fetch from a database. Here we fetch from npoint.
-        const response = await fetch(USERS_PATH);
-        if (!response.ok) throw new Error('Failed to fetch users from npoint.');
-        const users = await response.json();
+        const users = await readUsers();
         res.json(users);
     } catch (error) {
         console.error('Error fetching users:', error);
@@ -230,19 +306,33 @@ app.get('/api/users', async (req, res) => {
 app.delete('/api/users/:contactInfo', async (req, res) => {
     const { contactInfo } = req.params;
     try {
-        const response = await fetch(USERS_PATH);
-        let users = await response.json();
+        let users = await readUsers();
         const updatedUsers = users.filter(u => u.contactInfo !== contactInfo);
-
-        await fetch(USERS_PATH, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(updatedUsers)
-        });
+        if (users.length === updatedUsers.length) {
+            return res.status(404).send('User not found');
+        }
+        await writeUsers(updatedUsers);
         res.status(204).send();
     } catch (error) {
         console.error('Error deleting user:', error);
         res.status(500).json({ message: 'Could not delete user.' });
+    }
+});
+
+// DELETE multiple users
+app.delete('/api/users', async (req, res) => {
+    const { contactInfos } = req.body;
+    if (!Array.isArray(contactInfos)) {
+        return res.status(400).send('Invalid data format. Expected an array of contact infos.');
+    }
+    try {
+        let users = await readUsers();
+        const updatedUsers = users.filter(u => !contactInfos.includes(u.contactInfo));
+        await writeUsers(updatedUsers);
+        res.status(204).send();
+    } catch (error) {
+        console.error('Error bulk deleting users:', error);
+        res.status(500).json({ message: 'Could not bulk delete users.' });
     }
 });
 
@@ -251,12 +341,11 @@ app.put('/api/users/:contactInfo/role', async (req, res) => {
     const { contactInfo } = req.params;
     const { role } = req.body;
     try {
-        const response = await fetch(USERS_PATH);
-        let users = await response.json();
+        let users = await readUsers();
         const user = users.find(u => u.contactInfo === contactInfo);
         if (user) user.role = role;
 
-        await fetch(USERS_PATH, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(users) });
+        await writeUsers(users);
         res.status(200).json(user);
     } catch (error) {
         res.status(500).json({ message: 'Could not update user role.' });
@@ -265,10 +354,12 @@ app.put('/api/users/:contactInfo/role', async (req, res) => {
 
 // --- Root Route ---
 
-// This will serve your home page as the main entry point.
-// It's placed after static middleware to act as a fallback for the root URL.
+// This will serve the correct entry page.
+// If an admin is "logged in" (via a simple token check for this demo), show the admin page.
+// Otherwise, show the login page.
 app.get('/', (req, res) => {
-    res.sendFile(path.join(__dirname, 'login.html'));
+    // Note: In a real app, this would be handled by proper session middleware.
+    res.sendFile(path.join(__dirname, 'login.html')); // Default to login
 });
 
 // --- Static File Serving ---

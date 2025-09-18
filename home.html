@@ -476,7 +476,7 @@
             <!-- Exam links will be populated by JavaScript -->
         </ul>
         <ul class="user-menu" style="margin-top: auto; padding-top: 1rem; border-top: 1px solid var(--card-border-color);">
-            <li><a href="/dashboard.html"><span class="icon">📊</span> My Dashboard</a></li>
+            <li><a href="/dashboard.html" onclick="toggleSideMenu()"><span class="icon">📊</span> My Dashboard</a></li>
             <li><a href="/profile.html"><span class="icon">👤</span> My Profile</a></li>
             <li><a href="#" onclick="logout()"><span class="icon">🚪</span> Logout</a></li>
         </ul>
@@ -490,7 +490,10 @@
             <h2>Competitive Success</h2>
         </div>
         <div class="header-logo">
-            <img src="https://st4.depositphotos.com/1842549/20934/i/450/depositphotos_209344954-stock-photo-success-icon-internet-button-white.jpg" alt="Competitive Success Logo">
+            <picture>
+                <source srcset="https://st4.depositphotos.com/1842549/20934/i/450/depositphotos_209344954-stock-photo-success-icon-internet-button-white.webp" type="image/webp">
+                <img src="https://st4.depositphotos.com/1842549/20934/i/450/depositphotos_209344954-stock-photo-success-icon-internet-button-white.jpg" alt="Competitive Success Logo">
+            </picture>
         </div>
     </header>
 
@@ -507,7 +510,10 @@
 
             <!-- Main Content Card -->
             <div class="thumbnail-card">
-                <img id="examImage" src="https://images.unsplash.com/photo-1523240795612-9a054b0db644?q=80&w=2070" alt="Exam Thumbnail">
+                <picture id="examImageContainer">
+                    <source id="examImageWebp" srcset="https://images.unsplash.com/photo-1523240795612-9a054b0db644?q=80&w=2070&fm=webp" type="image/webp">
+                    <img id="examImage" src="https://images.unsplash.com/photo-1523240795612-9a054b0db644?q=80&w=2070" alt="Exam Thumbnail">
+                </picture>
                 <div class="thumbnail-content">
                     <h3 id="examName">Your Exam</h3>
                     <p id="description-text">Select an exam from the menu to see a brief description here.</p>
@@ -571,7 +577,9 @@
 
             // 2. Wait for the fade-out to be visible, then update content and fade back in
             setTimeout(() => {
-                document.getElementById('examName').textContent = exam.name;
+                document.getElementById('examName').textContent = exam.name;                
+                // Update both the webp and the fallback img
+                document.getElementById('examImageWebp').srcset = exam.image.replace(/\?.*$/, '') + '?q=80&w=2070&fm=webp';
                 document.getElementById('examImage').src = exam.image;
                 document.getElementById('startLearningBtn').href = exam.page;
                 document.getElementById('description-text').textContent = exam.description || "Select an exam from the menu to see a brief description here.";

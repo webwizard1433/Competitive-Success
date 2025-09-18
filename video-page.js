@@ -83,8 +83,10 @@ function populateVideos(videoData, defaultThumbnails) {
         
         let thumbnailUrl = '';
         if (video.id && !video.id.startsWith('placeholder_')) { // Check for real YouTube ID first
-            // It's a real YouTube video
-            thumbnailUrl = `https://img.youtube.com/vi/${video.id}/mqdefault.jpg`;
+            // It's a real YouTube video. We'll use a picture element for WebP fallback.
+            // The `data-src` will be the fallback JPG, and we'll add a webp source.
+            thumbnailUrl = `https://img.youtube.com/vi/${video.id}/mqdefault.jpg`; 
+
         } else if (video.type === 'gdrive') {
             thumbnailUrl = defaultThumbnails.gdrive;
         } else {
@@ -102,7 +104,10 @@ function populateVideos(videoData, defaultThumbnails) {
 
         card.innerHTML = `
             <div class="card-thumbnail loading">
-                <img data-src="${thumbnailUrl}" alt="${video.title}">
+                <picture>
+                    <source srcset="https://img.youtube.com/vi_webp/${video.id}/mqdefault.webp" type="image/webp">
+                    <img data-src="${thumbnailUrl}" alt="${video.title}">
+                </picture>
                 <span class="play-icon">▶</span>
             </div>
             <div class="card-content"> 
