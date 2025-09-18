@@ -618,7 +618,8 @@
 
         function logout() {
             safeStorage.removeItem('sessionToken');
-            // Redirect to login page
+            safeStorage.removeItem('userName');
+            // Reload the home page in a logged-out state
             window.location.href = '/login.html';
         }
 
@@ -864,11 +865,6 @@
 
         // On page load, check for a saved choice and update the dashboard
         document.addEventListener('DOMContentLoaded', () => {
-            // Ensure user is logged in before doing anything else
-            if (!safeStorage.getItem('sessionToken')) {
-                window.location.href = '/login.html';
-                return;
-            }
             // Check for an exam in the URL, otherwise default to 'upsc'
             const urlParams = new URLSearchParams(window.location.search);
             const examFromUrl = urlParams.get('exam') || safeStorage.getItem('userExamChoice');

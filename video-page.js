@@ -3,6 +3,7 @@ const videoPlayer = document.getElementById('videoPlayer');
 const videoGrid = document.getElementById('videoGrid');
 let currentExamKey = 'upsc'; // Default exam
 let userData = { progress: {}, favorites: [] };
+let currentVideoIndex = -1; // To track the current video in the modal
 
 // --- User Data Management ---
 const safeStorage = (() => {
@@ -222,6 +223,27 @@ async function handleFavoriteUpdate(video, button) {
     }
 }
 
+function navigateVideo(direction) {
+    const newIndex = currentVideoIndex + direction;
+
+    // Ensure the new index is within the bounds of the videoData array
+    if (newIndex >= 0 && newIndex < videoData.length) {
+        const nextVideo = videoData[newIndex];
+        openModal(nextVideo);
+    }
+}
+
+function updateNavButtons() {
+    const prevBtn = document.getElementById('prevVideoBtn');
+    const nextBtn = document.getElementById('nextVideoBtn');
+    if (!prevBtn || !nextBtn) return;
+
+    // Disable 'Previous' if it's the first video
+    prevBtn.style.display = currentVideoIndex > 0 ? 'block' : 'none';
+    // Disable 'Next' if it's the last video
+    nextBtn.style.display = currentVideoIndex < videoData.length - 1 ? 'block' : 'none';
+}
+
 // Function to open the modal and play the video
 function openModal(video) {
     if (!video || !video.id) return;
@@ -236,6 +258,9 @@ function openModal(video) {
 
     videoPlayer.src = embedUrl;
     modal.classList.add('show');
+
+    currentVideoIndex = videoData.findIndex(v => v.id === video.id);
+    updateNavButtons();
 
     // Store the currently playing video ID in session storage
     try {
@@ -253,6 +278,12 @@ function openModal(video) {
     } catch(e) {
         console.error("Could not update recently watched list:", e);
     }
+}
+
+function closeModal() {
+    modal.classList.remove('show');
+    videoPlayer.src = "";
+    currentVideoIndex = -1; // Reset index when modal is closed
 }
 
 // Close the modal if the user clicks outside of the video content
@@ -276,4 +307,15 @@ if (backToTopBtn) {
         window.scrollTo({ top: 0, behavior: 'smooth' });
     }
     backToTopBtn.onclick = scrollToTop;
+}
+
+// --- Add Navigation Buttons to Modal on Load ---
+document.addEventListener('DOMContentLoaded', () => {
+    if (modal) {
+        const modalContent = modal.querySelector('.modal-content');
+        if (modalContent) {
+            modalContent.insertAdjacentHTML('beforeend', '<button id="prevVideoBtn" class="modal-nav prev" onclick="navigateVideo(-1)">&#10094;</button>');
+            modalContent.insertAdjacentHTML('beforeend', '<button id="nextVideoBtn" class="modal-nav next" onclick="navigateVideo(1)">&#10095;</button>');
+        }
+    }
 }

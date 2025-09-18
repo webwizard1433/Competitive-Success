@@ -2,43 +2,11 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <title>Login | Competitive Exam Prep</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Login | Competitive Success</title>
     <link rel="icon" href="/success.png" type="image/png">
-    <script>
-        // --- Safe Storage Utility ---
-        const safeStorage = (() => { // Prioritize sessionStorage for mobile stability
-            const getStorage = (storageType) => {
-                try {
-                    const storage = window[storageType];
-                    storage.setItem('__test__', '1');
-                    storage.removeItem('__test__');
-                    return storage;
-                } catch (e) {
-                    return null;
-                }
-            };
-
-            const storage = getStorage('sessionStorage') || getStorage('localStorage');
-
-            try {
-                if (storage) return storage;
-            } catch (e) {
-                console.warn("localStorage is not available. Using in-memory fallback.");
-            }
-            const memoryStore = {};
-            return { setItem: (k, v) => { memoryStore[k] = v; }, getItem: (k) => memoryStore[k] || null, removeItem: (k) => { delete memoryStore[k]; } };
-        })();
-
-        document.addEventListener('DOMContentLoaded', () => {
-            if (safeStorage.getItem('sessionToken')) {
-                window.location.href = '/home.html';
-            }
-        });
-    </script>
     <style>
-       /* --- Modern Dark Theme --- */
-       :root {
+        :root {
             --primary-color: #4dabf7;
             --primary-hover-color: #74c0fc;
             --background-start: #101113;
@@ -49,283 +17,236 @@
             --secondary-text-color: #adb5bd;
             --error-color: #e03131;
             --success-color: #2f9e44;
-       }
+        }
         body {
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-            background: linear-gradient(-45deg, #101113, #1d1e20, #25262b, #343a40);
-            background-size: 400% 400%;
-            animation: gradientBG 15s ease infinite;
+            background-color: var(--background-start);
             display: flex;
             justify-content: center;
             align-items: center;
             min-height: 100vh;
             margin: 0;
             padding: 1rem;
-            box-sizing: border-box;
+            box-sizing: border-box; overflow: hidden; position: relative;
         }
 
-        @keyframes gradientBG {
-            0% { background-position: 0% 50%; }
-            50% { background-position: 100% 50%; }
-            100% { background-position: 0% 50%; }
-        }
-
-        .logo-container {
-            text-align: center;
-            margin-bottom: 1rem;
-        }
-
-        .container {
-            /* Changed to a gradient for a more modern look */
-            background: rgba(255, 255, 255, 0.05);
-            backdrop-filter: blur(10px);
+        .login-container {
+            background: var(--card-background);
             padding: 2rem 3rem;
             border-radius: 10px;
-            box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3);
             width: 100%;
-            max-width: 450px;
-            box-sizing: border-box;
+            animation: fadeIn 0.5s ease-in-out;
+            z-index: 2; /* Ensure login form is above the background shapes */
+            max-width: 400px;
         }
-
-        h1 {
-            color: var(--primary-color);
-            text-align: center;
-            margin-bottom: 0.5rem;
+        .tab-header { display: flex; margin-bottom: 1.5rem; border-bottom: 1px solid var(--card-border-color); }
+        .tab-link {
+            flex: 1; padding: 0.75rem; text-align: center; cursor: pointer;
+            color: var(--secondary-text-color); font-weight: 600;
+            border-bottom: 3px solid transparent;
+            transition: color 0.3s, border-color 0.3s;
         }
+        .tab-link.active { color: var(--primary-color); border-bottom-color: var(--primary-color); }
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
 
-        .header-text {
-            text-align: center;
-            color: var(--secondary-text-color);
-            margin-bottom: 2rem;
-        }
+        h1 { color: var(--primary-color); text-align: center; margin-bottom: 2rem; }
+        .form-group { margin-bottom: 1.25rem; }
+        .form-group label { display: block; margin-bottom: 0.5rem; color: var(--secondary-text-color); font-weight: 500; font-size: 0.9rem; }
+        .input-wrapper { position: relative; }
+        .input-icon { position: absolute; left: 12px; top: 50%; transform: translateY(-50%); color: var(--secondary-text-color); pointer-events: none; }
+        .form-group input { width: 100%; padding: 0.75rem 0.75rem 0.75rem 2.5rem; border: 1px solid var(--card-border-color); background: rgba(0,0,0,0.2); color: var(--text-color); border-radius: 5px; box-sizing: border-box; font-size: 1rem; }
+        .form-group input:focus { outline: none; border-color: var(--primary-color); background-color: rgba(0,0,0,0.3); }
+        .form-group input:focus + .input-icon { color: var(--primary-color); }
 
-        .logo-container img {
-            width: 60px;
-            height: 60px;
-            border-radius: 50%;
-        }
-
-        .form-group {
-            margin-bottom: 1.25rem;
-        }
-
-        .form-group label {
-            display: block;
-            margin-bottom: 0.5rem;
-            color: var(--text-color);
-            font-weight: 600;
-        }
-
-        .input-wrapper {
-            position: relative;
-        }
-
-        .form-group input {
-            width: 100%;
-            padding: 0.75rem 0.75rem 0.75rem 2.5rem; /* Add padding for icon */
-            border: 1px solid var(--input-border-color);
-            background: rgba(0,0,0,0.2);
-            color: var(--text-color);
-            border-radius: 5px;
-            box-sizing: border-box;
-            font-size: 1rem;
-            border-color: var(--card-border-color);
-        }
-
-        .input-icon {
-            position: absolute;
-            left: 12px;
-            top: 50%;
-            transform: translateY(-50%);
-            color: var(--secondary-text-color);
-            pointer-events: none;
-        }
-
-        .form-group input:focus {
-            outline: none;
-            border-color: var(--primary-color);
-            background-color: rgba(0,0,0,0.3);
-        }
-
-        .password-wrapper {
-            position: relative;
-        }
-
-        .toggle-password {
-            position: absolute;
-            top: 50%;
-            right: 10px;
-            transform: translateY(-50%);
-            cursor: pointer;
-            user-select: none;
-            color: var(--secondary-text-color);
-        }
-
-        .forgot-password {
-            text-align: right;
-            margin-top: -0.75rem; /* Pull it up a bit */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
         }
 
         .btn {
-            width: 100%;
-            padding: 0.85rem;
-            background-color: var(--primary-color);
-            color: #0A2342;
-            border: none;
-            border-radius: 5px;
-            font-size: 1.1rem;
-            font-weight: bold;
-            cursor: pointer;
+            width: 100%; padding: 0.85rem; background-color: var(--primary-color); color: #000;
+            border: none; border-radius: 5px; font-size: 1.1rem; font-weight: bold; cursor: pointer;
             transition: background-color 0.3s ease;
         }
-
-        .btn:hover {
-            background-color: var(--primary-hover-color);
-        }
-
-        .message {
-            text-align: center;
-            margin-top: 1rem;
-            padding: 0.75rem;
-            border-radius: 5px;
-            display: none;
-        }
-
+        .btn:hover { background-color: var(--primary-hover-color); }
+        .message { text-align: center; margin-top: 1rem; padding: 0.75rem; border-radius: 5px; display: none; }
         .message.error { background-color: rgba(224, 49, 49, 0.1); color: var(--error-color); display: block; }
-        .message.success { background-color: rgba(47, 158, 68, 0.1); color: var(--success-color); display: block; }
+        .form-footer { text-align: center; margin-top: 1.5rem; color: var(--secondary-text-color); }
+        .form-footer a { color: var(--primary-color); text-decoration: none; font-weight: 600; }
 
-        .form-footer {
-            text-align: center;
-            margin-top: 1.5rem;
-            color: var(--secondary-text-color);
+        /* --- Animated Background --- */
+        .bg-shapes { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 1; overflow: hidden; }
+        .bg-shapes li {
+            position: absolute; display: block; list-style: none;
+            width: 20px; height: 20px;
+            background: rgba(77, 171, 247, 0.2); /* Use primary color with low opacity */
+            animation: animate-shapes 25s linear infinite;
+            bottom: -150px;
         }
-        .form-footer a {
-            color: var(--primary-color);
-            text-decoration: none;
-            font-weight: 600;
+        .bg-shapes li:nth-child(1) { left: 25%; width: 80px; height: 80px; animation-delay: 0s; }
+        .bg-shapes li:nth-child(2) { left: 10%; width: 20px; height: 20px; animation-delay: 2s; animation-duration: 12s; }
+        .bg-shapes li:nth-child(3) { left: 70%; width: 20px; height: 20px; animation-delay: 4s; }
+        .bg-shapes li:nth-child(4) { left: 40%; width: 60px; height: 60px; animation-delay: 0s; animation-duration: 18s; }
+        .bg-shapes li:nth-child(5) { left: 65%; width: 20px; height: 20px; animation-delay: 0s; }
+        .bg-shapes li:nth-child(6) { left: 75%; width: 110px; height: 110px; animation-delay: 3s; }
+        .bg-shapes li:nth-child(7) { left: 35%; width: 150px; height: 150px; animation-delay: 7s; }
+        .bg-shapes li:nth-child(8) { left: 50%; width: 25px; height: 25px; animation-delay: 15s; animation-duration: 45s; }
+        .bg-shapes li:nth-child(9) { left: 20%; width: 15px; height: 15px; animation-delay: 2s; animation-duration: 35s; }
+        .bg-shapes li:nth-child(10) { left: 85%; width: 150px; height: 150px; animation-delay: 0s; animation-duration: 11s; }
+
+        @keyframes animate-shapes {
+            0% { transform: translateY(0) rotate(0deg); opacity: 1; border-radius: 0; }
+            100% {
+                transform: translateY(-1000px) rotate(720deg);
+                opacity: 0;
+                border-radius: 50%;
+            }
         }
     </style>
 </head>
 <body>
-
-    <div class="container">
-        <div class="logo-container">
-            <img src="https://st4.depositphotos.com/1842549/20934/i/450/depositphotos_209344954-stock-photo-success-icon-internet-button-white.jpg" alt="Logo">
+    <div class="login-container">
+        <div class="tab-header">
+            <div class="tab-link active" onclick="showTab('student')">Student Login</div>
+            <div class="tab-link" onclick="showTab('admin')">Admin Login</div>
         </div>
-        <h1>Competitive Success</h1>
-        <p class="header-text">Welcome back! Login to access your dashboard.</p>
-        
-        <form id="loginForm" novalidate autocomplete="off">
-            <div class="form-group">
-                <label for="contactInfo">Email or Mobile Number</label>
-                <div class="input-wrapper">
-                    <span class="input-icon">👤</span>
-                    <input type="text" id="contactInfo" name="contactInfo" required>
+
+        <!-- Student Login Form -->
+        <div id="student" class="tab-content active">
+            <h1>Welcome Back!</h1>
+            <form id="studentLoginForm">
+                <div class="form-group">
+                    <label for="studentContact">Email or Mobile</label><div class="input-wrapper">
+                    <input type="text" id="studentContact" required><span class="input-icon">👤</span>
+                </div></div>
+                <div class="form-group">
+                    <label for="studentPassword">Password</label><div class="input-wrapper">
+                    <input type="password" id="studentPassword" required><span class="input-icon">🔒</span>
                 </div>
+                </div>
+                <button type="submit" class="btn">Login</button>
+                <div id="studentMessage" class="message"></div>
+            </form>
+            <div class="form-footer">
+                Don't have an account? <a href="/register.html">Register</a>
             </div>
+        </div>
 
-            <div class="form-group">
-                <label for="password">Password</label>
-                <div class="password-wrapper input-wrapper">
-                    <span class="input-icon">🔒</span>
-                    <input type="password" id="password" name="password" required autocomplete="new-password">
-                    <span class="toggle-password" onclick="togglePassword('password')">👁️</span>
-                </div>
-                <div class="forgot-password">
-                    <a href="/forgot-password.html">Forgot Password?</a>
-                </div>
-            </div>
-
-            <button type="submit" class="btn">Login</button>
-
-            <div id="message" class="message"></div>
-        </form>
-
-        <div class="form-footer">
-            Don't have an account? <a href="/register.html">Register Now</a>
+        <!-- Admin Login Form -->
+        <div id="admin" class="tab-content">
+            <h1>Admin Access</h1>
+            <form id="adminLoginForm">
+                <div class="form-group">
+                    <label for="adminPassword">Password</label><div class="input-wrapper">
+                    <input type="password" id="adminPassword" required><span class="input-icon">🔑</span>
+                </div></div>
+                <button type="submit" class="btn">Login</button>
+                <div id="adminMessage" class="message"></div>
+            </form>
         </div>
     </div>
 
+    <!-- Animated Background Shapes -->
+    <div class="bg-shapes">
+        <li></li>
+        <li></li>
+        <li></li>
+        <li></li>
+        <li></li>
+        <li></li>
+        <li></li>
+        <li></li>
+        <li></li>
+        <li></li>
+    </div>
+
     <script>
-        function togglePassword(id) {
-            const input = document.getElementById(id);
-            input.type = input.type === 'password' ? 'text' : 'password';
+        // --- Safe Storage Utility ---
+        const safeStorage = (() => {
+            try {
+                const storage = window.sessionStorage; // Use sessionStorage for login tokens
+                storage.setItem('__test__', '1');
+                storage.removeItem('__test__');
+                return storage;
+            } catch (e) {
+                const memoryStore = {};
+                return { setItem: (k, v) => { memoryStore[k] = v; }, getItem: (k) => memoryStore[k] || null, removeItem: (k) => { delete memoryStore[k]; } };
+            }
+        })();
+
+        // --- Tab Switching Logic ---
+        function showTab(tabName) {
+            document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
+            document.querySelectorAll('.tab-link').forEach(link => link.classList.remove('active'));
+            document.getElementById(tabName).classList.add('active');
+            document.querySelector(`.tab-link[onclick="showTab('${tabName}')"]`).classList.add('active');
         }
 
-        const form = document.getElementById('loginForm');
-        form.addEventListener('submit', async function(e) {
+        // --- Admin Login Logic ---
+        const ADMIN_PASSWORD = "password123";
+        document.getElementById('adminLoginForm').addEventListener('submit', (e) => {
             e.preventDefault();
-            const messageDiv = document.getElementById('message');
-            const submitButton = form.querySelector('button[type="submit"]');
+            const password = document.getElementById('adminPassword').value;
+            const messageEl = document.getElementById('adminMessage');
 
-            const contactInfo = form.elements.contactInfo.value.trim();
-            const password = form.elements.password.value;
-
-            if (!contactInfo || !password) {
-                showMessage('Please fill out all fields.', 'error');
-                return;
+            if (password === ADMIN_PASSWORD) {
+                sessionStorage.setItem('adminToken', 'true');
+                window.location.href = '/index.html';
+            } else {
+                messageEl.textContent = 'Incorrect password.';
+                messageEl.className = 'message error';
+                sessionStorage.removeItem('adminToken');
             }
+        });
+
+        // --- Student Login Logic ---
+        document.getElementById('studentLoginForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const contact = document.getElementById('studentContact').value;
+            const password = document.getElementById('studentPassword').value;
+            const messageEl = document.getElementById('studentMessage');
+            const submitButton = e.target.querySelector('button');
 
             submitButton.disabled = true;
             submitButton.textContent = 'Logging in...';
+            messageEl.style.display = 'none';
 
             try {
-                // --- Insecure Demo Login Logic ---
-                // IMPORTANT: This logic is for demonstration only and is NOT secure.
-                // It fetches all users to the client, which should never be done in production.
-                // Replace 'YOUR_NPOINT_ID' with the same ID you used in register.html.
+                // This is an insecure demo endpoint. Use a real backend in production.
                 const response = await fetch('https://api.npoint.io/628bf2833503e69fb337');
-
-                if (!response.ok) {
-                    throw new Error('Could not fetch user data. Please try again.');
-                }
-
-                let users = await response.json();
-
-                // Ensure `users` is an array, even if npoint returns a single object
-                if (!Array.isArray(users)) {
-                    users = [users];
-                }
-
-                // Find a user that matches the login credentials
-                const foundUser = users.find(user => user.contactInfo === contactInfo && user.password === password);
-
-                if (!foundUser) {
-                    throw new Error('Invalid email/mobile or password.');
-                }
-
-                // --- Login Success ---
-                showMessage('Login successful! Redirecting...', 'success');
+                if (!response.ok) throw new Error('Could not connect to user service.');
                 
-                // Store user info (using contactInfo as a simple token/ID for this demo)
-                safeStorage.setItem('sessionToken', foundUser.contactInfo); 
-                safeStorage.setItem('userName', foundUser.fullName); // Store the full name
-                safeStorage.setItem('userExamChoice', foundUser.examChoice); // Store the exam choice
+                const users = await response.json();
+                const user = users.find(u => u.contactInfo === contact && u.password === password);
 
-                // Redirect to the user's dashboard
-                setTimeout(() => { window.location.replace('/home.html'); }, 1500);
-                setTimeout(() => { window.location.href = '/home.html'; }, 1500);
-
+                if (user) {
+                    // Set session token and user details
+                    safeStorage.setItem('sessionToken', user.contactInfo);
+                    safeStorage.setItem('userName', user.fullName);
+                    safeStorage.setItem('userExamChoice', user.examChoice);
+                    window.location.href = '/home.html';
+                } else {
+                    throw new Error('Invalid credentials. Please check your email/mobile and password.');
+                }
             } catch (error) {
-                showMessage(error.message, 'error');
+                messageEl.textContent = error.message;
+                messageEl.className = 'message error';
             } finally {
                 submitButton.disabled = false;
                 submitButton.textContent = 'Login';
             }
         });
 
-        function showMessage(msg, type) {
-            const messageDiv = document.getElementById('message');
-            messageDiv.textContent = msg;
-            messageDiv.className = `message ${type}`;
-        }
-
-        // Clear form fields on page load for security
-        window.addEventListener('DOMContentLoaded', () => {
-            form.elements.contactInfo.value = '';
-            form.elements.password.value = '';
+        // --- Redirect if already logged in ---
+        document.addEventListener('DOMContentLoaded', () => {
+            if (safeStorage.getItem('sessionToken')) {
+                window.location.href = '/home.html';
+            } else if (sessionStorage.getItem('adminToken') === 'true') {
+                window.location.href = '/index.html';
+            }
         });
     </script>
-
 </body>
 </html>

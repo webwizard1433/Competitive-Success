@@ -1,0 +1,82 @@
+[
+  {
+    "id": "anhbMmxLSiU",
+    "title": "Day 1 | 75 Days Maths Hard Challenge",
+    "category": "ssc-cgl-quant",
+    "type": "youtube",
+    "_id": "vid001",
+    "order": 0
+  },
+  {
+    "id": "13lhhdfulYk",
+    "title": "Day 2 | 75 Days Maths Hard Challenge",
+    "category": "ssc-cgl-quant",
+    "type": "youtube",
+    "_id": "vid002",
+    "order": 1
+  },
+  {
+    "id": "uIgfE1yWHMs",
+    "title": "Day 3 | 75 Days Maths Hard Challenge",
+    "category": "ssc-cgl-quant",
+    "type": "youtube",
+    "_id": "vid003",
+    "order": 2
+  },
+  {
+    "id": "HvwaRsvUwQI",
+    "title": "Day 4 | 75 Days Maths Hard Challenge",
+    "category": "ssc-cgl-quant",
+    "type": "youtube",
+    "_id": "vid004",
+    "order": 3
+  },
+  {
+    "id": "KNJntHXUrOA",
+    "title": "Day 5 | 75 Days Maths Hard Challenge",
+    "category": "ssc-cgl-quant",
+    "type": "youtube",
+    "_id": "vid005",
+    "order": 4
+  },
+  {
+    "id": "1vEVT0mXZg9VpZig4j4ZZOEOeQQfostCi",
+    "title": "History Lecture 1",
+    "type": "gdrive",
+    "category": "upsc-history",
+    "_id": "vid006",
+    "order": 5
+  },
+  {
+    "id": "placeholder_2",
+    "title": "History Lecture 2",
+    "category": "upsc-history",
+    "type": "youtube",
+    "_id": "vid007",
+    "order": 6
+  },
+  {
+    "id": "placeholder_1",
+    "title": "Geography Lecture 1",
+    "category": "upsc-geography",
+    "type": "youtube",
+    "_id": "vid008",
+    "order": 7
+  },
+  {
+    "id": "placeholder_1",
+    "title": "Polity Lecture 1",
+    "category": "upsc-polity",
+    "type": "youtube",
+    "_id": "vid009",
+    "order": 8
+  },
+  {
+    "id": "placeholder_1",
+    "title": "Economy Lecture 1",
+    "category": "upsc-economy",
+    "type": "youtube",
+    "_id": "vid010",
+    "order": 9
+  }
+]
