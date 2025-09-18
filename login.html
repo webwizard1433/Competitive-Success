@@ -7,32 +7,34 @@
     <link rel="icon" href="/success.png" type="image/png">
     <script>
         // --- Safe Storage Utility ---
-        const safeStorage = (() => {
+        const safeStorage = (() => { // Prioritize sessionStorage for mobile stability
+            const getStorage = (storageType) => {
+                try {
+                    const storage = window[storageType];
+                    storage.setItem('__test__', '1');
+                    storage.removeItem('__test__');
+                    return storage;
+                } catch (e) {
+                    return null;
+                }
+            };
+
+            const storage = getStorage('sessionStorage') || getStorage('localStorage');
+
             try {
-                const storage = window.localStorage;
-                storage.setItem('__test__', '1');
-                storage.removeItem('__test__');
-                return storage;
+                if (storage) return storage;
             } catch (e) {
                 console.warn("localStorage is not available. Using in-memory fallback.");
-                const memoryStore = {};
-                return {
-                    setItem: (key, value) => { memoryStore[key] = value; },
-                    getItem: (key) => memoryStore[key] || null,
-                    removeItem: (key) => { delete memoryStore[key]; }
-                };
             }
+            const memoryStore = {};
+            return { setItem: (k, v) => { memoryStore[k] = v; }, getItem: (k) => memoryStore[k] || null, removeItem: (k) => { delete memoryStore[k]; } };
         })();
 
-        // If a user is already logged in, redirect them to the home page.
-        // Otherwise, clear any stale session data.
-        if (safeStorage.getItem('sessionToken')) {
-            window.location.replace('/home.html');
-        } else {
-            safeStorage.removeItem('sessionToken');
-            safeStorage.removeItem('userExamChoice');
-            safeStorage.removeItem('userName');
-        }
+        document.addEventListener('DOMContentLoaded', () => {
+            if (safeStorage.getItem('sessionToken')) {
+                window.location.href = '/home.html';
+            }
+        });
     </script>
     <style>
        /* --- Modern Dark Theme --- */
@@ -302,6 +304,7 @@
 
                 // Redirect to the user's dashboard
                 setTimeout(() => { window.location.replace('/home.html'); }, 1500);
+                setTimeout(() => { window.location.href = '/home.html'; }, 1500);
 
             } catch (error) {
                 showMessage(error.message, 'error');

@@ -11,6 +11,7 @@
         :root { --primary-color: #FFC107; --primary-hover-color: #DAA520; --card-background: rgba(255, 255, 255, 0.05); --card-border-color: rgba(255, 255, 255, 0.2); --text-color: #F5F5DC; --secondary-text-color: #adb5bd; }
         body {
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            --success-color: #2f9e44; /* Added for chart */
             background-color: #0a192f;
             background-image: radial-gradient(at 80% 20%, hsla(212,40%,50%,0.3) 0px, transparent 50%), radial-gradient(at 20% 80%, hsla(280,40%,50%,0.3) 0px, transparent 50%);
             margin: 0; color: var(--text-color); min-height: 100vh; background-attachment: fixed;
@@ -74,6 +75,28 @@
         .video-container { position: relative; padding-bottom: 56.25%; height: 0; }
         .video-container iframe { position: absolute; top: 0; left: 0; width: 100%; height: 100%; }
 
+        /* --- Test History Table Styles --- */
+        .history-table-container {
+            overflow-x: auto;
+        }
+        .history-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 1rem;
+        }
+        .history-table th, .history-table td {
+            padding: 0.75rem 1rem;
+            text-align: left;
+            border-bottom: 1px solid var(--card-border-color);
+        }
+        .history-table th {
+            color: var(--primary-color);
+            font-size: 0.9rem;
+            text-transform: uppercase;
+        }
+        .history-table td {
+            color: var(--text-color);
+        }
     </style>
 </head>
 <body>
@@ -121,6 +144,23 @@
             </div>
         </section>
 
+        <!-- Mock Test History Section -->
+        <section class="dashboard-section">
+            <h2>Mock Test History</h2>
+            <div id="testHistoryContainer">
+                <div class="progress-summary" style="margin-bottom: 1.5rem;">
+                    <canvas id="testProgressChart"></canvas>
+                </div>
+                <div class="history-table-container">
+                    <table class="history-table">
+                        <thead><tr><th>Test Name</th><th>Score</th><th>Percentage</th><th>Date</th></tr></thead>
+                        <tbody id="testHistoryTableBody"></tbody>
+                    </table>
+                </div>
+                <div id="testHistoryEmpty" class="empty-state" style="display: none;"><p>You haven't completed any mock tests yet. <a href="/mock-test.html">Take a test</a> to start tracking your progress!</p></div>
+            </div>
+        </section>
+
         <!-- Recently Watched Section -->
         <section class="dashboard-section">
             <h2>Recently Watched</h2>
@@ -155,26 +195,39 @@
         </div>
     </div>
 
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script>
         // --- Safe Storage & User ID ---
-        const safeStorage = (() => {
+        const safeStorage = (() => { // Prioritize sessionStorage for mobile stability
+            const getStorage = (storageType) => {
+                try {
+                    const storage = window[storageType];
+                    storage.setItem('__test__', '1');
+                    storage.removeItem('__test__');
+                    return storage;
+                } catch (e) {
+                    return null;
+                }
+            };
+
+            const storage = getStorage('sessionStorage') || getStorage('localStorage');
+
             try {
-                const storage = window.localStorage;
-                storage.setItem('__test__', '1'); storage.removeItem('__test__');
-                return storage;
+                if (storage) return storage;
             } catch (e) {
-                const memoryStore = {};
-                return { setItem: (k, v) => { memoryStore[k] = v; }, getItem: (k) => memoryStore[k] || null, removeItem: (k) => { delete memoryStore[k]; } };
+                console.warn("Storage is not available. Using in-memory fallback.");
             }
+            const memoryStore = {};
+            return { setItem: (k, v) => { memoryStore[k] = v; }, getItem: (k) => memoryStore[k] || null, removeItem: (k) => { delete memoryStore[k]; } };
         })();
 
         const userId = safeStorage.getItem('sessionToken');
-        let userData = { progress: {}, favorites: [] };
+        let userData = { progress: {}, favorites: [], mockTestHistory: [] };
 
         // --- Dashboard Population ---
         document.addEventListener('DOMContentLoaded', async () => {
             if (!userId) {
-                window.location.replace('/login.html');
+                window.location.href = '/login.html';
                 return;
             }
 
@@ -184,7 +237,7 @@
                 const response = await fetch('https://api.npoint.io/628bf2833503e69fb337');
                 const users = await response.json();
                 const currentUser = users.find(u => u.contactInfo === userId);
-                userData = currentUser || { progress: {}, favorites: [] };
+                userData = currentUser || { progress: {}, favorites: [], mockTestHistory: [] };
 
                 // --- This is a placeholder for total video counts per exam ---
                 // In a real app, this data would come from a database or a shared config file.
@@ -211,12 +264,67 @@
                 }, 100); // Small delay for animation to be visible
                 progressText.textContent = `${percentage}% Complete (${completedCount} / ${totalVideos} videos)`;
 
+                // Populate Mock Test History
+                populateTestHistory();
+
             } catch (error) {
                 console.error('Error loading dashboard:', error);
                 document.getElementById('favoritesEmpty').style.display = 'block';
                 document.getElementById('recentEmpty').style.display = 'block';
             }
         });
+
+        function populateTestHistory() {
+            const history = userData.mockTestHistory || [];
+            const tableBody = document.getElementById('testHistoryTableBody');
+            const emptyState = document.getElementById('testHistoryEmpty');
+            const chartContainer = document.querySelector('#testHistoryContainer .progress-summary');
+
+            if (history.length === 0) {
+                emptyState.style.display = 'block';
+                tableBody.parentElement.style.display = 'none';
+                chartContainer.style.display = 'none';
+                return;
+            }
+
+            // Sort history by date, most recent first
+            history.sort((a, b) => new Date(b.date) - new Date(a.date));
+
+            tableBody.innerHTML = '';
+            history.forEach(test => {
+                const row = tableBody.insertRow();
+                row.innerHTML = `
+                    <td>${test.testName}</td>
+                    <td>${test.score}/${test.total}</td>
+                    <td>${test.percentage}%</td>
+                    <td>${new Date(test.date).toLocaleDateString()}</td>
+                `;
+            });
+
+            // --- Render Chart ---
+            const chartCanvas = document.getElementById('testProgressChart');
+            const chartLabels = history.slice(0, 10).reverse().map(t => new Date(t.date).toLocaleDateString()); // Show last 10 tests
+            const chartData = history.slice(0, 10).reverse().map(t => t.percentage);
+
+            new Chart(chartCanvas, {
+                type: 'bar',
+                data: {
+                    labels: chartLabels,
+                    datasets: [{
+                        label: 'Test Score (%)',
+                        data: chartData,
+                        backgroundColor: 'rgba(47, 158, 68, 0.6)',
+                        borderColor: 'var(--success-color)',
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    scales: { y: { beginAtZero: true, max: 100 } },
+                    responsive: true,
+                    maintainAspectRatio: false
+                }
+            });
+        }
 
         function createVideoCard(video) {
             const card = document.createElement('div');

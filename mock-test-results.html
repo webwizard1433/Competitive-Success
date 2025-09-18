@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="View your mock test score, performance analysis, and review your answers.">
     <title>Test Results | Competitive Success</title>
     <link rel="icon" href="/success.png" type="image/png">
     <style>
@@ -17,7 +18,7 @@
             align-items: center;
             text-align: center;
         }
-        .main-container { padding: 2rem; max-width: 800px; margin: auto; }
+        .main-container { padding: 2rem; max-width: 800px; margin: auto; width: 100%; box-sizing: border-box; }
         .results-container {
             background-color: var(--card-background);
             border: 1px solid var(--card-border-color);
@@ -52,6 +53,30 @@
             font-weight: bold;
             margin-top: 0.5rem;
         }
+        .performance-summary {
+            margin-top: 2.5rem;
+            padding-top: 1.5rem;
+            border-top: 1px solid var(--card-border-color);
+        }
+        .summary-stats {
+            display: flex;
+            justify-content: space-around;
+            margin-bottom: 1.5rem;
+        }
+        .stat-item { font-size: 1.1rem; }
+        .stat-item span { display: block; font-size: 2rem; font-weight: bold; }
+        .stat-item .correct { color: var(--success-color); }
+        .stat-item .incorrect { color: var(--error-color); }
+        .stat-item .unanswered { color: var(--secondary-text-color); }
+
+        .results-palette { display: grid; grid-template-columns: repeat(auto-fill, minmax(35px, 1fr)); gap: 0.5rem; }
+        .palette-item {
+            width: 35px; height: 35px; display: flex; align-items: center; justify-content: center;
+            border-radius: 5px; font-weight: bold; color: white;
+        }
+        .palette-item.correct { background-color: var(--success-color); }
+        .palette-item.incorrect { background-color: var(--error-color); }
+        .palette-item.unanswered { background-color: var(--secondary-text-color); opacity: 0.6; }
         .action-buttons {
             margin-top: 2.5rem;
             display: flex;
@@ -75,6 +100,16 @@
                 <span class="total">/ <span id="total">0</span></span>
                 <div id="percentage" class="percentage">0%</div>
             </div>
+            <div class="performance-summary">
+                <div class="summary-stats">
+                    <div class="stat-item"><span id="correctCount" class="correct">0</span>Correct</div>
+                    <div class="stat-item"><span id="incorrectCount" class="incorrect">0</span>Incorrect</div>
+                    <div class="stat-item"><span id="unansweredCount" class="unanswered">0</span>Unanswered</div>
+                </div>
+                <div class="results-palette" id="resultsPalette">
+                    <!-- Palette items will be generated here -->
+                </div>
+            </div>
             <div class="action-buttons">
                 <a id="reviewBtn" href="#" class="btn">Review Answers</a>
                 <a href="/mock-test.html" class="btn">Take Another Test</a>
@@ -84,16 +119,58 @@
     </main>
 
     <script>
+        // This data is needed to check answers. In a real app, this would be in a shared JS file or fetched.
+        const testData = {
+            upsc_gs1: { questions: Array.from({ length: 100 }, (_, i) => ({ correct: 2 })) },
+            ssc_tier1_1: { questions: Array.from({ length: 100 }, (_, i) => ({ correct: 2 })) },
+            cds_gk1: { questions: Array.from({ length: 120 }, (_, i) => ({ correct: 2 })) },
+            nda_math1: { questions: Array.from({ length: 120 }, (_, i) => ({ correct: 0 })) },
+            banking_prelim1: { questions: Array.from({ length: 100 }, (_, i) => ({ correct: 2 })) }
+        };
+
         document.addEventListener('DOMContentLoaded', () => {
             const results = JSON.parse(sessionStorage.getItem('mockTestResults'));
 
-            if (results) {
+            if (results && results.testId) {
+                const test = testData[results.testId];
+                if (!test) {
+                    document.getElementById('resultsContainer').innerHTML = '<h1>Could not load test data for results analysis.</h1><a href="/mock-test.html" class="btn">Go to Tests</a>';
+                    return;
+                }
+
+                // --- Populate Main Score ---
                 document.getElementById('testName').textContent = `Results for ${results.testName}`;
                 document.getElementById('score').textContent = results.score;
                 document.getElementById('total').textContent = results.total;
                 const percentage = results.total > 0 ? Math.round((results.score / results.total) * 100) : 0;
                 document.getElementById('percentage').textContent = `${percentage}%`;
                 
+                // --- Calculate and Populate Summary Stats ---
+                let correctCount = 0;
+                let incorrectCount = 0;
+                const paletteContainer = document.getElementById('resultsPalette');
+                
+                results.userAnswers.forEach((answer, index) => {
+                    const paletteItem = document.createElement('div');
+                    paletteItem.className = 'palette-item';
+                    paletteItem.textContent = index + 1;
+
+                    if (answer === null) {
+                        paletteItem.classList.add('unanswered');
+                    } else if (answer === test.questions[index].correct) {
+                        correctCount++;
+                        paletteItem.classList.add('correct');
+                    } else {
+                        incorrectCount++;
+                        paletteItem.classList.add('incorrect');
+                    }
+                    paletteContainer.appendChild(paletteItem);
+                });
+
+                document.getElementById('correctCount').textContent = correctCount;
+                document.getElementById('incorrectCount').textContent = incorrectCount;
+                document.getElementById('unansweredCount').textContent = results.total - (correctCount + incorrectCount);
+
                 const reviewBtn = document.getElementById('reviewBtn');
                 reviewBtn.href = `/mock-test-review.html`;
             } else {
