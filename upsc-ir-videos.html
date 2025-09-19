@@ -45,9 +45,13 @@
             const videoGrid = document.getElementById('videoGrid');
             try {
                 const response = await fetch('/api/videos?category=upsc-ir');
-                videoData = await response.json();
+                const fetchedVideos = await response.json();
+                const videos = Array.from({ length: 23 }, (_, i) => 
+                    fetchedVideos[i] || { id: `placeholder_ir_${i+1}`, title: `International Relations ${i + 1}`, type: 'placeholder' }
+                );
+                videoData = videos;
                 await fetchUserData(); // Fetch user data for progress
-                populateVideos(videoData, defaultThumbnails);
+                populateVideos(videoData, defaultThumbnails, videoGrid);
             } catch (error) {
                 console.error("Failed to load videos:", error);
                 videoGrid.innerHTML = '<p>Could not load videos. Please try again later.</p>';

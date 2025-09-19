@@ -1123,6 +1123,18 @@
             });
         }
 
+        // --- Global Keyboard Navigation ---
+        document.addEventListener('keydown', (e) => {
+            // Do not trigger back navigation if the user is typing in an input field
+            const activeElement = document.activeElement;
+            const isTyping = ['INPUT', 'TEXTAREA'].includes(activeElement.tagName) || activeElement.isContentEditable;
+
+            if (e.key === 'Backspace' && !isTyping) {
+                e.preventDefault(); // Prevent default browser action (which might also be to go back)
+                window.history.back();
+            }
+        });
+
     </script>
 
 </body>

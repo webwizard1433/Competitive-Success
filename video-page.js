@@ -466,31 +466,6 @@ function onPlayerStateChange(event) {
         playPauseBtn.setAttribute('data-tooltip', 'Play');
     }
 
-    // When video ends (state 0), start the 'Up Next' countdown and show controls
-    if (event.data === YT.PlayerState.ENDED) {
-        videoPlayer.parentElement.classList.remove('hide-yt-controls');
-        const nextIndex = currentVideoIndex + 1;
-        if (nextIndex < videoData.length) {
-            const countdownEl = document.getElementById('upNextCountdown');
-            const upNextTitleEl = document.getElementById('upNextTitle');
-            const countdownTimerEl = document.getElementById('countdownTimer');
-
-            upNextTitleEl.textContent = `Up Next: ${videoData[nextIndex].title}`;
-            countdownEl.style.display = 'flex';
-
-            let countdown = 5;
-            countdownTimerEl.textContent = countdown;
-
-            upNextTimer = setInterval(() => {
-                countdown--;
-                countdownTimerEl.textContent = countdown;
-                if (countdown <= 0) {
-                    clearInterval(upNextTimer);
-                    navigateVideo(1); // Autoplay next video
-                }
-            }, 1000);
-        }
-    }
 }
 
 function toggleMute() {
@@ -752,9 +727,6 @@ document.addEventListener('DOMContentLoaded', () => {
     if (modal) {
         const modalContent = modal.querySelector('.modal-content');
         if (modalContent) {
-            modalContent.insertAdjacentHTML('beforeend', '<button id="prevVideoBtn" class="modal-nav prev" onclick="navigateVideo(-1)" title="Previous Video"><svg class="icon-svg" viewBox="0 0 320 512"><path d="M41.4 233.4c-12.5 12.5-12.5 32.8 0 45.3l160 160c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L109.3 256 246.6 118.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0l-160 160z"/></svg></button>');
-            modalContent.insertAdjacentHTML('beforeend', '<button id="focusModeBtn" class="focus-mode-btn" onclick="toggleFocusMode()">Focus Mode</button>');
-            modalContent.insertAdjacentHTML('beforeend', '<button id="nextVideoBtn" class="modal-nav next" onclick="navigateVideo(1)" title="Next Video"><svg class="icon-svg" viewBox="0 0 320 512"><path d="M278.6 233.4c12.5 12.5 12.5 32.8 0 45.3l-160 160c-12.5 12.5-32.8-12.5-45.3 0s-12.5-32.8 0-45.3L210.7 256 73.4 118.6c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0l160 160z"/></svg></button>');
         }
 
         // Load YouTube Iframe API script

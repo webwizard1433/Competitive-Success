@@ -46,9 +46,13 @@
             const videoGrid = document.getElementById('videoGrid');
             try {
                 const response = await fetch('/api/videos?category=upsc-world-history');
-                videoData = await response.json();
+                const fetchedVideos = await response.json();
+                const videos = Array.from({ length: 14 }, (_, i) => 
+                    fetchedVideos[i] || { id: `placeholder_world-history_${i+1}`, title: `World History ${i + 1}`, type: 'placeholder' }
+                );
+                videoData = videos;
                 await fetchUserData(); // Fetch user data for progress
-                populateVideos(videoData, defaultThumbnails);
+                populateVideos(videoData, defaultThumbnails, videoGrid);
             } catch (error) {
                 console.error("Failed to load videos:", error);
                 videoGrid.innerHTML = '<p>Could not load videos. Please try again later.</p>';

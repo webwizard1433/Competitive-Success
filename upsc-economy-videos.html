@@ -44,9 +44,13 @@
             const videoGrid = document.getElementById('videoGrid');
             try {
                 const response = await fetch('/api/videos?category=upsc-economy');
-                videoData = await response.json();
+                const fetchedVideos = await response.json();
+                const videos = Array.from({ length: 50 }, (_, i) => 
+                    fetchedVideos[i] || { id: `placeholder_economy_${i+1}`, title: `Economy ${i + 1}`, type: 'placeholder' }
+                );
+                videoData = videos;
                 await fetchUserData(); // Fetch user data for progress
-                populateVideos(videoData, defaultThumbnails);
+                populateVideos(videoData, defaultThumbnails, videoGrid);
             } catch (error) {
                 console.error("Failed to load videos:", error);
                 videoGrid.innerHTML = '<p>Could not load videos. Please try again later.</p>';

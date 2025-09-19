@@ -36,7 +36,7 @@
         // --- Page-Specific Data ---
         let videoData = []; // This will be fetched from the API
         const defaultThumbnails = {
-            placeholder: "https://images.unsplash.com/photo-1588196749597-9ff075ee6b5b?q=80&w=1974"
+            placeholder: "https://getintoias.com/wp-content/uploads/2018/07/Indian-Polity-Study-Material-Notes.jpg"
         };
     </script>
     <script src="/video-page.js"></script>
@@ -46,7 +46,11 @@
             const videoGrid = document.getElementById('videoGrid');
             try {
                 const response = await fetch('/api/videos?category=upsc-polity');
-                videoData = await response.json();
+                const fetchedVideos = await response.json();
+                const videos = Array.from({ length: 41 }, (_, i) => 
+                    fetchedVideos[i] || { id: `placeholder_polity_${i+1}`, title: `Polity ${i + 1}`, type: 'placeholder' }
+                );
+                videoData = videos;
                 await fetchUserData(); // Fetch user data for progress
                 populateVideos(videoData, defaultThumbnails);
             } catch (error) {

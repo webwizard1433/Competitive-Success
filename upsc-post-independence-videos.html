@@ -45,9 +45,13 @@
             const videoGrid = document.getElementById('videoGrid');
             try {
                 const response = await fetch('/api/videos?category=upsc-post-independence');
-                videoData = await response.json();
+                const fetchedVideos = await response.json();
+                const videos = Array.from({ length: 6 }, (_, i) => 
+                    fetchedVideos[i] || { id: `placeholder_post-independence_${i+1}`, title: `Post Independence ${i + 1}`, type: 'placeholder' }
+                );
+                videoData = videos;
                 await fetchUserData(); // Fetch user data for progress
-                populateVideos(videoData, defaultThumbnails);
+                populateVideos(videoData, defaultThumbnails, videoGrid);
             } catch (error) {
                 console.error("Failed to load videos:", error);
                 videoGrid.innerHTML = '<p>Could not load videos. Please try again later.</p>';

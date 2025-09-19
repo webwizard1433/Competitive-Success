@@ -3,13 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="icon" href="/success.png" type="image/png">
     <title>UPSC Biology Videos | Competitive Success</title>
-    <link rel="stylesheet" href="/video-page.css">
+    <link rel="icon" href="/success.png" type="image/png">
+    <link rel="stylesheet" href="/video-hub.css">
 </head>
 <body>
     <main class="main-container">
-        <button id="backToTopBtn" title="Go to top">↑</button>
         <div class="back-to-home">
             <a href="/upsc-videos.html">← Back to Subjects</a>
         </div>
@@ -24,7 +23,6 @@
 
     <div id="videoModal" class="modal">
         <div class="modal-content">
-            <span class="close-button" onclick="closeModal()">&times;</span>
             <div class="video-container">
                 <iframe id="videoPlayer" src="" title="Video Player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; fullscreen" allowfullscreen></iframe>
             </div>
@@ -35,7 +33,7 @@
         // --- Page-Specific Data ---
         let videoData = []; // This will be fetched from the API
         const defaultThumbnails = {
-            placeholder: "https://images.unsplash.com/photo-1530026405182-2813f3246d57?q=80&w=1974"
+            placeholder: "https://ecdn.teacherspayteachers.com/thumbitem/Living-Environment-Resource-Pack--9991850-1732315358/original-9991850-1.jpg"
         };
     </script>
     <script src="/video-page.js"></script>
@@ -45,9 +43,13 @@
             const videoGrid = document.getElementById('videoGrid');
             try {
                 const response = await fetch('/api/videos?category=upsc-biology');
-                videoData = await response.json();
+                const fetchedVideos = await response.json();
+                const videos = Array.from({ length: 7 }, (_, i) => 
+                    fetchedVideos[i] || { id: `placeholder_biology_${i+1}`, title: `Biology ${i + 1}`, type: 'placeholder' }
+                );
+                videoData = videos;
                 await fetchUserData(); // Fetch user data for progress
-                populateVideos(videoData, defaultThumbnails);
+                populateVideos(videoData, defaultThumbnails, videoGrid);
             } catch (error) {
                 console.error("Failed to load videos:", error);
                 videoGrid.innerHTML = '<p>Could not load videos. Please try again later.</p>';
