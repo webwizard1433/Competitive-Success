@@ -192,6 +192,12 @@ body.modal-open {
 .modal.focus-active .close-button, .modal.focus-active #doubtForum {
     display: none;
 }
+.custom-controls-container .icon-svg {
+    width: 20px;
+    height: 20px;
+    fill: currentColor;
+}
+
 
 /* --- Back to Top Button --- */
 #backToTopBtn {

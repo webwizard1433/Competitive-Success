@@ -553,7 +553,7 @@
         </ul>
         <ul class="user-menu" style="margin-top: auto; padding-top: 1rem; border-top: 1px solid var(--card-border-color);">
             <li><a href="/cutoff-predictor.html"><span class="icon">📊</span> Cut-off Predictor</a></li>
-            <li><a href="/typing-test.html"><span class="icon">⌨️</span> Typing Test</a></li>
+            <li><a href="#" onclick="openTypingTestModal(event)"><span class="icon">⌨️</span> Typing Test</a></li>
             <li><a href="#" onclick="showLogoutConfirm()"><span class="icon">🚪</span> Logout</a></li>
         </ul>
     </aside>
@@ -627,12 +627,65 @@
         </div>
     </div>
 
+    <!-- Typing Test Modal -->
+    <div id="typingTestModal" class="confirm-modal" style="--modal-width: 80vw; --modal-height: 80vh;">
+        <div class="confirm-modal-content" style="width: var(--modal-width); height: var(--modal-height); max-width: none; padding: 0; display: flex; flex-direction: column;">
+            <div style="padding: 1rem; display: flex; justify-content: space-between; align-items: center; gap: 1rem; border-bottom: 1px solid var(--card-border-color); background-color: var(--card-background);">
+                <h2 style="margin: 0; font-size: 1.2rem;">Typing Test Practice</h2>
+                <div>
+                    <button id="typingTestFullscreenBtn" class="btn" onclick="toggleTypingTestFullscreen()" style="padding: 0.5rem 1rem; background-color: var(--card-border-color); color: var(--text-color);">Fullscreen</button>
+                    <button class="btn" onclick="closeTypingTestModal()" style="padding: 0.5rem 1rem;">Back to Home</button>
+                </div>
+            </div>
+            <iframe id="typingTestFrame" src="" style="flex-grow: 1; border: none; border-radius: 0 0 12px 12px;"></iframe>
+        </div>
+    </div>
+
 
     <button onclick="scrollToTop()" id="backToTopBtn" title="Go to top">↑</button>
 
     <script>
         // --- Dynamic Content & Modal Logic ---
 
+        document.addEventListener('fullscreenchange', () => {
+            const fullscreenBtn = document.getElementById('typingTestFullscreenBtn');
+            if (document.fullscreenElement) {
+                fullscreenBtn.textContent = 'Exit Fullscreen';
+            } else {
+                fullscreenBtn.textContent = 'Fullscreen';
+            }
+        });
+
+        function toggleTypingTestFullscreen() {
+            // Target the content box itself to make it fullscreen
+            const modalContent = document.querySelector('#typingTestModal .confirm-modal-content');
+            if (!document.fullscreenElement) {
+                modalContent.requestFullscreen().catch(err => {
+                    alert(`Error attempting to enable full-screen mode: ${err.message} (${err.name})`);
+                });
+            } else {
+                if (document.exitFullscreen) {
+                    document.exitFullscreen();
+                }
+            }
+        }
+
+        // --- Typing Test Modal Logic ---
+        function openTypingTestModal(event) {
+            event.preventDefault();
+            const modal = document.getElementById('typingTestModal');
+            const iframe = document.getElementById('typingTestFrame');
+            iframe.src = 'https://www.typingclub.com/'; // Set the source when opening
+            modal.classList.add('show');
+            toggleSideMenu(); // Close the side menu
+        }
+
+        function closeTypingTestModal() {
+            const modal = document.getElementById('typingTestModal');
+            const iframe = document.getElementById('typingTestFrame');
+            iframe.src = 'about:blank'; // Clear the iframe to stop any activity
+            modal.classList.remove('show');
+        }
         // --- Search Data ---
         const searchableContent = [
             // This will be populated dynamically

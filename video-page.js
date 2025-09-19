@@ -1,5 +1,6 @@
 const modal = document.getElementById('videoModal');
 const videoPlayer = document.getElementById('videoPlayer');
+const videoPlayerContainer = document.getElementById('videoPlayerContainer');
 const videoGrid = document.getElementById('videoGrid');
 let currentExamKey = 'upsc'; // Default exam
 
@@ -312,42 +313,39 @@ function openModal(video) {
 
     let embedUrl = '';
 
+    // Reset player container classes
+    videoPlayerContainer.className = 'video-container';
+
     if (video.type === 'gdrive') {
         embedUrl = `https://drive.google.com/file/d/${video.id}/preview`;
-        videoPlayer.src = embedUrl;
-        // Hide YouTube-specific controls for GDrive
-        document.getElementById('customControls').style.display = 'none';
-        document.getElementById('youtubeControls').style.display = 'none';
-        videoPlayer.parentElement.classList.remove('hide-yt-controls');
     } else { // Default to YouTube
         // Use YouTube Iframe API
+        videoPlayerContainer.classList.add('modern'); // Use new modern player
         embedUrl = `https://www.youtube.com/embed/${video.id}?autoplay=1&enablejsapi=1&origin=${window.location.origin}&controls=0&rel=0&modestbranding=1`;
-        if (player && typeof player.loadVideoById === 'function') {
-            player.loadVideoById(video.id);
-        } else {
-            videoPlayer.src = embedUrl;
-        }
-        document.getElementById('customControls').style.display = 'flex';
-        document.getElementById('youtubeControls').style.display = 'flex';
+    }
+
+    // Load the video
+    if (player && typeof player.loadVideoById === 'function' && video.type !== 'gdrive' && player.getIframe().src.includes(video.id)) {
+        // If player exists and it's the same video, just play it
+        player.playVideo();
+    } else if (player && typeof player.loadVideoById === 'function' && video.type !== 'gdrive') {
+        player.loadVideoById(video.id);
+    } else {
+        videoPlayer.src = embedUrl;
     }
 
     modal.classList.add('show');
 
     // Set the active video title
-    const videoTitleEl = document.getElementById('videoTitle');
-    if (videoTitleEl) {
-        videoTitleEl.textContent = video.title;
-    }
+    document.getElementById('videoTitle').textContent = video.title;
 
-    // Reset playback speed display
-    const playbackSpeedDisplay = document.getElementById('playbackSpeed');
-    if (playbackSpeedDisplay) {
-        playbackSpeedDisplay.textContent = '1x';
-    }
-    // Reset player speed if it exists
-    if (player && typeof player.setPlaybackRate === 'function') {
-        player.setPlaybackRate(1);
-    }
+    // Reset time display
+    document.getElementById('currentTime').textContent = '0:00';
+    document.getElementById('duration').textContent = '0:00';
+
+    // Reset and populate settings menu
+    populateSettingsMenu();
+    changePlaybackSpeed(1, true); // Reset to 1x speed
 
     // Add a class to body to prevent background scrolling
     document.body.classList.add('modal-open');
@@ -410,12 +408,20 @@ function onYouTubeIframeAPIReady() {
 
 function onPlayerReady(event) {
     // Setup custom controls
+    const bigPlayBtn = document.getElementById('bigPlayBtn');
     const playPauseBtn = document.getElementById('playPauseBtn');
     const progressBarWrapper = document.getElementById('progressBarWrapper');
     const fullscreenBtn = document.getElementById('fullscreenBtn');
+    const pipBtn = document.getElementById('pipBtn');
+    const settingsBtn = document.getElementById('settingsBtn');
+    const volumeBtn = document.getElementById('volumeBtn');
+    const volumeSlider = document.getElementById('volumeSlider');
 
-    playPauseBtn.onclick = () => togglePlayPause();
+    if (bigPlayBtn) bigPlayBtn.onclick = () => togglePlayPause();
+    if (playPauseBtn) playPauseBtn.onclick = () => togglePlayPause();
     fullscreenBtn.onclick = () => toggleFullscreen();
+    pipBtn.onclick = () => togglePictureInPicture();
+
     progressBarWrapper.onclick = (e) => {
         const rect = progressBarWrapper.getBoundingClientRect();
         const clickX = e.clientX - rect.left;
@@ -423,6 +429,24 @@ function onPlayerReady(event) {
         const seekTo = (clickX / width) * player.getDuration();
         player.seekTo(seekTo, true);
     };
+
+    // Volume controls
+    volumeBtn.onclick = () => toggleMute();
+    volumeSlider.addEventListener('input', e => {
+        player.setVolume(e.target.value * 100);
+        player.unMute();
+    });
+
+    // Settings Menu
+    settingsBtn.onclick = () => {
+        document.getElementById('settingsMenu').classList.toggle('active');
+    };
+    // Hide settings menu when clicking outside
+    document.addEventListener('click', (e) => {
+        if (!settingsBtn.contains(e.target) && !document.getElementById('settingsMenu').contains(e.target)) {
+            document.getElementById('settingsMenu').classList.remove('active');
+        }
+    });
 }
 
 function onPlayerStateChange(event) {
@@ -430,12 +454,14 @@ function onPlayerStateChange(event) {
     clearInterval(progressInterval);
 
     if (event.data === YT.PlayerState.PLAYING) {
-        playPauseBtn.textContent = '⏸️';
-        videoPlayer.parentElement.classList.add('hide-yt-controls');
+        videoPlayerContainer.classList.remove('paused');
+        playPauseBtn.innerHTML = `<svg viewBox="0 0 320 512"><path d="M48 64C21.5 64 0 85.5 0 112V400c0 26.5 21.5 48 48 48H80c26.5 0 48-21.5 48-48V112c0-26.5-21.5-48-48-48H48zm192 0c-26.5 0-48 21.5-48 48V400c0 26.5 21.5 48 48 48h32c26.5 0 48-21.5 48-48V112c0-26.5-21.5-48-48-48H240z"/></svg>`; // Pause Icon
+        playPauseBtn.setAttribute('data-tooltip', 'Pause');
         progressInterval = setInterval(updateProgressBar, 250);
     } else {
-        playPauseBtn.textContent = '▶️';
-        videoPlayer.parentElement.classList.remove('hide-yt-controls');
+        videoPlayerContainer.classList.add('paused');
+        playPauseBtn.innerHTML = `<svg viewBox="0 0 384 512"><path d="M73 39c-14.8-9.1-33.4-9.4-48.5-.9S0 62.6 0 80V432c0 17.4 9.4 33.4 24.5 41.9s33.7 8.1 48.5-.9L361 297c14.3-8.7 23-24.2 23-41s-8.7-32.2-23-41L73 39z"/></svg>`; // Play Icon
+        playPauseBtn.setAttribute('data-tooltip', 'Play');
     }
 
     // When video ends (state 0), start the 'Up Next' countdown and show controls
@@ -465,6 +491,20 @@ function onPlayerStateChange(event) {
     }
 }
 
+function toggleMute() {
+    if (!player || typeof player.isMuted !== 'function') return;
+    const volumeBtn = document.getElementById('volumeBtn');
+    if (player.isMuted()) {
+        player.unMute();
+        volumeBtn.setAttribute('data-tooltip', 'Mute');
+        volumeBtn.innerHTML = `<svg viewBox="0 0 640 512"><path d="M533.6 32.5C598.5 85.3 640 165.8 640 256s-41.5 170.8-106.4 223.5c-10.1 8.4-25.3 6.9-33.8-3.2s-6.9-25.3 3.2-33.8C557.5 398.2 592 331.2 592 256s-34.5-142.2-89.1-186.5c-10.1-8.4-11.5-23.6-3.2-33.8s23.6-11.5 33.8-3.2zM473.1 107c43.2 35.2 70.9 88.9 70.9 149s-27.7 113.8-70.9 149c-10.1 8.4-25.3 6.9-33.8-3.2s-6.9-25.3 3.2-33.8C483.8 339.3 504 300.6 504 256s-20.2-83.3-61.5-111.2c-10.1-8.4-11.5-23.6-3.2-33.8s23.6-11.5 33.8-3.2zM301.1 34.8C312.6 40 320 51.4 320 64V448c0 12.6-7.4 24-18.9 29.2s-25 3.1-34.4-5.3L131.8 352H64c-35.3 0-64-28.7-64-64V224c0-35.3 28.7-64 64-64h67.8L266.7 40.1c9.4-8.4 22.9-10.4 34.4-5.3z"/></svg>`; // Volume Icon
+    } else {
+        player.mute();
+        volumeBtn.setAttribute('data-tooltip', 'Unmute');
+        volumeBtn.innerHTML = `<svg viewBox="0 0 320 512"><path d="M301.1 34.8C312.6 40 320 51.4 320 64V448c0 12.6-7.4 24-18.9 29.2s-25 3.1-34.4-5.3L131.8 352H64c-35.3 0-64-28.7-64-64V224c0-35.3 28.7-64 64-64h67.8L266.7 40.1c9.4-8.4 22.9-10.4 34.4-5.3zM96 288H64c-8.8 0-16-7.2-16-16V240c0-8.8 7.2-16 16-16h32V288z"/></svg>`; // Mute Icon
+    }
+}
+
 // --- Custom Player Control Functions ---
 function togglePlayPause() {
     if (!player || typeof player.getPlayerState !== 'function') return;
@@ -477,11 +517,13 @@ function togglePlayPause() {
 }
 
 function toggleFullscreen() {
-    const iframe = document.getElementById('videoPlayer');
+    const container = document.getElementById('videoModal'); // Fullscreen the whole modal
     if (document.fullscreenElement) {
         document.exitFullscreen();
     } else {
-        iframe.requestFullscreen();
+        if (container.requestFullscreen) container.requestFullscreen();
+        else if (container.webkitRequestFullscreen) container.webkitRequestFullscreen();
+        else if (container.msRequestFullscreen) container.msRequestFullscreen();
     }
 }
 
@@ -496,6 +538,13 @@ function updateProgressBar() {
     const currentTime = player.getCurrentTime();
     const duration = player.getDuration();
     const progress = (currentTime / duration) * 100;
+    const volume = player.getVolume() / 100;
+
+    // Update volume slider to match player state (e.g., if changed with keyboard)
+    const volumeSlider = document.getElementById('volumeSlider');
+    if (volumeSlider) {
+        volumeSlider.value = player.isMuted() ? 0 : volume;
+    }
 
     document.getElementById('progressBar').style.width = `${progress}%`;
 
@@ -508,8 +557,13 @@ function updateProgressBar() {
         sessionStorage.setItem('videoProgress', JSON.stringify(videoProgressData));
     }
 
-    document.getElementById('currentTime').textContent = formatTime(currentTime);
-    document.getElementById('duration').textContent = formatTime(duration);
+    const currentTimeEl = document.getElementById('currentTime');
+    const durationEl = document.getElementById('duration');
+
+    if (currentTimeEl && durationEl) {
+        currentTimeEl.textContent = formatTime(currentTime);
+        durationEl.textContent = formatTime(duration);
+    }
 }
 
 // --- Keyboard Navigation for Modal ---
@@ -525,23 +579,46 @@ function handleModalKeydown(e) {
     }
 }
 
-function changePlaybackSpeed(rate) {
+function populateSettingsMenu() {
+    const menu = document.getElementById('settingsMenu');
+    if (!menu) return;
+    menu.innerHTML = ''; // Clear old items
+    const speeds = [0.5, 1, 1.5, 2];
+    speeds.forEach(speed => {
+        const item = document.createElement('div');
+        item.className = 'settings-menu-item';
+        item.textContent = `${speed}x`;
+        item.dataset.speed = speed;
+        item.onclick = () => changePlaybackSpeed(speed);
+        menu.appendChild(item);
+    });
+}
+
+function changePlaybackSpeed(rate, isInitial = false) {
     if (player && typeof player.setPlaybackRate === 'function') {
-        player.setPlaybackRate(rate);
-        document.getElementById('playbackSpeed').textContent = `${rate}x`;
+        const speed = parseFloat(rate);
+        player.setPlaybackRate(speed);
+
+        // Update UI
+        document.querySelectorAll('#settingsMenu .settings-menu-item').forEach(item => {
+            item.classList.toggle('selected', parseFloat(item.dataset.speed) === speed);
+        });
+
+        if (!isInitial) {
+            document.getElementById('settingsMenu').classList.remove('active');
+        }
     }
 }
 
 function togglePictureInPicture() {
-    if (document.pictureInPictureEnabled && videoPlayer.src.includes('youtube')) {
+    if (document.pictureInPictureEnabled && videoPlayer.requestPictureInPicture) {
         if (document.pictureInPictureElement) {
             document.exitPictureInPicture();
         } else {
-            // The YouTube Iframe API doesn't directly support PiP request.
-            // We have to request it on the underlying video element if possible,
-            // but browser security often prevents this for cross-origin iframes.
-            // This is a known limitation. We add a message for the user.
-            alert("To use Picture-in-Picture, right-click twice on the video and select 'Picture in picture'.");
+            videoPlayer.requestPictureInPicture().catch(error => {
+                console.error("PiP Error:", error);
+                alert("To use Picture-in-Picture, right-click twice on the video and select 'Picture in picture'.");
+            });
         }
     } else {
         alert('Picture-in-Picture is not supported for this video or by your browser.');
@@ -673,9 +750,9 @@ document.addEventListener('DOMContentLoaded', () => {
     if (modal) {
         const modalContent = modal.querySelector('.modal-content');
         if (modalContent) {
-            modalContent.insertAdjacentHTML('beforeend', '<button id="prevVideoBtn" class="modal-nav prev" onclick="navigateVideo(-1)">&#10094;</button>');
+            modalContent.insertAdjacentHTML('beforeend', '<button id="prevVideoBtn" class="modal-nav prev" onclick="navigateVideo(-1)" title="Previous Video"><svg class="icon-svg" viewBox="0 0 320 512"><path d="M41.4 233.4c-12.5 12.5-12.5 32.8 0 45.3l160 160c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L109.3 256 246.6 118.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0l-160 160z"/></svg></button>');
             modalContent.insertAdjacentHTML('beforeend', '<button id="focusModeBtn" class="focus-mode-btn" onclick="toggleFocusMode()">Focus Mode</button>');
-            modalContent.insertAdjacentHTML('beforeend', '<button id="nextVideoBtn" class="modal-nav next" onclick="navigateVideo(1)">&#10095;</button>');
+            modalContent.insertAdjacentHTML('beforeend', '<button id="nextVideoBtn" class="modal-nav next" onclick="navigateVideo(1)" title="Next Video"><svg class="icon-svg" viewBox="0 0 320 512"><path d="M278.6 233.4c12.5 12.5 12.5 32.8 0 45.3l-160 160c-12.5 12.5-32.8-12.5-45.3 0s-12.5-32.8 0-45.3L210.7 256 73.4 118.6c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0l160 160z"/></svg></button>');
         }
 
         // Load YouTube Iframe API script
