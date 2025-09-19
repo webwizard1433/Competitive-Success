@@ -21,20 +21,12 @@
        }
         body {
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-            background: linear-gradient(-45deg, #101113, #1d1e20, #25262b, #343a40);
-            background-size: 400% 400%;
-            animation: gradientBG 15s ease infinite;
+            background: #1d1e20; /* A static background is more performant */
             display: block; /* Allow natural scrolling */
             min-height: 100vh;
             margin: 0;
             padding: 1rem;
             box-sizing: border-box;
-        }
-
-        @keyframes gradientBG {
-            0% { background-position: 0% 50%; }
-            50% { background-position: 100% 50%; }
-            100% { background-position: 0% 50%; }
         }
 
         .logo-container {
@@ -100,6 +92,12 @@
             pointer-events: none;
         }
 
+        .password-toggle {
+            position: absolute; right: 12px; top: 50%; transform: translateY(-50%);
+            cursor: pointer; color: var(--secondary-text-color);
+            z-index: 3; /* Ensure it's above the input */
+        }
+
         .input-wrapper > select + .input-wrapper::after, .input-wrapper > select::after {
             content: '▼';
             position: absolute;
@@ -127,6 +125,24 @@
         .strength-meter div.weak { background-color: #e03131; }
         .strength-meter div.medium { background-color: #fcc419; }
         .strength-meter div.strong { background-color: #2f9e44; }
+        .strength-text {
+            font-size: 0.85rem;
+            color: var(--secondary-text-color);
+            margin-top: 0.5rem;
+            height: 1.2em; /* Reserve space to prevent layout shift */
+        }
+
+        .terms-group {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            margin-bottom: 1.5rem;
+            font-size: 0.9rem;
+            color: var(--secondary-text-color);
+        }
+        .terms-group a {
+            color: var(--primary-color);
+        }
 
         .form-group input:focus {
             outline: none;
@@ -206,9 +222,13 @@
                 <div class="input-wrapper">
                     <span class="input-icon">🔒</span>
                     <input type="password" id="password" required>
+                    <span class="password-toggle" onclick="togglePasswordVisibility(this, 'password')">👁️</span>
                 </div>
                 <div class="strength-meter" id="password-strength-meter">
                     <div></div><div></div><div></div><div></div>
+                </div>
+                <div id="password-strength-text" class="strength-text">
+                    <!-- Feedback will be inserted here -->
                 </div>
             </div>
             <div class="form-group">
@@ -216,7 +236,15 @@
                 <div class="input-wrapper">
                     <span class="input-icon">🔒</span>
                     <input type="password" id="confirmPassword" required>
+                    <span class="password-toggle" onclick="togglePasswordVisibility(this, 'confirmPassword')">👁️</span>
                 </div>
+            </div>
+            <div class="form-group terms-group">
+                <input type="checkbox" id="terms" required>
+                <label for="terms">
+                    I agree to the <a href="/terms.html" target="_blank">Terms of Service</a> and 
+                    <a href="/privacy.html" target="_blank">Privacy Policy</a>.
+                </label>
             </div>
             <button type="submit" class="btn">Register</button>
             <div id="message" class="message"></div>
@@ -228,39 +256,83 @@
     </div>
 
     <script>
+        function togglePasswordVisibility(icon, inputId) {
+            const input = document.getElementById(inputId);
+            if (input.type === 'password') {
+                input.type = 'text';
+                icon.textContent = '🙈';
+            } else {
+                input.type = 'password';
+                icon.textContent = '👁️';
+            }
+        }
+
         // Note: This is a simplified list. A real app might fetch this from a config.
         const exams = { upsc: "UPSC", cds: "CDS", nda: "NDA", 'ssc-cgl': "SSC-CGL", banking: "Banking", railways: "Railways" };
 
         const passwordInput = document.getElementById('password');
         const strengthMeter = document.getElementById('password-strength-meter');
         const strengthMeterBars = strengthMeter.querySelectorAll('div');
+        const strengthText = document.getElementById('password-strength-text');
+        const contactInfoInput = document.getElementById('contactInfo');
 
         passwordInput.addEventListener('input', () => {
             const password = passwordInput.value;
+            const feedback = [];
             let score = 0;
-            if (password.length >= 8) score++;
-            if (/[A-Z]/.test(password)) score++;
-            if (/[a-z]/.test(password)) score++;
-            if (/[0-9]/.test(password)) score++;
-            // A simple check for special characters
-            if (/[^A-Za-z0-9]/.test(password)) score++; 
+
+            if (password.length < 8) {
+                feedback.push('at least 8 characters');
+            } else {
+                score++;
+            }
+
+            if (!/[A-Z]/.test(password)) {
+                feedback.push('an uppercase letter');
+            } else {
+                score++;
+            }
+
+            if (!/[a-z]/.test(password)) {
+                feedback.push('a lowercase letter');
+            } else {
+                score++;
+            }
+
+            if (!/[0-9]/.test(password)) {
+                feedback.push('a number');
+            } else {
+                score++;
+            }
+
+            if (!/[^A-Za-z0-9]/.test(password)) {
+                feedback.push('a special character');
+            } else {
+                score++;
+            }
 
             strengthMeterBars.forEach((bar, index) => {
                 if (index < score) {
                     if (score <= 2) bar.className = 'weak';
                     else if (score <= 4) bar.className = 'medium';
                     else bar.className = 'strong';
-                } else {
-                    bar.className = '';
-                }
+                } else { bar.className = ''; }
             });
+
+            if (password.length === 0) {
+                strengthText.textContent = '';
+            } else if (feedback.length > 0) {
+                strengthText.textContent = `Missing: ${feedback.join(', ')}`;
+            } else {
+                strengthText.textContent = 'Excellent password!';
+            }
         });
 
         const form = document.getElementById('registerForm');
         form.addEventListener('submit', async function(e) {
             e.preventDefault();
-            const submitButton = form.querySelector('button[type="submit"]');
             const messageDiv = document.getElementById('message');
+            const submitButton = form.querySelector('button[type="submit"]');
             const { fullName, contactInfo, password, confirmPassword } = form.elements;
 
             if (!fullName.value || !contactInfo.value || !password.value || !confirmPassword.value) {
@@ -285,57 +357,55 @@
             submitButton.textContent = 'Registering...';
 
             try {
-                // IMPORTANT: This is a temporary endpoint for demonstration and is NOT secure.
-                // Replace 'YOUR_NPOINT_ID' with your actual npoint.io bin ID below.
-                // Go to npoint.io, create a new bin with initial content like `[]`, and get your ID.
-                // For a real application, you should use a proper backend service.
-                const npointUrl = 'https://api.npoint.io/628bf2833503e69fb337';
-
-                // 1. Get the current list of users
-                const getResponse = await fetch(npointUrl);
-                let users = [];
-                // Handle cases where the npoint bin might be empty (returns 200 OK with no content)
-                const text = await getResponse.text();
-                if (getResponse.ok && text) {
-                    const data = JSON.parse(text);
-                    users = Array.isArray(data) ? data : []; // Ensure it's an array
-                } else if (!getResponse.ok) {
-                    throw new Error('Could not connect to user database.');
-                }
-
-                // Check if user already exists
-                if (users.some(user => user.contactInfo === contactInfo.value)) {
-                    throw new Error('An account with this email/mobile already exists.');
-                }
-
-                // 2. Add the new user to the list
-                const newUser = { fullName: fullName.value, contactInfo: contactInfo.value, password: password.value, examChoice: 'upsc', registeredAt: new Date().toISOString() };
-                users.push(newUser);
-
-                // 3. Post the updated list back to npoint
-                const response = await fetch(npointUrl, {
+                const response = await fetch('/api/users/register', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(users) // Storing password here is insecure, for demo only
+                    body: JSON.stringify({
+                        fullName: fullName.value,
+                        contactInfo: contactInfo.value,
+                        password: password.value
+                    })
                 });
 
                 if (!response.ok) {
-                    // npoint.io doesn't give useful error messages in the body for POSTs,
-                    // so we create a generic one if the request fails.
-                    throw new Error(`HTTP error! Status: ${response.status}`);
+                    const errorData = await response.json();
+                    throw new Error(errorData.message || `HTTP error! Status: ${response.status}`);
                 }
 
-                const result = await response.json();
-                messageDiv.textContent = 'Registration successful! Redirecting to login...';
+                const newUser = await response.json();
+                messageDiv.textContent = 'Registration successful! Redirecting to your dashboard...';
                 messageDiv.className = 'message success';
-                setTimeout(() => window.location.href = '/login.html', 2000);
+
+                // --- Auto-login logic ---
+                // In a real app, the server would return a session token.
+                // Here, we simulate it by setting the same items as the login page.
+                const safeStorage = window.localStorage || {}; // Use localStorage for persistence
+                safeStorage.setItem('sessionToken', newUser.contactInfo);
+                safeStorage.setItem('userName', newUser.fullName);
+                safeStorage.setItem('userExamChoice', newUser.examChoice);
+
+                setTimeout(() => window.location.href = '/home.html', 1500);
             } catch (error) {
                 console.error('Registration failed:', error); // Log the actual error for debugging
-                messageDiv.textContent = 'An error occurred. Please try again.';
+                messageDiv.textContent = error.message || 'An error occurred. Please try again.';
                 messageDiv.className = 'message error';
             } finally {
                 submitButton.disabled = false;
                 submitButton.textContent = 'Register';
+            }
+        });
+
+        contactInfoInput.addEventListener('input', () => {
+            const value = contactInfoInput.value;
+            const isEmail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value);
+            const isMobile = /^\d{10}$/.test(value);
+
+            if (isEmail || isMobile) {
+                contactInfoInput.style.borderColor = 'var(--success-color)';
+            } else if (value.length > 0) {
+                contactInfoInput.style.borderColor = 'var(--error-color)';
+            } else {
+                contactInfoInput.style.borderColor = 'var(--card-border-color)';
             }
         });
 

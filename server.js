@@ -2,6 +2,7 @@ const express = require('express');
 const path = require('path');
 const fs = require('fs').promises;
 const cors = require('cors'); // You'll need to install this
+const sqlite3 = require('sqlite3').verbose();
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -17,6 +18,28 @@ app.use(express.json());
 
 // This middleware is for parsing URL-encoded form data.
 app.use(express.urlencoded({ extended: true }));
+
+// --- Database Setup (SQLite) ---
+const dbPath = path.join(__dirname, 'database.db');
+const db = new sqlite3.Database(dbPath, (err) => {
+    if (err) {
+        console.error('Error opening database', err.message);
+    } else {
+        console.log('Connected to the SQLite database.');
+        // Create users table if it doesn't exist
+        db.run(`CREATE TABLE IF NOT EXISTS users (
+            contactInfo TEXT PRIMARY KEY,
+            fullName TEXT NOT NULL,
+            password TEXT NOT NULL,
+            examChoice TEXT,
+            registeredAt TEXT,
+            progress TEXT,
+            favorites TEXT,
+            mockTestHistory TEXT,
+            role TEXT
+        )`);
+    }
+});
 
 // --- API Routes for Videos ---
 const VIDEOS_PATH = path.join(__dirname, 'videos.json');
@@ -209,6 +232,40 @@ app.get('/api/analytics/videos', async (req, res) => {
     }
 });
 
+// --- API Route for Registration Analytics ---
+app.get('/api/analytics/registrations', async (req, res) => {
+    try {
+        // In a real app, you'd fetch from a database. Here we fetch from npoint.
+        const userResponse = await fetch('https://api.npoint.io/628bf2833503e69fb337');
+        if (!userResponse.ok) throw new Error('Failed to fetch users from npoint.');
+        const users = await userResponse.json();
+
+        const last7Days = {};
+        for (let i = 6; i >= 0; i--) {
+            const d = new Date();
+            d.setDate(d.getDate() - i);
+            const key = d.toISOString().split('T')[0]; // YYYY-MM-DD
+            last7Days[key] = 0;
+        }
+
+        users.forEach(user => {
+            if (user.registeredAt) {
+                const regDate = new Date(user.registeredAt);
+                const regDateKey = regDate.toISOString().split('T')[0];
+                if (last7Days.hasOwnProperty(regDateKey)) {
+                    last7Days[regDateKey]++;
+                }
+            }
+        });
+
+        res.json(last7Days);
+
+    } catch (error) {
+        console.error('Error fetching registration analytics:', error);
+        res.status(500).json({ message: 'Could not fetch registration analytics data.' });
+    }
+});
+
 // --- API Routes for Doubts/Forum ---
 const DOUBTS_PATH = path.join(__dirname, 'doubts.json');
 
@@ -273,50 +330,94 @@ app.post('/api/doubts/:doubtId/replies', async (req, res) => {
 });
 
 // --- API Routes for Users ---
-const USERS_PATH = path.join(__dirname, 'users.json');
-
-// Helper function to read users
-const readUsers = async () => {
-    try {
-        const data = await fs.readFile(USERS_PATH, 'utf-8');
-        return JSON.parse(data);
-    } catch (error) {
-        if (error.code === 'ENOENT') return []; // Return empty array if file doesn't exist
-        throw error;
-    }
-};
-
-// Helper function to write users
-const writeUsers = async (users) => {
-    await fs.writeFile(USERS_PATH, JSON.stringify(users, null, 2), 'utf-8');
-};
 
 // GET all users
 app.get('/api/users', async (req, res) => {
-    try {
-        const users = await readUsers();
-        res.json(users);
-    } catch (error) {
-        console.error('Error fetching users:', error);
-        res.status(500).json({ message: 'Could not fetch users.' });
-    }
+    db.all("SELECT contactInfo, fullName, role, registeredAt FROM users", [], (err, rows) => {
+        if (err) {
+            res.status(500).json({ message: 'Could not fetch users.' });
+            return console.error(err.message);
+        }
+        res.json(rows);
+    });
 });
 
+// POST a new user (Registration)
+app.post('/api/users/register', async (req, res) => {
+    const { fullName, contactInfo, password, examChoice } = req.body;
+
+    if (!fullName || !contactInfo || !password) {
+        return res.status(400).json({ message: 'All fields are required.' });
+    }
+
+    const sql = `INSERT INTO users (contactInfo, fullName, password, examChoice, registeredAt, progress, favorites, mockTestHistory)
+                 VALUES (?, ?, ?, ?, ?, ?, ?, ?)`;
+    
+    const newUser = {
+        contactInfo,
+        fullName,
+        password, // In a real app, this should be hashed!
+        examChoice: examChoice || 'upsc',
+        registeredAt: new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' }),
+        progress: JSON.stringify({}),
+        favorites: JSON.stringify({}),
+        mockTestHistory: JSON.stringify([])
+    };
+
+    db.run(sql, [newUser.contactInfo, newUser.fullName, newUser.password, newUser.examChoice, newUser.registeredAt, newUser.progress, newUser.favorites, newUser.mockTestHistory], function(err) {
+        if (err) {
+            if (err.message.includes('UNIQUE constraint failed')) {
+                return res.status(409).json({ message: 'An account with this email/mobile already exists.' });
+            }
+            console.error('Registration error:', err.message);
+            return res.status(500).json({ message: 'An error occurred during registration.' });
+        }
+        
+        // For auto-login, return the user info (excluding password)
+        const { password: _, ...userToReturn } = newUser;
+        // The JSON fields need to be parsed back for the client
+        userToReturn.progress = JSON.parse(userToReturn.progress);
+        userToReturn.favorites = JSON.parse(userToReturn.favorites);
+        userToReturn.mockTestHistory = JSON.parse(userToReturn.mockTestHistory);
+        res.status(201).json(userToReturn);
+    });
+});
+
+// POST to login a user
+app.post('/api/users/login', async (req, res) => {
+    const { contact, password } = req.body;
+    const sql = "SELECT * FROM users WHERE contactInfo = ? AND password = ?";
+
+    db.get(sql, [contact, password], (err, row) => {
+        if (err) {
+            console.error('Login error:', err.message);
+            return res.status(500).json({ message: 'Server error during login.' });
+        }
+        if (row) {
+            // Parse JSON string fields before sending to client
+            row.progress = JSON.parse(row.progress || '{}');
+            row.favorites = JSON.parse(row.favorites || '{}');
+            row.mockTestHistory = JSON.parse(row.mockTestHistory || '[]');
+            
+            const { password: _, ...userToReturn } = row;
+            res.json({ success: true, user: userToReturn });
+        } else {
+            res.status(401).json({ success: false, message: 'Invalid credentials.' });
+        }
+    });
+});
 // DELETE a user by contactInfo
 app.delete('/api/users/:contactInfo', async (req, res) => {
     const { contactInfo } = req.params;
-    try {
-        let users = await readUsers();
-        const updatedUsers = users.filter(u => u.contactInfo !== contactInfo);
-        if (users.length === updatedUsers.length) {
+    db.run(`DELETE FROM users WHERE contactInfo = ?`, contactInfo, function(err) {
+        if (err) {
+            return res.status(500).json({ message: 'Could not delete user.' });
+        }
+        if (this.changes === 0) {
             return res.status(404).send('User not found');
         }
-        await writeUsers(updatedUsers);
         res.status(204).send();
-    } catch (error) {
-        console.error('Error deleting user:', error);
-        res.status(500).json({ message: 'Could not delete user.' });
-    }
+    });
 });
 
 // DELETE multiple users
@@ -325,31 +426,30 @@ app.delete('/api/users', async (req, res) => {
     if (!Array.isArray(contactInfos)) {
         return res.status(400).send('Invalid data format. Expected an array of contact infos.');
     }
-    try {
-        let users = await readUsers();
-        const updatedUsers = users.filter(u => !contactInfos.includes(u.contactInfo));
-        await writeUsers(updatedUsers);
+    const placeholders = contactInfos.map(() => '?').join(',');
+    db.run(`DELETE FROM users WHERE contactInfo IN (${placeholders})`, contactInfos, function(err) {
+        if (err) {
+            return res.status(500).json({ message: 'Could not bulk delete users.' });
+        }
         res.status(204).send();
-    } catch (error) {
-        console.error('Error bulk deleting users:', error);
-        res.status(500).json({ message: 'Could not bulk delete users.' });
-    }
+    });
 });
 
 // PUT (update) a user's role
 app.put('/api/users/:contactInfo/role', async (req, res) => {
     const { contactInfo } = req.params;
     const { role } = req.body;
-    try {
-        let users = await readUsers();
-        const user = users.find(u => u.contactInfo === contactInfo);
-        if (user) user.role = role;
-
-        await writeUsers(users);
-        res.status(200).json(user);
-    } catch (error) {
-        res.status(500).json({ message: 'Could not update user role.' });
-    }
+    db.run(`UPDATE users SET role = ? WHERE contactInfo = ?`, [role, contactInfo], function(err) {
+        if (err) {
+            return res.status(500).json({ message: 'Could not update user role.' });
+        }
+        db.get("SELECT * FROM users WHERE contactInfo = ?", [contactInfo], (err, row) => {
+            if (err || !row) {
+                return res.status(404).json({ message: 'User not found after update.' });
+            }
+            res.status(200).json(row);
+        });
+    });
 });
 
 // --- API Routes for Broadcast Message ---

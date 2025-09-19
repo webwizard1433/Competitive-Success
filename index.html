@@ -202,7 +202,7 @@
                 <button class="btn btn-success" onclick="openAddModal()">Add New Video</button>
                 <button id="saveOrderBtn" class="btn" style="display: none;">Save Order</button>
                 <a href="/admin-profile.html" class="btn btn-secondary" style="background-color: var(--card-border-color); color: var(--text-color);">Settings</a>
-                <a href="/home.html" onclick="sessionStorage.removeItem('adminToken')" class="btn btn-danger">Logout</a>
+                <a href="#" onclick="logout(event)" class="btn btn-danger">Logout</a>
             </div>
         </div>
         <div class="form-group" style="margin-bottom: 1.5rem; max-width: 400px;">
@@ -337,6 +337,7 @@
     </div>
 
 
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script>
         // Basic security check
         if (sessionStorage.getItem('adminToken') !== 'true') {
@@ -508,6 +509,13 @@
             }
         });
 
+        function logout(event) {
+            event.preventDefault();
+            showConfirmModal('Logout', 'Are you sure you want to log out?', () => {
+                sessionStorage.removeItem('adminToken');
+                window.location.href = '/login.html';
+            });
+        }
         // --- Generic Confirmation Modal Logic ---
         function showConfirmModal(title, text, onConfirm) {
             document.getElementById('confirmModalTitle').textContent = title;
