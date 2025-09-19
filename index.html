@@ -76,8 +76,11 @@
         /* Drag and Drop styles for video table */
         #videoTableBody tr { cursor: grab; }
         #videoTableBody tr:active { cursor: grabbing; }
-        .data-table .dragging { opacity: 0.5; background: var(--primary-color); color: #000; }
-        .data-table .drag-over { border-top: 2px solid var(--primary-color); }
+        .data-table .dragging { opacity: 0.4; background: #343a40; }
+        .data-table .drag-over-placeholder {
+            border-top: 2px dashed var(--primary-color);
+            background-color: rgba(77, 171, 247, 0.1);
+        }
 
         /* --- Analytics Section --- */
         .analytics-container {
@@ -132,6 +135,39 @@
         .form-group input:focus { outline: none; border-color: var(--primary-color); }
 
         /* --- Animation --- */
+        /* --- Confirmation Modal --- */
+        .confirm-modal-content {
+            background-color: var(--card-background);
+            border: 1px solid var(--card-border-color);
+            border-radius: 12px;
+            padding: 2rem;
+            width: 90%;
+            max-width: 400px;
+            text-align: center;
+            box-shadow: 0 8px 32px 0 rgba(0,0,0,0.4);
+        }
+        .confirm-modal-content h2 {
+            color: var(--primary-color);
+            margin: 0 0 1rem;
+        }
+        .confirm-modal-content p {
+            color: var(--secondary-text-color);
+            margin-bottom: 2rem;
+            line-height: 1.6;
+        }
+        .confirm-modal-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+        }
+        .confirm-modal-buttons .btn {
+            width: auto; /* Override full-width button style */
+        }
+        .confirm-modal-buttons .btn-secondary {
+            background-color: var(--card-border-color);
+            color: var(--text-color);
+        }
+
         @keyframes fadeIn {
             from { opacity: 0; transform: translateY(-10px); }
             to { opacity: 1; transform: translateY(0); }
@@ -165,6 +201,7 @@
             <div class="actions">
                 <button class="btn btn-success" onclick="openAddModal()">Add New Video</button>
                 <button id="saveOrderBtn" class="btn" style="display: none;">Save Order</button>
+                <a href="/admin-profile.html" class="btn btn-secondary" style="background-color: var(--card-border-color); color: var(--text-color);">Settings</a>
                 <a href="/home.html" onclick="sessionStorage.removeItem('adminToken')" class="btn btn-danger">Logout</a>
             </div>
         </div>
@@ -287,6 +324,19 @@
         </div>
     </div>
 
+    <!-- Generic Confirmation Modal -->
+    <div id="confirmModal" class="modal">
+        <div class="confirm-modal-content">
+            <h2 id="confirmModalTitle">Confirm Action</h2>
+            <p id="confirmModalText">Are you sure?</p>
+            <div class="confirm-modal-buttons">
+                <button id="confirmModalCancel" class="btn btn-secondary">Cancel</button>
+                <button id="confirmModalConfirm" class="btn btn-danger">Confirm</button>
+            </div>
+        </div>
+    </div>
+
+
     <script>
         // Basic security check
         if (sessionStorage.getItem('adminToken') !== 'true') {
@@ -295,6 +345,7 @@
 
         const tableBody = document.getElementById('videoTableBody');
         const modal = document.getElementById('videoModal');
+        const confirmModal = document.getElementById('confirmModal');
         const videoForm = document.getElementById('videoForm');
         const saveOrderBtn = document.getElementById('saveOrderBtn');
         const userTableBody = document.getElementById('userTableBody');
@@ -457,17 +508,36 @@
             }
         });
 
-        async function deleteVideo(id) {
-            if (!confirm('Are you sure you want to delete this video?')) return;
+        // --- Generic Confirmation Modal Logic ---
+        function showConfirmModal(title, text, onConfirm) {
+            document.getElementById('confirmModalTitle').textContent = title;
+            document.getElementById('confirmModalText').innerHTML = text; // Use innerHTML to allow for bolding etc.
+            confirmModal.classList.add('show');
 
-            try {
-                const response = await fetch(`/api/videos/${id}`, { method: 'DELETE' });
-                if (!response.ok) throw new Error('Failed to delete video');
-                fetchAndRenderVideos();
-            } catch (error) {
-                console.error('Delete error:', error);
-                alert('Could not delete video.');
-            }
+            const confirmBtn = document.getElementById('confirmModalConfirm');
+            const cancelBtn = document.getElementById('confirmModalCancel');
+
+            // Clone and replace to remove old event listeners
+            const newConfirmBtn = confirmBtn.cloneNode(true);
+            confirmBtn.parentNode.replaceChild(newConfirmBtn, confirmBtn);
+
+            newConfirmBtn.onclick = () => {
+                onConfirm();
+                confirmModal.classList.remove('show');
+            };
+
+            cancelBtn.onclick = () => {
+                confirmModal.classList.remove('show');
+            };
+        }
+
+        async function deleteVideo(id) {
+            showConfirmModal('Delete Video', 'Are you sure you want to permanently delete this video?', async () => {
+                try {
+                    await fetch(`/api/videos/${id}`, { method: 'DELETE' });
+                    fetchAndRenderVideos();
+                } catch (error) { alert('Could not delete video.'); }
+            });
         }
 
         function toggleAllCheckboxes(type) {
@@ -491,52 +561,46 @@
             if (selectedCheckboxes.length === 0) return;
 
             const idsToDelete = Array.from(selectedCheckboxes).map(cb => cb.value);
-            if (!confirm(`Are you sure you want to delete ${idsToDelete.length} selected video(s)?`)) return;
+            const text = `Are you sure you want to delete <strong>${idsToDelete.length}</strong> selected video(s)?`;
 
-            try {
-                const response = await fetch('/api/videos', {
-                    method: 'DELETE',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ ids: idsToDelete })
-                });
-                if (!response.ok) throw new Error('Failed to delete selected videos');
-                fetchAndRenderVideos();
-            } catch (error) {
-                alert('Could not delete selected videos.');
-            }
+            showConfirmModal('Delete Selected Videos', text, async () => {
+                try {
+                    await fetch('/api/videos', {
+                        method: 'DELETE',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ ids: idsToDelete })
+                    });
+                    fetchAndRenderVideos();
+                } catch (error) { alert('Could not delete selected videos.'); }
+            });
         }
 
         async function deleteSelectedUsers() {
             const selectedCheckboxes = document.querySelectorAll('.user-checkbox:checked');
             if (selectedCheckboxes.length === 0) return;
-
             const contactInfosToDelete = Array.from(selectedCheckboxes).map(cb => cb.value);
-            if (!confirm(`Are you sure you want to delete ${contactInfosToDelete.length} selected user(s)?`)) return;
+            const text = `Are you sure you want to delete <strong>${contactInfosToDelete.length}</strong> selected user(s)?`;
 
-            try {
-                const response = await fetch('/api/users', {
-                    method: 'DELETE',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ contactInfos: contactInfosToDelete })
-                });
-                if (!response.ok) throw new Error('Failed to delete selected users');
-                fetchAndRenderUsers();
-            } catch (error) {
-                alert('Could not delete selected users.');
-            }
+            showConfirmModal('Delete Selected Users', text, async () => {
+                try {
+                    await fetch('/api/users', {
+                        method: 'DELETE',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ contactInfos: contactInfosToDelete })
+                    });
+                    fetchAndRenderUsers();
+                } catch (error) { alert('Could not delete selected users.'); }
+            });
         }
 
         async function deleteUser(contactInfo) {
-            if (!confirm(`Are you sure you want to delete the user: ${contactInfo}?`)) return;
-
-            try {
-                const response = await fetch(`/api/users/${contactInfo}`, { method: 'DELETE' });
-                if (!response.ok) throw new Error('Failed to delete user');
-                fetchAndRenderUsers(); // Refresh the user list
-            } catch (error) {
-                console.error('Delete user error:', error);
-                alert('Could not delete user.');
-            }
+            const text = `Are you sure you want to delete the user: <strong>${contactInfo}</strong>? This action cannot be undone.`;
+            showConfirmModal('Delete User', text, async () => {
+                try {
+                    await fetch(`/api/users/${contactInfo}`, { method: 'DELETE' });
+                    fetchAndRenderUsers();
+                } catch (error) { alert('Could not delete user.'); }
+            });
         }
 
         // --- Broadcast Message Logic ---
@@ -565,19 +629,18 @@
         });
 
         async function clearBroadcast() {
-            if (!confirm('Are you sure you want to clear the current broadcast message?')) return;
-            try {
-                await fetch('/api/broadcast', { method: 'DELETE' });
-                alert('Broadcast message cleared.');
-                document.getElementById('broadcastMessage').value = '';
-            } catch (error) {
-                console.error('Failed to clear broadcast:', error);
-                alert('Could not clear broadcast message.');
-            }
+            showConfirmModal('Clear Broadcast', 'Are you sure you want to clear the current broadcast message?', async () => {
+                try {
+                    await fetch('/api/broadcast', { method: 'DELETE' });
+                    alert('Broadcast message cleared.');
+                    document.getElementById('broadcastMessage').value = '';
+                } catch (error) { alert('Could not clear broadcast message.'); }
+            });
         }
 
         // --- Drag and Drop Reordering ---
         let draggedItem = null;
+        let placeholder = null;
 
         tableBody.addEventListener('dragstart', e => {
             if (e.target.tagName === 'TR') {
@@ -590,22 +653,30 @@
 
         tableBody.addEventListener('dragend', e => {
             if (draggedItem) {
+                // Clean up placeholder and dragging styles
+                if (placeholder) placeholder.classList.remove('drag-over-placeholder');
                 draggedItem.classList.remove('dragging');
                 draggedItem = null;
+                placeholder = null;
             }
         });
 
         tableBody.addEventListener('dragover', e => {
             e.preventDefault();
             const target = e.target.closest('tr');
+
+            // Remove placeholder from previous target
+            if (placeholder && placeholder !== target) {
+                placeholder.classList.remove('drag-over-placeholder');
+            }
+
             if (target && target !== draggedItem) {
+                placeholder = target; // Set new placeholder
+                placeholder.classList.add('drag-over-placeholder');
+
                 const rect = target.getBoundingClientRect();
                 const offset = e.clientY - rect.top - (rect.height / 2);
-                if (offset > 0) {
-                    tableBody.insertBefore(draggedItem, target.nextSibling);
-                } else {
-                    tableBody.insertBefore(draggedItem, target);
-                }
+                tableBody.insertBefore(draggedItem, offset > 0 ? target.nextSibling : target);
                 saveOrderBtn.style.display = 'inline-block';
             }
         });

@@ -256,19 +256,37 @@
         });
 
         // --- Admin Login Logic ---
-        const ADMIN_PASSWORD = "password123";
-        document.getElementById('adminLoginForm').addEventListener('submit', (e) => {
+        document.getElementById('adminLoginForm').addEventListener('submit', async (e) => {
             e.preventDefault();
             const password = document.getElementById('adminPassword').value;
             const messageEl = document.getElementById('adminMessage');
+            const submitButton = e.target.querySelector('button');
 
-            if (password === ADMIN_PASSWORD) {
-                sessionStorage.setItem('adminToken', 'true');
-                window.location.href = '/index.html';
-            } else {
-                messageEl.textContent = 'Incorrect password.';
+            submitButton.disabled = true;
+            submitButton.textContent = 'Logging in...';
+            messageEl.style.display = 'none';
+
+            try {
+                const response = await fetch('/api/admin/login', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ password })
+                });
+                const result = await response.json();
+                if (!response.ok) throw new Error(result.message);
+
+                if (result.success) {
+                    sessionStorage.setItem('adminToken', 'true');
+                    window.location.href = '/index.html';
+                }
+            } catch (error) {
+                messageEl.textContent = error.message || 'Incorrect password.';
                 messageEl.className = 'message error';
                 sessionStorage.removeItem('adminToken');
+            }
+            finally {
+                submitButton.disabled = false;
+                submitButton.textContent = 'Login';
             }
         });
 

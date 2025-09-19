@@ -13,6 +13,10 @@ else if (path.includes('railways')) currentExamKey = 'railways';
 
 let userData = { progress: {}, favorites: {} };
 let currentVideoIndex = -1; // To track the current video in the modal
+let upNextTimer; // For autoplay countdown
+let player; // For YouTube Iframe API
+let progressInterval; // For custom progress bar
+let videoProgressData = {}; // For card progress bars
 
 // --- User Data Management ---
 const safeStorage = (() => {
@@ -47,6 +51,12 @@ const lazyLoadObserver = new IntersectionObserver((entries, observer) => {
     });
 }, { rootMargin: "0px 0px 200px 0px" }); // Start loading images 200px before they enter the viewport
 
+// --- Video Progress Tracking (Session) ---
+function loadVideoProgress() {
+    const data = sessionStorage.getItem('videoProgress');
+    videoProgressData = data ? JSON.parse(data) : {};
+}
+
 
 // --- Core Functions ---
 
@@ -75,6 +85,25 @@ async function fetchUserData() {
     }
 }
 
+// --- Video Search/Filter ---
+function filterVideos() {
+    const searchInput = document.getElementById('videoSearchInput');
+    if (!searchInput) return;
+
+    const filter = searchInput.value.toLowerCase();
+    const cards = document.querySelectorAll('.grid-container .resource-card');
+
+    cards.forEach(card => {
+        const title = card.querySelector('h3').textContent.toLowerCase();
+        if (title.includes(filter)) {
+            card.style.display = '';
+        } else {
+            card.style.display = 'none';
+        }
+    });
+}
+
+
 // Function to create and append video cards
 function populateVideos(videoData, defaultThumbnails, targetGrid = null) {
     const grid = targetGrid || document.getElementById('videoGrid');
@@ -90,12 +119,11 @@ function populateVideos(videoData, defaultThumbnails, targetGrid = null) {
             // Use <picture> for WebP optimization for YouTube videos
             thumbnailHtml = `
                 <picture>
-                    <source srcset="https://img.youtube.com/vi_webp/${video.id}/mqdefault.webp" type="image/webp">
-                    <img data-src="https://img.youtube.com/vi/${video.id}/mqdefault.jpg" alt="${video.title}">
+                    <source srcset="https://img.youtube.com/vi_webp/${video.id}/maxresdefault.webp" type="image/webp">
+                    <img data-src="https://img.youtube.com/vi/${video.id}/maxresdefault.jpg" alt="${video.title}">
                 </picture>
             `;
         } else {
-            // Use a simple <img> for GDrive, placeholders, or custom URLs (like from Unsplash)
             const thumbUrl = video.type === 'gdrive' ? defaultThumbnails.gdrive : defaultThumb;
             thumbnailHtml = `<img data-src="${thumbUrl}" alt="${video.title}">`;
         }
@@ -119,6 +147,9 @@ function populateVideos(videoData, defaultThumbnails, targetGrid = null) {
                     </div>
                 </div>
             </div>
+            <div class="card-progress-bar-container">
+                <div class="card-progress-bar" id="progress-bar-${video.id}"></div>
+            </div>
         `;
         if (video.id.startsWith('placeholder_')) {
             card.classList.add('placeholder');
@@ -138,17 +169,29 @@ function populateVideos(videoData, defaultThumbnails, targetGrid = null) {
         const img = card.querySelector('img');
         lazyLoadObserver.observe(img);
 
+        // Set initial progress bar width
+        const progressBar = card.querySelector(`#progress-bar-${video.id}`);
+        if (progressBar && videoProgressData[video.id]) {
+            progressBar.style.width = `${videoProgressData[video.id]}%`;
+        }
+
         // --- Event Listeners for Controls ---
         const favoriteBtn = card.querySelector('.favorite-btn');
         if (favoriteBtn) {
             favoriteBtn.addEventListener('click', (e) => {
                 e.stopPropagation(); // Prevent the card's click event from firing
+                card.classList.add('animate-zoom');
                 handleFavoriteUpdate(video, favoriteBtn);
+                card.addEventListener('animationend', () => card.classList.remove('animate-zoom'), { once: true });
             });
         }
 
         const progressCheckbox = card.querySelector('.progress-checkbox');
         if (progressCheckbox) {
+            progressCheckbox.addEventListener('change', () => {
+                card.classList.add('animate-zoom');
+                card.addEventListener('animationend', () => card.classList.remove('animate-zoom'), { once: true });
+            });
             progressCheckbox.addEventListener('click', (e) => e.stopPropagation()); // Prevent card click
             progressCheckbox.addEventListener('change', (e) => handleProgressUpdate(video.id, e.target.checked));
         }
@@ -261,18 +304,54 @@ function updateNavButtons() {
 
 // Function to open the modal and play the video
 function openModal(video) {
-    if (!video || !video.id) return;
-    
+    if (!video || !video.id || video.id.startsWith('placeholder_')) return;
+
+    // Clear any existing autoplay timer
+    clearTimeout(upNextTimer);
+    document.getElementById('upNextCountdown').style.display = 'none';
+
     let embedUrl = '';
 
     if (video.type === 'gdrive') {
         embedUrl = `https://drive.google.com/file/d/${video.id}/preview`;
+        videoPlayer.src = embedUrl;
+        // Hide YouTube-specific controls for GDrive
+        document.getElementById('customControls').style.display = 'none';
+        document.getElementById('youtubeControls').style.display = 'none';
+        videoPlayer.parentElement.classList.remove('hide-yt-controls');
     } else { // Default to YouTube
-        embedUrl = `https://www.youtube.com/embed/${video.id}?autoplay=1`;
+        // Use YouTube Iframe API
+        embedUrl = `https://www.youtube.com/embed/${video.id}?autoplay=1&enablejsapi=1&origin=${window.location.origin}&controls=0&rel=0&modestbranding=1`;
+        if (player && typeof player.loadVideoById === 'function') {
+            player.loadVideoById(video.id);
+        } else {
+            videoPlayer.src = embedUrl;
+        }
+        document.getElementById('customControls').style.display = 'flex';
+        document.getElementById('youtubeControls').style.display = 'flex';
     }
 
-    videoPlayer.src = embedUrl;
     modal.classList.add('show');
+
+    // Set the active video title
+    const videoTitleEl = document.getElementById('videoTitle');
+    if (videoTitleEl) {
+        videoTitleEl.textContent = video.title;
+    }
+
+    // Reset playback speed display
+    const playbackSpeedDisplay = document.getElementById('playbackSpeed');
+    if (playbackSpeedDisplay) {
+        playbackSpeedDisplay.textContent = '1x';
+    }
+    // Reset player speed if it exists
+    if (player && typeof player.setPlaybackRate === 'function') {
+        player.setPlaybackRate(1);
+    }
+
+    // Add a class to body to prevent background scrolling
+    document.body.classList.add('modal-open');
+    document.addEventListener('keydown', handleModalKeydown);
 
     currentVideoIndex = videoData.findIndex(v => v.id === video.id);
     updateNavButtons();
@@ -300,6 +379,14 @@ function closeModal() {
     modal.classList.remove('show');
     videoPlayer.src = "";
     currentVideoIndex = -1; // Reset index when modal is closed
+    document.body.classList.remove('modal-open'); // Allow background scrolling again
+    document.removeEventListener('keydown', handleModalKeydown);
+    clearInterval(progressInterval); // Stop progress bar updates
+    clearTimeout(upNextTimer); // Clear autoplay timer on manual close
+    // Stop the YouTube video
+    if (player && typeof player.stopVideo === 'function') {
+        player.stopVideo();
+    }
 }
 
 function toggleFocusMode() {
@@ -311,6 +398,156 @@ function toggleFocusMode() {
         btn.textContent = 'Exit Focus';
     } else {
         btn.textContent = 'Focus Mode';
+    }
+}
+
+// --- YouTube Iframe API Functions ---
+function onYouTubeIframeAPIReady() {
+    player = new YT.Player('videoPlayer', {
+        events: {
+            'onReady': onPlayerReady,
+            'onStateChange': onPlayerStateChange
+        }
+    });
+}
+
+function onPlayerReady(event) {
+    // Setup custom controls
+    const playPauseBtn = document.getElementById('playPauseBtn');
+    const progressBarWrapper = document.getElementById('progressBarWrapper');
+    const fullscreenBtn = document.getElementById('fullscreenBtn');
+
+    playPauseBtn.onclick = () => togglePlayPause();
+    fullscreenBtn.onclick = () => toggleFullscreen();
+    progressBarWrapper.onclick = (e) => {
+        const rect = progressBarWrapper.getBoundingClientRect();
+        const clickX = e.clientX - rect.left;
+        const width = rect.width;
+        const seekTo = (clickX / width) * player.getDuration();
+        player.seekTo(seekTo, true);
+    };
+}
+
+function onPlayerStateChange(event) {
+    const playPauseBtn = document.getElementById('playPauseBtn');
+    clearInterval(progressInterval);
+
+    if (event.data === YT.PlayerState.PLAYING) {
+        playPauseBtn.textContent = '⏸️';
+        videoPlayer.parentElement.classList.add('hide-yt-controls');
+        progressInterval = setInterval(updateProgressBar, 250);
+    } else {
+        playPauseBtn.textContent = '▶️';
+        videoPlayer.parentElement.classList.remove('hide-yt-controls');
+    }
+
+    // When video ends (state 0), start the 'Up Next' countdown and show controls
+    if (event.data === YT.PlayerState.ENDED) {
+        videoPlayer.parentElement.classList.remove('hide-yt-controls');
+        const nextIndex = currentVideoIndex + 1;
+        if (nextIndex < videoData.length) {
+            const countdownEl = document.getElementById('upNextCountdown');
+            const upNextTitleEl = document.getElementById('upNextTitle');
+            const countdownTimerEl = document.getElementById('countdownTimer');
+
+            upNextTitleEl.textContent = `Up Next: ${videoData[nextIndex].title}`;
+            countdownEl.style.display = 'flex';
+
+            let countdown = 5;
+            countdownTimerEl.textContent = countdown;
+
+            upNextTimer = setInterval(() => {
+                countdown--;
+                countdownTimerEl.textContent = countdown;
+                if (countdown <= 0) {
+                    clearInterval(upNextTimer);
+                    navigateVideo(1); // Autoplay next video
+                }
+            }, 1000);
+        }
+    }
+}
+
+// --- Custom Player Control Functions ---
+function togglePlayPause() {
+    if (!player || typeof player.getPlayerState !== 'function') return;
+    const state = player.getPlayerState();
+    if (state === YT.PlayerState.PLAYING) {
+        player.pauseVideo();
+    } else {
+        player.playVideo();
+    }
+}
+
+function toggleFullscreen() {
+    const iframe = document.getElementById('videoPlayer');
+    if (document.fullscreenElement) {
+        document.exitFullscreen();
+    } else {
+        iframe.requestFullscreen();
+    }
+}
+
+function formatTime(seconds) {
+    const min = Math.floor(seconds / 60);
+    const sec = Math.floor(seconds % 60);
+    return `${min}:${String(sec).padStart(2, '0')}`;
+}
+
+function updateProgressBar() {
+    if (!player || typeof player.getCurrentTime !== 'function') return;
+    const currentTime = player.getCurrentTime();
+    const duration = player.getDuration();
+    const progress = (currentTime / duration) * 100;
+
+    document.getElementById('progressBar').style.width = `${progress}%`;
+
+    // Update card progress bar
+    const currentVideoId = videoData[currentVideoIndex]?.id;
+    if (currentVideoId) {
+        const cardProgressBar = document.getElementById(`progress-bar-${currentVideoId}`);
+        if (cardProgressBar) cardProgressBar.style.width = `${progress}%`;
+        videoProgressData[currentVideoId] = progress;
+        sessionStorage.setItem('videoProgress', JSON.stringify(videoProgressData));
+    }
+
+    document.getElementById('currentTime').textContent = formatTime(currentTime);
+    document.getElementById('duration').textContent = formatTime(duration);
+}
+
+// --- Keyboard Navigation for Modal ---
+function handleModalKeydown(e) {
+    if (e.key === 'Escape') {
+        closeModal();
+    } else if (e.key === ' ' || e.key === 'Spacebar') {
+        e.preventDefault(); // Prevent page scroll
+        togglePlayPause();
+    } else if (e.key.toLowerCase() === 'f') {
+        e.preventDefault();
+        toggleFullscreen();
+    }
+}
+
+function changePlaybackSpeed(rate) {
+    if (player && typeof player.setPlaybackRate === 'function') {
+        player.setPlaybackRate(rate);
+        document.getElementById('playbackSpeed').textContent = `${rate}x`;
+    }
+}
+
+function togglePictureInPicture() {
+    if (document.pictureInPictureEnabled && videoPlayer.src.includes('youtube')) {
+        if (document.pictureInPictureElement) {
+            document.exitPictureInPicture();
+        } else {
+            // The YouTube Iframe API doesn't directly support PiP request.
+            // We have to request it on the underlying video element if possible,
+            // but browser security often prevents this for cross-origin iframes.
+            // This is a known limitation. We add a message for the user.
+            alert("To use Picture-in-Picture, right-click twice on the video and select 'Picture in picture'.");
+        }
+    } else {
+        alert('Picture-in-Picture is not supported for this video or by your browser.');
     }
 }
 
@@ -433,6 +670,9 @@ if (backToTopBtn) {
 
 // --- Add Navigation Buttons to Modal on Load ---
 document.addEventListener('DOMContentLoaded', () => {
+    // Load video progress from session storage at the start
+    loadVideoProgress();
+
     if (modal) {
         const modalContent = modal.querySelector('.modal-content');
         if (modalContent) {
@@ -440,5 +680,11 @@ document.addEventListener('DOMContentLoaded', () => {
             modalContent.insertAdjacentHTML('beforeend', '<button id="focusModeBtn" class="focus-mode-btn" onclick="toggleFocusMode()">Focus Mode</button>');
             modalContent.insertAdjacentHTML('beforeend', '<button id="nextVideoBtn" class="modal-nav next" onclick="navigateVideo(1)">&#10095;</button>');
         }
+
+        // Load YouTube Iframe API script
+        const tag = document.createElement('script');
+        tag.src = "https://www.youtube.com/iframe_api";
+        const firstScriptTag = document.getElementsByTagName('script')[0];
+        firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
     }
 });

@@ -390,6 +390,49 @@ app.delete('/api/broadcast', async (req, res) => {
     }
 });
 
+// --- API Routes for Admin ---
+const ADMIN_CONFIG_PATH = path.join(__dirname, 'admin-config.json');
+
+// Helper to read admin config
+const readAdminConfig = async () => {
+    try {
+        const data = await fs.readFile(ADMIN_CONFIG_PATH, 'utf-8');
+        return JSON.parse(data);
+    } catch (error) {
+        // If file doesn't exist, create it with a default password
+        if (error.code === 'ENOENT') {
+            const defaultConfig = { password: "password123" };
+            await fs.writeFile(ADMIN_CONFIG_PATH, JSON.stringify(defaultConfig, null, 2));
+            return defaultConfig;
+        }
+        throw error;
+    }
+};
+
+// POST to login admin
+app.post('/api/admin/login', async (req, res) => {
+    const { password } = req.body;
+    const config = await readAdminConfig();
+    if (password === config.password) {
+        res.status(200).json({ success: true, message: 'Login successful' });
+    } else {
+        res.status(401).json({ success: false, message: 'Incorrect password' });
+    }
+});
+
+// POST to change admin password
+app.post('/api/admin/change-password', async (req, res) => {
+    const { currentPassword, newPassword } = req.body;
+    const config = await readAdminConfig();
+
+    if (currentPassword !== config.password) {
+        return res.status(403).json({ message: 'Incorrect current password.' });
+    }
+
+    await fs.writeFile(ADMIN_CONFIG_PATH, JSON.stringify({ password: newPassword }, null, 2));
+    res.status(200).json({ message: 'Password updated successfully!' });
+});
+
 // --- Static File Serving ---
 // This serves all your other HTML, CSS, and client-side JS files.
 // It should be placed after your specific API routes but before the root fallback.

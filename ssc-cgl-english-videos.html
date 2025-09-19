@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SSC-CGL English Videos | Competitive Success</title>
+    <link rel="icon" href="/success.png" type="image/png">
+    <link rel="stylesheet" href="/video-page.css">
+</head>
+<body>
+    <main class="main-container">
+        <button id="backToTopBtn" title="Go to top">↑</button>
+        <div class="back-to-home">
+            <a href="/ssc-cgl-videos.html">← Back to Subjects</a>
+        </div>
+        <div class="page-header">
+            <h1>English Language & Comprehension</h1>
+            <p>Click on any video to play it instantly.</p>
+        </div>
+        <div class="grid-container" id="videoGrid">
+            <!-- Video cards will be dynamically inserted here by JavaScript -->
+        </div>
+    </main>
+
+    <!-- The Modal -->
+    <div id="videoModal" class="modal">
+        <div class="modal-content">
+            <span class="close-button" onclick="closeModal()">&times;</span>
+            <h3 id="videoTitle" class="video-title-modal">Video Title</h3>
+            <div class="video-container">
+                <iframe id="videoPlayer" src="" title="Video Player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; fullscreen" allowfullscreen></iframe>
+                <!-- Custom Controls -->
+                <div id="customControls" class="custom-controls-container">
+                    <button id="playPauseBtn">▶️</button>
+                    <span id="currentTime" class="time-display">0:00</span>
+                    <div id="progressBarWrapper" class="progress-bar-wrapper">
+                        <div id="progressBar" class="progress-bar-filled"></div>
+                    </div>
+                    <span id="duration" class="time-display">0:00</span>
+                    <button id="fullscreenBtn">⛶</button>
+                </div>
+                <!-- Up Next Countdown Overlay -->
+                <div id="upNextCountdown" class="up-next-overlay">
+                    <p id="upNextTitle">Up Next: Video Title</p>
+                    <p>Playing in <span id="countdownTimer">5</span>s...</p>
+                    <button onclick="navigateVideo(1)">Play Now</button>
+                    <button onclick="closeModal()">Cancel</button>
+                </div>
+            </div>
+            <!-- YouTube Specific Controls -->
+            <div id="youtubeControls" class="video-controls-extra">
+                <div class="control-group">
+                    <span>Speed:</span>
+                    <button onclick="changePlaybackSpeed(0.75)">0.75x</button>
+                    <button onclick="changePlaybackSpeed(1)">1x</button>
+                    <button onclick="changePlaybackSpeed(1.25)">1.25x</button>
+                    <button onclick="changePlaybackSpeed(1.5)">1.5x</button>
+                    <button onclick="changePlaybackSpeed(2)">2x</button>
+                    <span id="playbackSpeed" class="speed-display">1x</span>
+                </div>
+                <div class="control-group">
+                    <button onclick="togglePictureInPicture()">
+                        <svg xmlns="http://www.w3.org/2000/svg" height="16" width="16" viewBox="0 0 512 512" fill="currentColor"><path d="M416 32h-320c-26.47 0-48 21.53-48 48v352c0 26.47 21.53 48 48 48h320c26.47 0 48-21.53 48-48v-352c0-26.47-21.53-48-48-48zm-16 384h-288v-320h288v320zm-32-192h-128v128h128v-128z"/></svg>
+                        PiP
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="/video-page.js"></script>
+    <script>
+        // --- Page Initialization ---
+        document.addEventListener('DOMContentLoaded', () => {
+            // In a real app, you would fetch this from an API like:
+            // fetch('/api/videos?category=ssc-cgl-english').then(...)
+            // For now, we'll use a sample playlist.
+            // As requested, here are 42 sample videos for the English section.
+            videoData = [
+                { "id": "Hho_s3-w28Y", "title": "SSC CGL 2024 | English | Best 50+ Error Detection Questions" },
+                { "id": "yubGa-HwWcQ", "title": "SSC CGL 2024 | English | Cloze Test | Tricks To Solve Cloze Test" },
+                { "id": "4jO2Un3B3SM", "title": "SSC CGL | SSC CGL English | English For SSC CGL | Complete English" },
+                { "id": "t9GFyG4iX0c", "title": "SSC CGL 2024 | English | Para Jumbles | Tricks To Solve Para Jumbles" },
+                { "id": "ZkX5_A3X2zM", "title": "SSC CGL English | Vocabulary | Vocab For SSC CGL" },
+                { "id": "7EMO2-290sE", "title": "SSC CGL 2023 | English | One Word Substitution" },
+                { "id": "S9w4a-3f4uA", "title": "SSC CGL English | Idioms & Phrases | Complete Idioms & Phrases" },
+                { "id": "8G9X_sAZd4U", "title": "Reading Comprehension Tricks | English For All Competitive Exams" },
+                { "id": "o1_42iR84Yc", "title": "SSC CGL English | Narration (Direct/Indirect Speech)" },
+                { "id": "53T563-hQfA", "title": "SSC CGL English | Active and Passive Voice | Voice Change" },
+                { "id": "3-tJuL2aHwE", "title": "SSC CGL English | Subject Verb Agreement | English Grammar" },
+                { "id": "B2UvBa4D3Lg", "title": "SSC CGL English | Noun | Complete Noun Chapter" },
+                { "id": "a-s8o1q_1qQ", "title": "SSC CGL English | Pronoun | Complete Pronoun Chapter" },
+                { "id": "e_p4g-R3d_w", "title": "SSC CGL English | Adjective | Complete Adjective Chapter" },
+                { "id": "f_tZ3n_7yXo", "title": "SSC CGL English | Adverb | Complete Adverb Chapter" },
+                { "id": "q_r_s_t_u_v_w", "title": "English Lecture 16: Conjunctions" },
+                { "id": "x_y_z_a_b_c_d", "title": "English Lecture 17: Prepositions" },
+                { "id": "e_f_g_h_i_j_k", "title": "English Lecture 18: Sentence Improvement" },
+                { "id": "l_m_n_o_p_q_r", "title": "English Lecture 19: Fill in the Blanks" },
+                { "id": "s_t_u_v_w_x_y", "title": "English Lecture 20: Spelling Correction" },
+                { "id": "z_a_b_c_d_e_f", "title": "English Lecture 21: Synonyms & Antonyms" },
+                { "id": "g_h_i_j_k_l_m", "title": "English Lecture 22: Root Words Vocabulary" },
+                { "id": "n_o_p_q_r_s_t", "title": "English Lecture 23: Phrasal Verbs" },
+                { "id": "u_v_w_x_y_z_a", "title": "English Lecture 24: Mock Test 1" },
+                { "id": "b_c_d_e_f_g_h", "title": "English Lecture 25: Mock Test 2" },
+                { "id": "i_j_k_l_m_n_o", "title": "English Lecture 26: Mock Test 3" },
+                { "id": "p_q_r_s_t_u_v", "title": "English Lecture 27: Mock Test 4" },
+                { "id": "w_x_y_z_a_b_c", "title": "English Lecture 28: Mock Test 5" },
+                { "id": "d_e_f_g_h_i_j", "title": "English Lecture 29: Previous Year Questions Part 1" },
+                { "id": "k_l_m_n_o_p_q", "title": "English Lecture 30: Previous Year Questions Part 2" },
+                { "id": "r_s_t_u_v_w_x", "title": "English Lecture 31: Previous Year Questions Part 3" },
+                { "id": "y_z_a_b_c_d_e", "title": "English Lecture 32: Previous Year Questions Part 4" },
+                { "id": "f_g_h_i_j_k_l", "title": "English Lecture 33: Previous Year Questions Part 5" },
+                { "id": "m_n_o_p_q_r_s", "title": "English Lecture 34: Advanced Error Spotting" },
+                { "id": "t_u_v_w_x_y_z", "title": "English Lecture 35: Advanced Cloze Test" },
+                { "id": "a_b_c_d_e_f_g", "title": "English Lecture 36: Advanced Para Jumbles" },
+                { "id": "h_i_j_k_l_m_n", "title": "English Lecture 37: Advanced Vocabulary" },
+                { "id": "o_p_q_r_s_t_u", "title": "English Lecture 38: Mains Level Mock Test 1" },
+                { "id": "v_w_x_y_z_a_b", "title": "English Lecture 39: Mains Level Mock Test 2" },
+                { "id": "c_d_e_f_g_h_i", "title": "English Lecture 40: Mains Level Mock Test 3" },
+                { "id": "j_k_l_m_n_o_p", "title": "English Lecture 41: Strategy Session" },
+                { "id": "q_r_s_t_u_v_w", "title": "English Lecture 42: Last Minute Tips" }
+            ];
+            const defaultThumbnails = {
+                default: 'https://images.unsplash.com/photo-1509021436665-8f07dbf5bf1d?q=80&w=2070'
+            };
+            fetchUserData().then(() => {
+                populateVideos(videoData, defaultThumbnails, document.getElementById('videoGrid'));
+            });
+        });
+    </script>
+
+</body>
+</html>

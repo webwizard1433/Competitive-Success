@@ -9,7 +9,7 @@
 </head>
 <body>
     <main class="main-container">
-        <button id="backToTopBtn" title="Go to top">↑</button>
+        <button onclick="scrollToTop()" id="backToTopBtn" title="Go to top">↑</button>
         <div class="back-to-home">
             <a href="/ssc-cgl-videos.html">← Back to Subjects</a>
         </div>
@@ -25,9 +25,44 @@
     <!-- The Modal -->
     <div id="videoModal" class="modal">
         <div class="modal-content">
-            <span class="close-button" onclick="closeModal()">&times;</span>
+            <span class="close-button" onclick="closeModal()">&times;</span>            <h3 id="videoTitle" class="video-title-modal">Video Title</h3>
             <div class="video-container">
                 <iframe id="videoPlayer" src="" title="Video Player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; fullscreen" allowfullscreen></iframe>
+                <!-- Custom Controls -->
+                <div id="customControls" class="custom-controls-container">
+                    <button id="playPauseBtn">▶️</button>
+                    <span id="currentTime" class="time-display">0:00</span>
+                    <div id="progressBarWrapper" class="progress-bar-wrapper">
+                        <div id="progressBar" class="progress-bar-filled"></div>
+                    </div>
+                    <span id="duration" class="time-display">0:00</span>
+                    <button id="fullscreenBtn">⛶</button>
+                </div>
+                <!-- Up Next Countdown Overlay -->
+                <div id="upNextCountdown" class="up-next-overlay">
+                    <p id="upNextTitle">Up Next: Video Title</p>
+                    <p>Playing in <span id="countdownTimer">5</span>s...</p>
+                    <button onclick="navigateVideo(1)">Play Now</button>
+                    <button onclick="closeModal()">Cancel</button>
+                </div>
+            </div>
+            <!-- YouTube Specific Controls -->
+            <div id="youtubeControls" class="video-controls-extra">
+                <div class="control-group">
+                    <span>Speed:</span>
+                    <button onclick="changePlaybackSpeed(0.75)">0.75x</button>
+                    <button onclick="changePlaybackSpeed(1)">1x</button>
+                    <button onclick="changePlaybackSpeed(1.25)">1.25x</button>
+                    <button onclick="changePlaybackSpeed(1.5)">1.5x</button>
+                    <button onclick="changePlaybackSpeed(2)">2x</button>
+                    <span id="playbackSpeed" class="speed-display">1x</span>
+                </div>
+                <div class="control-group">
+                    <button onclick="togglePictureInPicture()">
+                        <svg xmlns="http://www.w3.org/2000/svg" height="16" width="16" viewBox="0 0 512 512" fill="currentColor"><path d="M416 32h-320c-26.47 0-48 21.53-48 48v352c0 26.47 21.53 48 48 48h320c26.47 0 48-21.53 48-48v-352c0-26.47-21.53-48-48-48zm-16 384h-288v-320h288v320zm-32-192h-128v128h128v-128z"/></svg>
+                        PiP
+                    </button>
+                </div>
             </div>
         </div>
     </div>

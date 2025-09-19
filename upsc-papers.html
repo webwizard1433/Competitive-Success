@@ -3,92 +3,169 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="icon" href="/success.png" type="image/png">
     <title>UPSC Previous Year Papers | Competitive Success</title>
+    <link rel="icon" href="/success.png" type="image/png">
+    <link rel="stylesheet" href="/video-page.css">
     <style>
-        :root {
-            --primary-color: #FFC107;
-            --card-background: rgba(255, 255, 255, 0.05);
-            --card-border-color: rgba(255, 255, 255, 0.2);
-            --text-color: #F5F5DC;
-            --secondary-text-color: #adb5bd;
+        .controls-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+            flex-wrap: wrap;
+            gap: 1rem;
         }
-        body {
-            background: linear-gradient(135deg, rgb(10, 35, 66) 0%, rgb(0, 26, 51) 100%);
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-            margin: 0; color: var(--text-color);
+        .search-bar {
+            flex-grow: 1;
+            max-width: 400px;
         }
-        .main-container { padding: 2rem; max-width: 1200px; margin: auto; }
-        .page-header { text-align: center; margin-bottom: 2.5rem; }
-        .page-header h1 { font-size: 3rem; color: var(--primary-color); margin: 0; }
-        .page-header p { font-size: 1.2rem; color: var(--text-color); }
-        .back-to-home { text-align: left; margin-bottom: 1.5rem; }
-        .back-to-home a { display: inline-block; padding: 0.5rem 1rem; background-color: var(--card-background); border: 1px solid var(--card-border-color); color: var(--primary-color); text-decoration: none; font-weight: bold; border-radius: 5px; transition: background-color 0.3s ease; }
-        .back-to-home a:hover { background-color: rgba(255, 255, 255, 0.1); }
-        .folder-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 1.5rem; }
-        .folder { background-color: var(--card-background); border: 1px solid var(--card-border-color); backdrop-filter: blur(5px); border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.07); text-align: center; padding: 1.5rem; transition: transform 0.2s ease, box-shadow 0.2s ease; text-decoration: none; color: var(--text-color); display: flex; flex-direction: column; align-items: center; justify-content: center; }
-        .folder:hover .folder-icon {
-            animation: wobble 0.8s ease-in-out;
+        .table-container {
+            overflow-x: auto;
+            background-color: var(--card-background);
+            border-radius: 8px;
+            border: 1px solid var(--card-border-color);
         }
-        @keyframes wobble {
-            0%, 100% { transform: rotate(0deg) scale(1); } 25% { transform: rotate(-5deg) scale(1.1); } 75% { transform: rotate(5deg) scale(1.1); }
+        .papers-table {
+            width: 100%;
+            border-collapse: collapse;
         }
-        .folder:hover { transform: translateY(-5px); box-shadow: 0 5px 15px rgba(0,0,0,0.15); }
-        .folder-icon { font-size: 4rem; color: #ffca28; }
-        .folder-name { font-weight: 600; margin-top: 1rem; }
+        .papers-table th, .papers-table td {
+            padding: 1rem 1.25rem;
+            text-align: left;
+            border-bottom: 1px solid var(--card-border-color);
+        }
+        .papers-table tr:last-child td {
+            border-bottom: none;
+        }
+        .papers-table th {
+            color: var(--primary-color);
+            font-size: 0.9rem;
+            text-transform: uppercase;
+        }
+        .papers-table tbody tr:hover {
+            background-color: rgba(77, 171, 247, 0.05);
+        }
+        .download-btn {
+            display: inline-block;
+            padding: 0.5rem 1.2rem;
+            background-color: var(--primary-color);
+            color: #0A2342;
+            text-decoration: none;
+            border-radius: 5px;
+            font-weight: bold;
+            transition: background-color 0.3s ease;
+        }
+        .download-btn:hover {
+            background-color: var(--primary-hover-color);
+        }
+        .download-btn.downloaded {
+            background-color: var(--success-color);
+            color: white;
+        }
     </style>
 </head>
 <body>
     <main class="main-container">
         <div class="back-to-home">
-            <a href="/home.html?exam=upsc">← Back to Dashboard</a>
+            <a href="/upsc.html">← Back to UPSC Resources</a>
         </div>
         <div class="page-header">
             <h1>UPSC Previous Year Papers</h1>
-            <p>Browse question papers by year.</p>
+            <p>Download official question papers for Prelims and Mains.</p>
         </div>
-        <div class="folder-grid">
-            <!-- 10 Folder Links -->
-            <a href="/upsc-papers-2023.html" class="folder">
-                <span class="folder-icon">📄</span>
-                <span class="folder-name">2023 Papers</span>
-            </a>
-            <a href="#" class="folder">
-                <span class="folder-icon">📄</span>
-                <span class="folder-name">2022 Papers</span>
-            </a>
-            <a href="#" class="folder">
-                <span class="folder-icon">📄</span>
-                <span class="folder-name">2021 Papers</span>
-            </a>
-            <a href="#" class="folder">
-                <span class="folder-icon">📄</span>
-                <span class="folder-name">2020 Papers</span>
-            </a>
-            <a href="#" class="folder">
-                <span class="folder-icon">📄</span>
-                <span class="folder-name">2019 Papers</span>
-            </a>
-            <a href="#" class="folder">
-                <span class="folder-icon">📄</span>
-                <span class="folder-name">2018 Papers</span>
-            </a>
-            <a href="#" class="folder">
-                <span class="folder-icon">📄</span>
-                <span class="folder-name">2017 Papers</span>
-            </a>
-            <a href="#" class="folder">
-                <span class="folder-icon">📄</span>
-                <span class="folder-name">2016 Papers</span>
-            </a>
-            <a href="#" class="folder">
-                <span class="folder-icon">📄</span>
-                <span class="folder-name">2015 Papers</span>
-            </a>
-            <a href="#" class="folder">
-                <span class="folder-icon">📄</span>
-                <span class="folder-name">2014 Papers</span>
-            </a>
+
+        <div class="controls-container">
+            <div class="search-bar">
+                <input type="text" id="paperSearchInput" class="search-input" placeholder="🔎 Search by year or paper name...">
+            </div>
+        </div>
+
+        <div class="table-container">
+            <table class="papers-table">
+                <thead>
+                    <tr>
+                        <th>Year</th>
+                        <th>Paper Name</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody id="papersTableBody">
+                    <!-- Paper rows will be populated here by JavaScript -->
+                </tbody>
+            </table>
         </div>
     </main>
+
+    <script>
+        const papersData = [
+            { year: 2023, name: "Prelims - General Studies Paper I", url: "#" },
+            { year: 2023, name: "Prelims - CSAT Paper II", url: "#" },
+            { year: 2023, name: "Mains - Essay", url: "#" },
+            { year: 2023, name: "Mains - GS Paper I", url: "#" },
+            { year: 2023, name: "Mains - GS Paper II", url: "#" },
+            { year: 2023, name: "Mains - GS Paper III", url: "#" },
+            { year: 2023, name: "Mains - GS Paper IV", url: "#" },
+            { year: 2022, name: "Prelims - General Studies Paper I", url: "#" },
+            { year: 2022, name: "Prelims - CSAT Paper II", url: "#" },
+            { year: 2022, name: "Mains - Essay", url: "#" },
+            { year: 2021, name: "Prelims - General Studies Paper I", url: "#" },
+            { year: 2021, name: "Prelims - CSAT Paper II", url: "#" },
+            { year: 2020, name: "Prelims - General Studies Paper I", url: "#" },
+            { year: 2020, name: "Prelims - CSAT Paper II", url: "#" },
+            // Add more papers here...
+        ];
+
+        const tableBody = document.getElementById('papersTableBody');
+        const searchInput = document.getElementById('paperSearchInput');
+
+        function renderTable(papers) {
+            tableBody.innerHTML = '';
+            if (papers.length === 0) {
+                tableBody.innerHTML = '<tr><td colspan="3" style="text-align: center; padding: 2rem;">No papers found.</td></tr>';
+                return;
+            }
+
+            papers.forEach(paper => {
+                const row = tableBody.insertRow();
+                const paperId = `${paper.year}-${paper.name.replace(/\s+/g, '-')}`;
+                const isDownloaded = localStorage.getItem(paperId) === 'true';
+
+                row.innerHTML = `
+                    <td>${paper.year}</td>
+                    <td>${paper.name}</td>
+                    <td>
+                        <a href="${paper.url}" class="download-btn ${isDownloaded ? 'downloaded' : ''}" data-paper-id="${paperId}" download>
+                            ${isDownloaded ? 'Downloaded' : 'Download'}
+                        </a>
+                    </td>
+                `;
+            });
+        }
+
+        function filterPapers() {
+            const query = searchInput.value.toLowerCase();
+            const filteredPapers = papersData.filter(paper => {
+                return paper.name.toLowerCase().includes(query) || String(paper.year).includes(query);
+            });
+            renderTable(filteredPapers);
+        }
+
+        // Event listener for download buttons
+        tableBody.addEventListener('click', (e) => {
+            if (e.target.classList.contains('download-btn')) {
+                const paperId = e.target.dataset.paperId;
+                localStorage.setItem(paperId, 'true');
+                e.target.classList.add('downloaded');
+                e.target.textContent = 'Downloaded';
+            }
+        });
+
+        searchInput.addEventListener('keyup', filterPapers);
+
+        // Initial render
+        document.addEventListener('DOMContentLoaded', () => {
+            renderTable(papersData);
+        });
+    </script>
+</body>
 </html>

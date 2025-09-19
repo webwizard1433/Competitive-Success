@@ -1,0 +1,133 @@
+/* --- "Cosmic Gold" Theme for Exam Hub Pages --- */
+:root {
+    --primary-color: #FFC107; /* Gold for accents */
+    --primary-hover-color: #DAA520;
+    --card-background: rgba(37, 38, 43, 0.5); /* #25262b with transparency */
+    --card-border-color: rgba(52, 58, 64, 0.7); /* #343a40 with transparency */
+    --text-color: #F5F5DC; /* Beige/Off-white */
+    --secondary-text-color: #adb5bd; /* Lighter gray for secondary text */
+}
+
+body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    background-color: #0a192f; /* Dark blue fallback */
+    background-image: 
+        radial-gradient(at 80% 20%, hsla(212,40%,50%,0.3) 0px, transparent 50%),
+        radial-gradient(at 20% 80%, hsla(280,40%,50%,0.3) 0px, transparent 50%);
+    margin: 0;
+    color: var(--text-color);
+    min-height: 100vh;
+    background-attachment: fixed;
+}
+
+.main-container {
+    padding: 2rem;
+    max-width: 1200px;
+    margin: auto;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.page-header {
+    text-align: center;
+    margin-bottom: 2.5rem;
+}
+
+.page-header h1 {
+    font-size: 3rem;
+    color: var(--primary-color);
+    margin: 0;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.page-header p {
+    font-size: 1.2rem;
+    color: var(--secondary-text-color);
+    max-width: 60ch;
+    margin: 0.5rem auto 0;
+}
+
+.back-to-home {
+    margin-bottom: 1.5rem;
+}
+
+.back-to-home a {
+    display: inline-block;
+    padding: 0.5rem 1rem;
+    background-color: var(--card-background);
+    border: 1px solid var(--card-border-color);
+    color: var(--primary-color);
+    text-decoration: none;
+    font-weight: bold;
+    border-radius: 5px;
+    transition: background-color 0.3s ease;
+}
+
+.back-to-home a:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+}
+
+.description-box {
+    background-color: var(--card-background);
+    border: 1px solid var(--card-border-color);
+    border-radius: 12px;
+    padding: 1.5rem 2rem;
+    margin-bottom: 2.5rem;
+    backdrop-filter: blur(5px);
+}
+
+.description-box h2 {
+    color: var(--primary-color);
+    margin-top: 0;
+}
+
+.website-link-box {
+    margin-top: 1rem;
+    padding: 0.75rem 1rem;
+    background-color: rgba(0,0,0,0.2);
+    border-radius: 5px;
+    text-align: center;
+}
+
+.website-link-box a {
+    color: var(--primary-color);
+    text-decoration: none;
+    font-weight: bold;
+}
+
+.grid-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 1.5rem;
+}
+
+.resource-card {
+    background-color: var(--card-background);
+    border: 1px solid var(--card-border-color);
+    backdrop-filter: blur(5px);
+    border-radius: 12px;
+    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+    transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease;
+    display: flex;
+    flex-direction: column;
+}
+
+.resource-card:hover {
+    transform: translateY(-6px);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+    border-color: var(--primary-color);
+}
+
+.card-thumbnail { width: 100%; height: 160px; object-fit: cover; background-color: #333; }
+.card-content { padding: 1.25rem; flex-grow: 1; display: flex; flex-direction: column; }
+.card-content h3 { margin: 0 0 0.5rem; font-size: 1.2rem; color: var(--text-color); } 
+.card-content p { margin: 0 0 1rem; color: var(--secondary-text-color); font-size: 0.9rem; flex-grow: 1; }
+.btn { display: block; padding: 0.6rem 1.2rem; background-color: var(--primary-color); color: #0A2342; text-decoration: none; border-radius: 5px; font-weight: bold; text-align: center; transition: background-color 0.3s ease; margin-top: auto; }
+.btn:hover { background-color: var(--primary-hover-color); }
+
+@media (max-width: 600px) {
+    .main-container { padding: 1rem; }
+    .page-header h1 { font-size: 2.2rem; }
+}

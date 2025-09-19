@@ -490,6 +490,48 @@
             opacity: 1;
             transform: scale(1.1);
         }
+
+        /* --- Confirmation Modal --- */
+        .confirm-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.7);
+            backdrop-filter: blur(5px);
+            z-index: 3000;
+            display: none; /* Hidden by default */
+            justify-content: center;
+            align-items: center;
+            animation: fadeIn 0.3s ease;
+        }
+        .confirm-modal.show {
+            display: flex;
+        }
+        .confirm-modal-content {
+            background-color: var(--card-background);
+            border: 1px solid var(--card-border-color);
+            border-radius: 12px;
+            padding: 2rem;
+            width: 90%;
+            max-width: 400px;
+            text-align: center;
+            box-shadow: 0 8px 32px 0 rgba(0,0,0,0.4);
+        }
+        .confirm-modal-content h2 {
+            color: var(--primary-color);
+            margin: 0 0 1rem;
+        }
+        .confirm-modal-content p {
+            color: var(--secondary-text-color);
+            margin-bottom: 2rem;
+        }
+        .confirm-modal-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+        }
     </style>
 </head>
 <body>
@@ -512,7 +554,7 @@
         <ul class="user-menu" style="margin-top: auto; padding-top: 1rem; border-top: 1px solid var(--card-border-color);">
             <li><a href="/cutoff-predictor.html"><span class="icon">📊</span> Cut-off Predictor</a></li>
             <li><a href="/typing-test.html"><span class="icon">⌨️</span> Typing Test</a></li>
-            <li><a href="#" onclick="logout()"><span class="icon">🚪</span> Logout</a></li>
+            <li><a href="#" onclick="showLogoutConfirm()"><span class="icon">🚪</span> Logout</a></li>
         </ul>
     </aside>
 
@@ -572,6 +614,19 @@
             <div id="searchResults" class="search-results"></div>
         </div>
     </div>
+
+    <!-- Logout Confirmation Modal -->
+    <div id="logoutConfirmModal" class="confirm-modal">
+        <div class="confirm-modal-content">
+            <h2>Confirm Logout</h2>
+            <p>Are you sure you want to log out?</p>
+            <div class="confirm-modal-buttons">
+                <button class="btn btn-secondary" onclick="hideLogoutConfirm()" style="background-color: var(--card-border-color); color: var(--text-color);">Cancel</button>
+                <button class="btn" onclick="logout()">Confirm</button>
+            </div>
+        </div>
+    </div>
+
 
     <button onclick="scrollToTop()" id="backToTopBtn" title="Go to top">↑</button>
 
@@ -663,7 +718,16 @@
             toggleSideMenu();
         }
 
+        function showLogoutConfirm() {
+            document.getElementById('logoutConfirmModal').classList.add('show');
+        }
+
+        function hideLogoutConfirm() {
+            document.getElementById('logoutConfirmModal').classList.remove('show');
+        }
+
         function logout() {
+            hideLogoutConfirm(); // Ensure modal is hidden
             safeStorage.removeItem('sessionToken');
             safeStorage.removeItem('userName');
             safeStorage.removeItem('userExamChoice');
