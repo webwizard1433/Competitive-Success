@@ -65,10 +65,5 @@
         </div>
     </main>
     <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            const safeStorage = window.localStorage || {};
-            const userExam = safeStorage.getItem('userExamChoice') || 'ssc-cgl';
-            document.getElementById('backToHomeLink').href = `/home.html?exam=${userExam}`;
-        });
     </script>
 </html>
