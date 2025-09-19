@@ -1044,7 +1044,10 @@
         // Add a pageshow event listener to re-check authentication
         // This prevents users from accessing the page via browser back/forward after logout
         window.addEventListener('pageshow', function(event) {
-            if (!safeStorage.getItem('sessionToken')) {
+            // The 'persisted' property is true if the page is from the back/forward cache
+            if (event.persisted) {
+                window.location.reload();
+            } else if (!safeStorage.getItem('sessionToken')) {
                 window.location.href = '/login.html';
             }
         });

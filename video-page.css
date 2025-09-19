@@ -35,6 +35,12 @@ body {
     background-color: rgba(255, 255, 255, 0.1);
 }
 .grid-container { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1.5rem; }
+
+/* Responsive layout for mobile devices */
+@media (max-width: 600px) {
+    .grid-container { grid-template-columns: 1fr; /* Single column layout */ }
+}
+
 body.modal-open {
     overflow: hidden; /* Prevent background from scrolling when modal is open */
 }

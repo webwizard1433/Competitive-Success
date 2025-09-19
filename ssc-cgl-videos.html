@@ -61,6 +61,18 @@
         </div>
     </main>
     <script>
+        // --- Standard Authentication Check ---
+        // This prevents access if not logged in and handles screen rotation logouts.
+        const sessionToken = window.localStorage.getItem('sessionToken');
+        if (!sessionToken) {
+            window.location.href = '/login.html';
+        }
+        window.addEventListener('pageshow', function(event) {
+            if (!window.localStorage.getItem('sessionToken')) {
+                window.location.href = '/login.html';
+            }
+        });
+
         // Add a listener to the main content area to remove blur before navigating
         const mainContainer = document.querySelector('.main-container');
         mainContainer.addEventListener('click', function(e) {

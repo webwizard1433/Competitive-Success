@@ -359,17 +359,14 @@ function openModal(video) {
     loadDoubtForum(video.id);
     // Store the currently playing video ID in session storage
     try {
-        if (window.sessionStorage) {
-            const recentVideosRaw = sessionStorage.getItem('recentlyWatched');
-            let recentVideos = recentVideosRaw ? JSON.parse(recentVideosRaw) : [];
-            // Remove the video if it's already in the list to avoid duplicates
-            recentVideos = recentVideos.filter(v => v.id !== video.id);
-            // Add the new video to the beginning of the list
-            recentVideos.unshift(video);
-            // Keep only the last 5 videos
-            const limitedRecent = recentVideos.slice(0, 5);
-            sessionStorage.setItem('recentlyWatched', JSON.stringify(limitedRecent));
-        }
+        // Store only the necessary info to prevent errors on page reload.
+        // The full video object was causing parsing issues on other pages.
+        const videoToStore = {
+            id: video.id,
+            title: video.title,
+            type: video.type
+        };
+        sessionStorage.setItem('activeVideo', JSON.stringify(videoToStore));
     } catch(e) {
         console.error("Could not update recently watched list:", e);
     }

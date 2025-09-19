@@ -110,6 +110,18 @@
             const userExam = safeStorage.getItem('userExamChoice') || 'upsc';
             document.getElementById('backToHomeLink').href = `/home.html?exam=${userExam}`;
         });
+
+        // --- Standard Authentication Check ---
+        // This prevents access if not logged in and handles screen rotation logouts.
+        const sessionToken = window.localStorage.getItem('sessionToken');
+        if (!sessionToken) {
+            window.location.href = '/login.html';
+        }
+        window.addEventListener('pageshow', function(event) {
+            if (!window.localStorage.getItem('sessionToken')) {
+                window.location.href = '/login.html';
+            }
+        });
     </script>
 
 </html>
