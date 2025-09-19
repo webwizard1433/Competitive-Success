@@ -280,6 +280,7 @@
             const messageEl = document.getElementById('adminMessage');
             const submitButton = e.target.querySelector('button');
 
+            let result; // Define result outside the try block
             submitButton.disabled = true;
             submitButton.textContent = 'Logging in...';
             messageEl.style.display = 'none';
@@ -290,7 +291,7 @@
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ password })
                 });
-                const result = await response.json();
+                result = await response.json();
                 if (!response.ok) throw new Error(result.message);
 
                 if (result.success) {
@@ -298,7 +299,7 @@
                     window.location.href = '/index.html';
                 }
             } catch (error) {
-                messageEl.textContent = error.message || 'Incorrect password.';
+                messageEl.textContent = (result && result.message) || error.message || 'Incorrect password. Please try again.';
                 messageEl.className = 'message error';
                 sessionStorage.removeItem('adminToken');
             }
@@ -316,6 +317,7 @@
             const messageEl = document.getElementById('studentMessage');
             const submitButton = e.target.querySelector('button');
 
+            let result; // Define result outside the try block
             submitButton.disabled = true;
             submitButton.textContent = 'Logging in...';
             messageEl.style.display = 'none';
@@ -326,7 +328,7 @@
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ contact, password })
                 });
-                const result = await response.json();
+                result = await response.json();
                 if (!result.success) throw new Error(result.message);
 
                 if (result.user) {
@@ -339,7 +341,7 @@
                     throw new Error('Invalid credentials. Please check your email/mobile and password.');
                 }
             } catch (error) {
-                messageEl.textContent = error.message;
+                messageEl.textContent = (result && result.message) || error.message || 'An error occurred. Please try again.';
                 messageEl.className = 'message error';
             } finally {
                 submitButton.disabled = false;

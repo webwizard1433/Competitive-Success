@@ -2,6 +2,7 @@ const express = require('express');
 const path = require('path');
 const fs = require('fs').promises;
 const cors = require('cors'); // You'll need to install this
+const bcrypt = require('bcrypt');
 const sqlite3 = require('sqlite3').verbose();
 
 const app = express();
@@ -350,13 +351,14 @@ app.post('/api/users/register', async (req, res) => {
         return res.status(400).json({ message: 'All fields are required.' });
     }
 
+    const saltRounds = 10;
+    const hashedPassword = await bcrypt.hash(password, saltRounds);
+
     const sql = `INSERT INTO users (contactInfo, fullName, password, examChoice, registeredAt, progress, favorites, mockTestHistory)
                  VALUES (?, ?, ?, ?, ?, ?, ?, ?)`;
     
     const newUser = {
-        contactInfo,
-        fullName,
-        password, // In a real app, this should be hashed!
+        contactInfo, fullName, password: hashedPassword,
         examChoice: examChoice || 'upsc',
         registeredAt: new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' }),
         progress: JSON.stringify({}),
@@ -364,7 +366,7 @@ app.post('/api/users/register', async (req, res) => {
         mockTestHistory: JSON.stringify([])
     };
 
-    db.run(sql, [newUser.contactInfo, newUser.fullName, newUser.password, newUser.examChoice, newUser.registeredAt, newUser.progress, newUser.favorites, newUser.mockTestHistory], function(err) {
+    db.run(sql, [newUser.contactInfo, newUser.fullName, hashedPassword, newUser.examChoice, newUser.registeredAt, newUser.progress, newUser.favorites, newUser.mockTestHistory], function(err) {
         if (err) {
             if (err.message.includes('UNIQUE constraint failed')) {
                 return res.status(409).json({ message: 'An account with this email/mobile already exists.' });
@@ -386,26 +388,51 @@ app.post('/api/users/register', async (req, res) => {
 // POST to login a user
 app.post('/api/users/login', async (req, res) => {
     const { contact, password } = req.body;
-    const sql = "SELECT * FROM users WHERE contactInfo = ? AND password = ?";
+    const sql = "SELECT * FROM users WHERE contactInfo = ?";
 
-    db.get(sql, [contact, password], (err, row) => {
+    db.get(sql, [contact], async (err, user) => {
         if (err) {
             console.error('Login error:', err.message);
             return res.status(500).json({ message: 'Server error during login.' });
         }
-        if (row) {
-            // Parse JSON string fields before sending to client
-            row.progress = JSON.parse(row.progress || '{}');
-            row.favorites = JSON.parse(row.favorites || '{}');
-            row.mockTestHistory = JSON.parse(row.mockTestHistory || '[]');
-            
-            const { password: _, ...userToReturn } = row;
-            res.json({ success: true, user: userToReturn });
+        if (user) {
+            const match = await bcrypt.compare(password, user.password);
+            if (match) {
+                // Parse JSON string fields before sending to client
+                user.progress = JSON.parse(user.progress || '{}');
+                user.favorites = JSON.parse(user.favorites || '{}');
+                user.mockTestHistory = JSON.parse(user.mockTestHistory || '[]');
+                
+                const { password: _, ...userToReturn } = user;
+                res.json({ success: true, user: userToReturn });
+            } else {
+                return res.status(401).json({ success: false, message: 'Invalid credentials.' });
+            }
         } else {
             res.status(401).json({ success: false, message: 'Invalid credentials.' });
         }
     });
 });
+
+// POST to reset a password
+app.post('/api/users/reset-password', async (req, res) => {
+    const { contactInfo, newPassword } = req.body;
+    if (!contactInfo || !newPassword) {
+        return res.status(400).json({ message: 'Missing required fields.' });
+    }
+
+    const saltRounds = 10;
+    const hashedPassword = await bcrypt.hash(newPassword, saltRounds);
+
+    const sql = `UPDATE users SET password = ? WHERE contactInfo = ?`;
+    db.run(sql, [hashedPassword, contactInfo], function(err) {
+        if (err) {
+            return res.status(500).json({ message: 'Could not update password.' });
+        }
+        res.status(200).json({ message: 'Password updated successfully!' });
+    });
+});
+
 // DELETE a user by contactInfo
 app.delete('/api/users/:contactInfo', async (req, res) => {
     const { contactInfo } = req.params;
