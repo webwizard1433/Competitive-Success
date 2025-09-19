@@ -403,19 +403,9 @@ app.get('/', (req, res) => {
 
 // --- Fallback for other HTML pages ---
 // This will catch requests for any other .html file and serve it.
-app.get('/*.html', (req, res) => {
-    const page = req.params[0];
-    res.sendFile(path.join(__dirname, `${page}.html`), (err) => {
-        // If the file doesn't exist, send a 404.
-        if (err) res.status(404).send('Page not found');
-    });
-});
-
-// --- Fallback for other HTML pages ---
-// This will catch requests for any other .html file and serve it.
-app.get('/*.html', (req, res) => {
-    const page = req.params[0];
-    res.sendFile(path.join(__dirname, `${page}.html`), (err) => {
+app.get('/:pageName.html', (req, res) => {
+    const { pageName } = req.params;
+    res.sendFile(path.join(__dirname, `${pageName}.html`), (err) => {
         // If the file doesn't exist, send a 404.
         if (err) res.status(404).send('Page not found');
     });
