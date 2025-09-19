@@ -8,3 +8,6 @@ npm-debug.log*
 
 # Other
 .DS_Store
+
+# Database file
+database.db
