@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>UPSC Interactive Maps | Competitive Success</title>
+    <link rel="icon" href="/success.png" type="image/png">
+    <!-- Leaflet CSS for map rendering -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
+    <style>
+        :root {
+            --primary-color: #FFC107;
+            --card-background: rgba(255, 255, 255, 0.05);
+            --card-border-color: rgba(255, 255, 255, 0.2);
+            --text-color: #F5F5DC;
+            --secondary-text-color: #adb5bd;
+        }
+        body {
+            background: linear-gradient(135deg, rgb(10, 35, 66) 0%, rgb(0, 26, 51) 100%);
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            margin: 0; color: var(--text-color);
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+        }
+        .main-container { padding: 2rem; max-width: 1400px; margin: auto; width: 100%; box-sizing: border-box; flex-grow: 1; display: flex; flex-direction: column; }
+        .page-header { text-align: center; margin-bottom: 1.5rem; }
+        .page-header h1 { font-size: 3rem; color: var(--primary-color); margin: 0; }
+        .page-header p { font-size: 1.2rem; color: var(--secondary-text-color); }
+        .back-to-home { margin-bottom: 1.5rem; }
+        .back-to-home a { display: inline-block; padding: 0.5rem 1rem; background-color: var(--card-background); border: 1px solid var(--card-border-color); color: var(--primary-color); text-decoration: none; font-weight: bold; border-radius: 5px; transition: background-color 0.3s ease; }
+        .back-to-home a:hover { background-color: rgba(255, 255, 255, 0.1); }
+
+        #map {
+            height: 100%;
+            width: 100%;
+            border-radius: 12px;
+            border: 1px solid var(--card-border-color);
+            background-color: var(--card-background);
+        }
+
+        /* Leaflet Customizations */
+        .leaflet-popup-content-wrapper, .leaflet-popup-tip {
+            background: var(--card-background);
+            color: var(--text-color);
+            border: 1px solid var(--card-border-color);
+            backdrop-filter: blur(5px);
+        }
+        .leaflet-popup-content h4 {
+            color: var(--primary-color);
+            margin: 0 0 5px;
+        }
+        .leaflet-control-layers {
+            background: var(--card-background);
+            border: 1px solid var(--card-border-color);
+        }
+        .leaflet-control-layers-base label, .leaflet-control-layers-overlays label {
+            color: var(--text-color);
+        }
+        .leaflet-container a {
+            color: var(--primary-color);
+        }
+    </style>
+</head>
+<body>
+    <main class="main-container">
+        <div class="back-to-home">
+            <a href="/upsc.html">← Back to UPSC Resources</a>
+        </div>
+        <div class="page-header">
+            <h1>Interactive Geography Maps</h1>
+            <p>Explore important geographical features of India.</p>
+        </div>
+        <div id="map"></div>
+    </main>
+
+    <!-- Leaflet JS for map functionality -->
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // Initialize the map, centered on India
+            const map = L.map('map').setView([22.5937, 78.9629], 5);
+
+            // Add a dark tile layer from CartoDB
+            L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+                attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>',
+                subdomains: 'abcd',
+                maxZoom: 19
+            }).addTo(map);
+
+            // --- Sample Data ---
+            // In a real app, this data would be fetched from a GeoJSON file or an API
+
+            // 1. Major Rivers
+            const riversData = [
+                { name: "Ganges", coords: [[25.27, 82.98], [25.45, 81.85], [27.38, 79.91], [30.10, 78.16]] },
+                { name: "Yamuna", coords: [[25.45, 81.85], [27.17, 78.04], [28.65, 77.21]] },
+                { name: "Brahmaputra", coords: [[26.14, 91.73], [27.97, 95.33], [29.28, 94.91]] },
+                { name: "Godavari", coords: [[16.98, 81.78], [18.80, 78.47], [19.99, 73.78]] },
+                { name: "Krishna", coords: [[15.98, 80.85], [17.00, 77.42], [17.99, 73.85]] },
+                { name: "Narmada", coords: [[21.66, 72.83], [22.75, 75.41], [22.78, 81.75]] }
+            ];
+
+            const riversLayer = L.layerGroup();
+            riversData.forEach(river => {
+                L.polyline(river.coords, { color: '#4dabf7', weight: 3 })
+                 .bindPopup(`<h4>${river.name} River</h4>`)
+                 .addTo(riversLayer);
+            });
+
+            // 2. National Parks
+            const parksData = [
+                { name: "Jim Corbett National Park", coords: [29.53, 78.77], state: "Uttarakhand" },
+                { name: "Kaziranga National Park", coords: [26.66, 93.35], state: "Assam" },
+                { name: "Gir National Park", coords: [21.16, 70.79], state: "Gujarat" },
+                { name: "Sundarbans National Park", coords: [21.94, 88.89], state: "West Bengal" },
+                { name: "Kanha National Park", coords: [22.33, 80.63], state: "Madhya Pradesh" },
+                { name: "Periyar National Park", coords: [9.46, 77.14], state: "Kerala" }
+            ];
+
+            const parksLayer = L.layerGroup();
+            parksData.forEach(park => {
+                L.marker(park.coords, {
+                    icon: L.divIcon({
+                        className: 'park-icon',
+                        html: '🌳',
+                        iconSize: [24, 24]
+                    })
+                })
+                .bindPopup(`<h4>${park.name}</h4><p>${park.state}</p>`)
+                .addTo(parksLayer);
+            });
+
+            // --- Layer Control ---
+            const overlayMaps = {
+                "Major Rivers": riversLayer,
+                "National Parks": parksLayer
+            };
+
+            // Add rivers layer by default
+            riversLayer.addTo(map);
+
+            L.control.layers(null, overlayMaps, { collapsed: false }).addTo(map);
+        });
+    </script>
+</body>
+</html>
+
+```
+
+### 2. Add a link to the new page from `upsc.html`
+
+I'll add a new card to the grid, making the interactive maps easily discoverable.
+
+```diff
+--- a/c:\Users\Saurabh\Documents\Programming\Saurabh\upsc.html
++++ b/c:\Users\Saurabh\Documents\Programming\Saurabh\upsc.html
+@@ -359,6 +359,16 @@
+                     <a href="/upsc-notes.html" class="btn">Browse Notes</a>
+                 </div>
+             </div>
++            <div class="resource-card">
++                <picture>
++                    <source srcset="https://images.unsplash.com/photo-1597739239359-191521a769c7?q=80&w=1974&fm=webp" type="image/webp">
++                    <img class="card-thumbnail" src="https://images.unsplash.com/photo-1597739239359-191521a769c7?q=80&w=1974" alt="Interactive map icon">
++                </picture>
++                <div class="card-content">
++                    <h3>Interactive Maps</h3>
++                    <p>Explore important geographical features of India visually.</p>
++                    <a href="/upsc-interactive-maps.html" class="btn">Open Maps</a>
++                </div>
++            </div>
+         </div>
+     </main>
+ 

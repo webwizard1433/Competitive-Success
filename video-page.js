@@ -124,6 +124,12 @@ function populateVideos(videoData, defaultThumbnails, targetGrid = null) {
             card.classList.add('placeholder');
         } else {
             card.onclick = () => openModal(video);
+            card.setAttribute('tabindex', '0'); // Make it focusable
+            card.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter') {
+                    openModal(video);
+                }
+            });
         }
 
         grid.appendChild(card);
@@ -313,14 +319,23 @@ async function loadDoubtForum(videoId) {
     const forumContainer = document.getElementById('doubtForum');
     if (!forumContainer) return;
 
-    // Add form to ask a question
+    // --- Create Tab Structure ---
     forumContainer.innerHTML = `
-        <h2>Doubts & Discussions</h2>
-        <form id="doubtForm" class="doubt-form">
-            <textarea id="doubtQuestion" placeholder="Have a question about this video? Ask here..." required></textarea>
-            <button type="submit" class="btn">Post Question</button>
-        </form>
-        <div id="doubtList" class="doubt-list"></div>
+        <div class="video-extra-tabs">
+            <div class="video-tab-link active" onclick="showVideoTab('doubts')">Doubts & Discussions</div>
+            <div class="video-tab-link" onclick="showVideoTab('transcript')">Transcript</div>
+        </div>
+        <div id="doubtsContent" class="video-tab-content active">
+            <form id="doubtForm" class="doubt-form">
+                <textarea id="doubtQuestion" placeholder="Have a question about this video? Ask here..." required></textarea>
+                <button type="submit" class="btn">Post Question</button>
+            </form>
+            <div id="doubtList" class="doubt-list"></div>
+        </div>
+        <div id="transcriptContent" class="video-tab-content">
+            <p>Video transcript is not available for this lecture yet. Please check back later.</p>
+            <!-- In a real app, you would fetch and display the transcript here -->
+        </div>
     `;
 
     document.getElementById('doubtForm').addEventListener('submit', (e) => {
@@ -364,6 +379,17 @@ async function loadDoubtForum(videoId) {
     } catch (error) {
         console.error('Failed to load doubts:', error);
     }
+}
+
+function showVideoTab(tabName) {
+    document.querySelectorAll('.video-tab-content').forEach(tab => {
+        tab.classList.remove('active');
+    });
+    document.querySelectorAll('.video-tab-link').forEach(link => {
+        link.classList.remove('active');
+    });
+    document.getElementById(`${tabName}Content`).classList.add('active');
+    document.querySelector(`.video-tab-link[onclick="showVideoTab('${tabName}')"]`).classList.add('active');
 }
 
 async function postDoubt(videoId) {

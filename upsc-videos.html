@@ -121,5 +121,15 @@
                 document.body.classList.remove('menu-open');
             }
         }, true); // Use capture phase to catch the event early
+
+        // Add keyboard navigation to folders
+        document.querySelectorAll('.folder').forEach(folder => {
+            folder.setAttribute('tabindex', '0');
+            folder.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter') {
+                    e.target.click();
+                }
+            });
+        });
     </script>
 </html>

@@ -238,6 +238,23 @@
             document.querySelector(`.tab-link[onclick="showTab('${tabName}')"]`).classList.add('active');
         }
 
+        // Add keyboard navigation for tabs
+        const tabHeader = document.querySelector('.tab-header');
+        tabHeader.addEventListener('keydown', (e) => {
+            const tabs = Array.from(tabHeader.querySelectorAll('.tab-link'));
+            const activeIndex = tabs.findIndex(tab => tab.classList.contains('active'));
+            let newIndex = activeIndex;
+
+            if (e.key === 'ArrowRight') {
+                newIndex = (activeIndex + 1) % tabs.length;
+            } else if (e.key === 'ArrowLeft') {
+                newIndex = (activeIndex - 1 + tabs.length) % tabs.length;
+            }
+
+            tabs[newIndex].click();
+            tabs[newIndex].focus();
+        });
+
         // --- Admin Login Logic ---
         const ADMIN_PASSWORD = "password123";
         document.getElementById('adminLoginForm').addEventListener('submit', (e) => {

@@ -52,6 +52,28 @@
             background-attachment: fixed; /* Prevents gradient from scrolling with content */
         }
 
+        /* --- Broadcast Alert Bar --- */
+        .broadcast-alert {
+            background-color: var(--primary-color);
+            color: #0a192f;
+            padding: 1rem;
+            text-align: center;
+            font-weight: bold;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            z-index: 1500; /* Above header */
+            display: none; /* Hidden by default */
+            align-items: center;
+            justify-content: center;
+            gap: 1rem;
+        }
+        .broadcast-alert .close-btn {
+            background: none; border: none; color: #0a192f;
+            font-size: 1.5rem; cursor: pointer; line-height: 1;
+        }
+
         /* --- Header & Navigation --- */
         .header {
             position: fixed;
@@ -60,7 +82,7 @@
             width: 100%;
             height: var(--header-height);
             display: flex; /* Changed from grid to flex */
-            justify-content: space-between; /* This is the key change */
+            justify-content: space-between;
             align-items: center;
             padding: 0 2rem;
             box-sizing: border-box;
@@ -68,6 +90,9 @@
             background-color: rgba(10, 25, 47, 0.85);
             backdrop-filter: blur(10px);
             border-bottom: 1px solid var(--card-border-color);
+        }
+        body.has-broadcast .header {
+            top: 48px; /* Adjust header position when broadcast is visible */
         }
  
         .header-logo { 
@@ -469,6 +494,13 @@
 </head>
 <body>
 
+    <!-- Broadcast Alert Bar -->
+    <div id="broadcastAlert" class="broadcast-alert">
+        <span id="broadcastMessage"></span>
+        <button class="close-btn" onclick="dismissBroadcast()" title="Dismiss message">&times;</button>
+    </div>
+
+
     <aside class="side-menu" id="examMenu">
         <div class="user-greeting">
             <span id="userName"></span>
@@ -478,6 +510,7 @@
             <!-- Exam links will be populated by JavaScript -->
         </ul>
         <ul class="user-menu" style="margin-top: auto; padding-top: 1rem; border-top: 1px solid var(--card-border-color);">
+            <li><a href="/cutoff-predictor.html"><span class="icon">📊</span> Cut-off Predictor</a></li>
             <li><a href="/typing-test.html"><span class="icon">⌨️</span> Typing Test</a></li>
             <li><a href="#" onclick="logout()"><span class="icon">🚪</span> Logout</a></li>
         </ul>
@@ -510,7 +543,7 @@
             </div>
 
             <!-- Main Content Card -->
-            <div class="thumbnail-card">
+            <div class="thumbnail-card" tabindex="0">
                 <picture id="examImageContainer">
                     <source id="examImageWebp" srcset="https://images.unsplash.com/photo-1523240795612-9a054b0db644?q=80&w=2070&fm=webp" type="image/webp">
                     <img id="examImage" src="https://images.unsplash.com/photo-1523240795612-9a054b0db644?q=80&w=2070" alt="Exam Thumbnail">
@@ -532,10 +565,8 @@
         <div class="search-content-wrapper" style="width: 90%; max-width: 600px;">
             <div class="search-input-container">
                 <input type="text" id="searchInput" class="search-popup-input" placeholder="Type or speak to search...">
-                <button class="voice-search-btn" onclick="startVoiceSearch()" title="Voice Search">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color: white;">
-                        <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"></path><path d="M19 10v2a7 7 0 0 1-14 0v-2"></path><line x1="12" y1="19" x2="12" y2="23"></line><line x1="8" y1="23" x2="16" y2="23"></line>
-                    </svg>
+                <button id="voiceSearchBtn" class="voice-search-btn" title="Voice Search">
+                    🎤
                 </button>
             </div>
             <div id="searchResults" class="search-results"></div>
@@ -672,7 +703,7 @@
         }
 
         function handleSearchClick(event) {
-            // Prevent search popup from opening if the voice button was clicked
+            // Prevent search popup from opening if the voice button was clicked.
             if (event.target.closest('.voice-search-btn')) return;
             openSearch();
         }
@@ -710,6 +741,11 @@
             recognition.start();
         }
 
+        // Add a dedicated event listener for the voice search button
+        document.getElementById('voiceSearchBtn').addEventListener('click', (e) => {
+            e.stopPropagation(); // Prevent the search bar click from firing
+            startVoiceSearch();
+        });
         function closeSearch() {
             searchPopup.classList.remove('show');
             searchInput.value = '';
@@ -884,6 +920,31 @@
             }
         });
 
+        // --- Broadcast Message Check ---
+        async function checkBroadcast() {
+            try {
+                const response = await fetch('/api/broadcast');
+                const data = await response.json();
+                const lastDismissed = safeStorage.getItem('dismissedBroadcast');
+
+                if (data.message && data.createdAt !== lastDismissed) {
+                    document.getElementById('broadcastMessage').textContent = data.message;
+                    document.getElementById('broadcastAlert').style.display = 'flex';
+                    document.body.classList.add('has-broadcast');
+                    document.querySelector('.main-container').style.paddingTop = `calc(var(--header-height) + 48px)`;
+                }
+            } catch (error) {
+                console.error('Could not fetch broadcast message:', error);
+            }
+        }
+
+        function dismissBroadcast() {
+            document.getElementById('broadcastAlert').style.display = 'none';
+            document.body.classList.remove('has-broadcast');
+            document.querySelector('.main-container').style.paddingTop = `var(--header-height)`;
+            safeStorage.setItem('dismissedBroadcast', new Date().toISOString()); // In a real app, use message ID
+        }
+
         // On page load, check for a saved choice and update the dashboard
         document.addEventListener('DOMContentLoaded', () => {
             // First, ensure the user is logged in.
@@ -892,6 +953,9 @@
                 window.location.href = '/login.html';
                 return; // Stop execution if not logged in
             }
+
+            // Check for a broadcast message
+            checkBroadcast();
 
             // Now that we know the user is logged in, proceed with loading their data.
             const savedExam = safeStorage.getItem('userExamChoice'); // Get the saved exam

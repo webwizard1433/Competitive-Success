@@ -239,6 +239,24 @@
         </div>
     </main>
 
+    <!-- Broadcast Message Section -->
+    <main class="main-container" style="padding-top: 0;">
+        <div class="header" style="margin-top: 2rem;">
+            <h1>Broadcast Message</h1>
+        </div>
+        <div class="analytics-card">
+            <h3>Send an alert to all users</h3>
+            <form id="broadcastForm">
+                <div class="form-group">
+                    <label for="broadcastMessage">Message (leave empty to clear)</label>
+                    <input type="text" id="broadcastMessage" placeholder="e.g., Site maintenance tomorrow at 2 AM">
+                </div>
+                <button type="submit" class="btn btn-success">Send Broadcast</button>
+                <button type="button" class="btn btn-danger" onclick="clearBroadcast()">Clear Broadcast</button>
+            </form>
+        </div>
+    </main>
+
     <!-- Add/Edit Video Modal -->
     <div id="videoModal" class="modal">
         <div class="modal-content">
@@ -280,6 +298,7 @@
         const videoForm = document.getElementById('videoForm');
         const saveOrderBtn = document.getElementById('saveOrderBtn');
         const userTableBody = document.getElementById('userTableBody');
+        const broadcastForm = document.getElementById('broadcastForm');
 
         async function fetchAndRenderVideos() {
             try {
@@ -520,6 +539,42 @@
             }
         }
 
+        // --- Broadcast Message Logic ---
+        broadcastForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const messageInput = document.getElementById('broadcastMessage');
+            const message = messageInput.value.trim();
+
+            if (!message) {
+                alert('Please enter a message to broadcast.');
+                return;
+            }
+
+            try {
+                await fetch('/api/broadcast', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ message })
+                });
+                alert('Broadcast message sent successfully!');
+                messageInput.value = '';
+            } catch (error) {
+                console.error('Failed to send broadcast:', error);
+                alert('Could not send broadcast message.');
+            }
+        });
+
+        async function clearBroadcast() {
+            if (!confirm('Are you sure you want to clear the current broadcast message?')) return;
+            try {
+                await fetch('/api/broadcast', { method: 'DELETE' });
+                alert('Broadcast message cleared.');
+                document.getElementById('broadcastMessage').value = '';
+            } catch (error) {
+                console.error('Failed to clear broadcast:', error);
+                alert('Could not clear broadcast message.');
+            }
+        }
 
         // --- Drag and Drop Reordering ---
         let draggedItem = null;

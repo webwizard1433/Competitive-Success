@@ -185,6 +185,36 @@ body {
     border-top: 1px solid var(--card-border-color);
 }
 .doubt-forum-container h2 {
+    font-size: 1.5rem;
+    color: var(--primary-color);
+    margin-bottom: 1.5rem;
+}
+
+/* --- Tabs for Doubts/Transcript --- */
+.video-extra-tabs {
+    display: flex;
+    border-bottom: 1px solid var(--card-border-color);
+    margin-bottom: 1.5rem;
+}
+.video-tab-link {
+    padding: 0.75rem 1.5rem;
+    cursor: pointer;
+    color: var(--secondary-text-color);
+    border-bottom: 3px solid transparent;
+    transition: color 0.3s, border-color 0.3s;
+}
+.video-tab-link.active {
+    color: var(--primary-color);
+    border-bottom-color: var(--primary-color);
+}
+.video-tab-content {
+    display: none;
+}
+.video-tab-content.active {
+    display: block;
+}
+
+.doubt-form textarea {
     font-size: 2rem;
     color: var(--primary-color);
     margin-bottom: 1.5rem;

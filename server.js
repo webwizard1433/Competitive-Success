@@ -352,20 +352,74 @@ app.put('/api/users/:contactInfo/role', async (req, res) => {
     }
 });
 
-// --- Root Route ---
+// --- API Routes for Broadcast Message ---
+const BROADCAST_PATH = path.join(__dirname, 'broadcast.json');
 
-// This will serve the correct entry page.
-// If an admin is "logged in" (via a simple token check for this demo), show the admin page.
-// Otherwise, show the login page.
-app.get('/', (req, res) => {
-    // Note: In a real app, this would be handled by proper session middleware.
-    res.sendFile(path.join(__dirname, 'login.html')); // Default to login
+// GET the current broadcast message
+app.get('/api/broadcast', async (req, res) => {
+    try {
+        const data = await fs.readFile(BROADCAST_PATH, 'utf-8');
+        res.json(JSON.parse(data));
+    } catch (error) {
+        // If file doesn't exist or is empty, send an empty object
+        if (error.code === 'ENOENT') {
+            return res.json({});
+        }
+        res.status(500).json({ message: 'Could not fetch broadcast message.' });
+    }
+});
+
+// POST a new broadcast message
+app.post('/api/broadcast', async (req, res) => {
+    const { message } = req.body;
+    if (typeof message !== 'string') {
+        return res.status(400).json({ message: 'Message must be a string.' });
+    }
+    const broadcast = { message, createdAt: new Date().toISOString() };
+    await fs.writeFile(BROADCAST_PATH, JSON.stringify(broadcast, null, 2), 'utf-8');
+    res.status(201).json(broadcast);
+});
+
+// DELETE the broadcast message
+app.delete('/api/broadcast', async (req, res) => {
+    try {
+        await fs.writeFile(BROADCAST_PATH, JSON.stringify({}, null, 2), 'utf-8');
+        res.status(204).send();
+    } catch (error) {
+        res.status(500).json({ message: 'Could not clear broadcast message.' });
+    }
 });
 
 // --- Static File Serving ---
 // This serves all your other HTML, CSS, and client-side JS files.
-// It should be placed after your specific routes.
+// It should be placed after your specific API routes but before the root fallback.
 app.use(express.static(path.join(__dirname, '')));
+
+// --- Root Route ---
+// This will serve the correct entry page.
+app.get('/', (req, res) => {
+    res.sendFile(path.join(__dirname, 'login.html')); // Default to login
+});
+
+// --- Fallback for other HTML pages ---
+// This will catch requests for any other .html file and serve it.
+app.get('/*.html', (req, res) => {
+    const page = req.params[0];
+    res.sendFile(path.join(__dirname, `${page}.html`), (err) => {
+        // If the file doesn't exist, send a 404.
+        if (err) res.status(404).send('Page not found');
+    });
+});
+
+// --- Fallback for other HTML pages ---
+// This will catch requests for any other .html file and serve it.
+app.get('/*.html', (req, res) => {
+    const page = req.params[0];
+    res.sendFile(path.join(__dirname, `${page}.html`), (err) => {
+        // If the file doesn't exist, send a 404.
+        if (err) res.status(404).send('Page not found');
+    });
+});
 
 // --- Server Listener ---
 
