@@ -294,9 +294,13 @@
                 // 1. Get the current list of users
                 const getResponse = await fetch(npointUrl);
                 let users = [];
-                if (getResponse.ok) {
-                    const data = await getResponse.json();
-                    users = Array.isArray(data) ? data : (data ? [data] : []); // Ensure it's an array
+                // Handle cases where the npoint bin might be empty (returns 200 OK with no content)
+                const text = await getResponse.text();
+                if (getResponse.ok && text) {
+                    const data = JSON.parse(text);
+                    users = Array.isArray(data) ? data : []; // Ensure it's an array
+                } else if (!getResponse.ok) {
+                    throw new Error('Could not connect to user database.');
                 }
 
                 // Check if user already exists
