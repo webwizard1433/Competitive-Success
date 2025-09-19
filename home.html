@@ -59,7 +59,8 @@
             left: 0;
             width: 100%;
             height: var(--header-height);
-            display: flex;
+            display: flex; /* Changed from grid to flex */
+            justify-content: space-between; /* This is the key change */
             align-items: center;
             padding: 0 2rem;
             box-sizing: border-box;
@@ -68,11 +69,11 @@
             backdrop-filter: blur(10px);
             border-bottom: 1px solid var(--card-border-color);
         }
-
-        .header-logo {
-            display: flex;
-            align-items: center;
-            justify-self: flex-end;
+ 
+        .header-logo { 
+            flex: 1; /* Allow the logo container to grow */
+            display: flex; 
+            align-items: center; 
             justify-content: flex-end;
         }
 
@@ -491,8 +492,8 @@
         </div>
         <div class="header-logo">
             <picture>
-                <source srcset="https://st4.depositphotos.com/1842549/20934/i/450/depositphotos_209344954-stock-photo-success-icon-internet-button-white.webp" type="image/webp">
-                <img src="https://st4.depositphotos.com/1842549/20934/i/450/depositphotos_209344954-stock-photo-success-icon-internet-button-white.jpg" alt="Competitive Success Logo">
+                <source srcset="https://i.pinimg.com/736x/0a/10/f2/0a10f26b18aa7d67ecb9310e67d0c230.jpg" type="image/webp">
+                <img src="https://i.pinimg.com/736x/0a/10/f2/0a10f26b18aa7d67ecb9310e67d0c230.jpg" alt="Competitive Success Logo">
             </picture>
         </div>
     </header>
