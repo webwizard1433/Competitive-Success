@@ -354,7 +354,7 @@ function openModal(video) {
     currentVideoIndex = videoData.findIndex(v => v.id === video.id);
     updateNavButtons();
 
-    loadDoubtForum(video.id);
+    // loadDoubtForum(video.id); // Temporarily disabled as per request
     // Store the currently playing video ID in session storage
     try {
         // Store only the necessary info to prevent errors on page reload.
@@ -413,7 +413,6 @@ function onPlayerReady(event) {
     const progressBarWrapper = document.getElementById('progressBarWrapper');
     const fullscreenBtn = document.getElementById('fullscreenBtn');
     const pipBtn = document.getElementById('pipBtn');
-    const settingsBtn = document.getElementById('settingsBtn');
     const volumeBtn = document.getElementById('volumeBtn');
     const volumeSlider = document.getElementById('volumeSlider');
 
@@ -421,6 +420,13 @@ function onPlayerReady(event) {
     if (playPauseBtn) playPauseBtn.onclick = () => togglePlayPause();
     fullscreenBtn.onclick = () => toggleFullscreen();
     pipBtn.onclick = () => togglePictureInPicture();
+
+    const settingsBtn = document.getElementById('settingsBtn');
+    if (settingsBtn) {
+        settingsBtn.onclick = () => {
+            document.getElementById('settingsMenu').classList.toggle('active');
+        };
+    }
 
     progressBarWrapper.onclick = (e) => {
         const rect = progressBarWrapper.getBoundingClientRect();
@@ -437,10 +443,6 @@ function onPlayerReady(event) {
         player.unMute();
     });
 
-    // Settings Menu
-    settingsBtn.onclick = () => {
-        document.getElementById('settingsMenu').classList.toggle('active');
-    };
     // Hide settings menu when clicking outside
     document.addEventListener('click', (e) => {
         if (!settingsBtn.contains(e.target) && !document.getElementById('settingsMenu').contains(e.target)) {
@@ -517,12 +519,12 @@ function togglePlayPause() {
 }
 
 function toggleFullscreen() {
-    const container = document.getElementById('videoModal'); // Fullscreen the whole modal
+    const container = document.getElementById('videoPlayerContainer'); // Target the player container
     if (document.fullscreenElement) {
         document.exitFullscreen();
     } else {
         if (container.requestFullscreen) container.requestFullscreen();
-        else if (container.webkitRequestFullscreen) container.webkitRequestFullscreen();
+        else if (container.webkitRequestFullscreen) container.webkitRequestFullscreen(); // Safari
         else if (container.msRequestFullscreen) container.msRequestFullscreen();
     }
 }
