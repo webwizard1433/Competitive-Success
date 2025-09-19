@@ -144,8 +144,6 @@
                         // Use existing video if available, otherwise create a placeholder
                         if (existingVideos[i]) {
                             videos.push(existingVideos[i]);
-                        } else {
-                            videos.push({ id: `placeholder_${titlePrefix}_${i}`, title: `${titlePrefix} ${i + 1}`, type: 'placeholder' });
                         }
                     }
                     return videos;
