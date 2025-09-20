@@ -550,68 +550,6 @@
         .profile-modal-content .profile-field p {
             margin: 0; font-size: 1.1rem; font-weight: 500;
         }
-
-        /* --- Chatbot Styles --- */
-        .chatbot-toggler {
-            position: fixed;
-            bottom: 25px;
-            right: 90px; /* Position it next to the back-to-top button */
-            width: 50px;
-            height: 50px;
-            background-color: var(--primary-color);
-            color: #0a192f;
-            border-radius: 50%;
-            border: none;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 2rem;
-            cursor: pointer;
-            z-index: 100;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
-            transition: transform 0.3s ease;
-        }
-        .chatbot-toggler:hover {
-            transform: scale(1.1);
-        }
-        .chatbot-container {
-            position: fixed;
-            bottom: 90px;
-            right: 25px;
-            width: 350px;
-            background: var(--card-background);
-            border: 1px solid var(--card-border-color);
-            border-radius: 15px;
-            overflow: hidden;
-            box-shadow: 0 0 128px 0 rgba(0,0,0,0.1), 0 32px 64px -48px rgba(0,0,0,0.5);
-            transform: scale(0.5);
-            opacity: 0;
-            pointer-events: none;
-            transition: transform 0.3s ease, opacity 0.3s ease;
-            transform-origin: bottom right;
-            z-index: 1200;
-        }
-        .chatbot-container.show {
-            transform: scale(1);
-            opacity: 1;
-            pointer-events: auto;
-        }
-        .chatbot-header {
-            padding: 1rem;
-            text-align: center;
-            background: var(--primary-color);
-            color: #0a192f;
-            font-weight: bold;
-        }
-        .chat-log { height: 300px; overflow-y: auto; padding: 1rem; }
-        .chat-message { margin-bottom: 1rem; display: flex; }
-        .chat-message.user { justify-content: flex-end; }
-        .chat-message p { max-width: 75%; padding: 0.75rem; border-radius: 10px; margin: 0; }
-        .chat-message.bot p { background: rgba(255,255,255,0.1); }
-        .chat-message.user p { background: var(--primary-color); color: #0a192f; }
-        .chat-input { display: flex; padding: 0.5rem; border-top: 1px solid var(--card-border-color); }
-        .chat-input input { flex-grow: 1; border: none; background: transparent; color: var(--text-color); padding: 0.75rem; outline: none; }
-        .chat-input button { background: none; border: none; color: var(--primary-color); font-size: 1.5rem; cursor: pointer; }
     </style>
 </head>
 <body>
@@ -749,26 +687,6 @@
         </div>
     </div>
 
-    <!-- Chatbot -->
-    <button class="chatbot-toggler" onclick="toggleChatbot()">
-        <span>🤖</span>
-    </button>
-    <div class="chatbot-container" id="chatbotContainer">
-        <div class="chatbot-header">
-            <span>AI Assistant</span>
-        </div>
-        <div class="chat-log" id="chatLog">
-            <div class="chat-message bot">
-                <p>Hello! How can I help you today? You can ask about exams like UPSC, CDS, or ask for help with your password.</p>
-            </div>
-        </div>
-        <div class="chat-input">
-            <input type="text" id="chatInput" placeholder="Ask a question...">
-            <button id="sendChatBtn">➤</button>
-        </div>
-    </div>
-
-
     <button onclick="scrollToTop()" id="backToTopBtn" title="Go to top">↑</button>
 
     <script>
@@ -839,80 +757,6 @@
             }
             messageDiv.style.display = 'block';
         }
-
-        // --- Chatbot Logic ---
-        const chatbotContainer = document.getElementById('chatbotContainer');
-        const chatLog = document.getElementById('chatLog');
-        const chatInput = document.getElementById('chatInput');
-        const sendChatBtn = document.getElementById('sendChatBtn');
-
-        function toggleChatbot() {
-            chatbotContainer.classList.toggle('show');
-        }
-
-        function handleChat() {
-            const userMessage = chatInput.value.trim();
-            if (!userMessage) return;
-
-            appendMessage(userMessage, 'user');
-            chatInput.value = '';
-
-            setTimeout(() => {
-                // Show a "thinking..." message
-                appendMessage("Thinking...", 'bot thinking');
-                getBotResponse(userMessage); // This is now async
-            }, 500);
-        }
-
-        function appendMessage(message, sender) {
-            const messageDiv = document.createElement('div');
-            messageDiv.className = `chat-message ${sender}`.trim();
-            const p = document.createElement('p');
-            p.innerHTML = message; // Use innerHTML to allow for links
-            messageDiv.appendChild(p);
-            chatLog.appendChild(messageDiv);
-            chatLog.scrollTop = chatLog.scrollHeight; // Auto-scroll to the latest message
-        }
-
-        async function getBotResponse(userMessage) {
-            const msg = userMessage.toLowerCase();
-            let botResponse = "I'm having trouble connecting right now. Please try again later.";
-
-            try {
-                const response = await fetch('/api/chatbot/ask', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ message: msg })
-                });
-
-                if (!response.ok) {
-                    throw new Error('Failed to get a response from the AI assistant.');
-                }
-
-                const data = await response.json();
-                botResponse = data.reply;
-
-            } catch (error) {
-                console.error("Chatbot API error:", error);
-            } finally {
-                // Remove "Thinking..." message and add the final response
-                const thinkingMessage = chatLog.querySelector('.thinking');
-                if (thinkingMessage) thinkingMessage.remove();
-                appendMessage(botResponse, 'bot');
-            }
-        }
-
-        function closeChatbotAndNavigate() {
-            // This function ensures the chatbot closes when a link inside it is clicked.
-            chatbotContainer.classList.remove('show');
-        }
-
-        sendChatBtn.addEventListener('click', handleChat);
-        chatInput.addEventListener('keydown', (e) => {
-            if (e.key === 'Enter') {
-                handleChat();
-            }
-        });
 
         document.addEventListener('fullscreenchange', () => {
             const fullscreenBtn = document.getElementById('typingTestFullscreenBtn');

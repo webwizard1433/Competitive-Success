@@ -5,45 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>NDA Syllabus | Competitive Success</title>
     <link rel="icon" href="/success.png" type="image/png">
-    <link rel="stylesheet" href="/video-page.css">
-    <style>
-        .syllabus-section {
-            background-color: var(--card-background);
-            border: 1px solid var(--card-border-color);
-            border-radius: 12px;
-            padding: 2rem;
-            margin-bottom: 2rem;
-        }
-        .syllabus-section h2 {
-            color: var(--primary-color);
-            border-bottom: 2px solid var(--card-border-color);
-            padding-bottom: 0.5rem;
-            margin-top: 0;
-        }
-        .syllabus-section ul {
-            list-style-type: disc;
-            padding-left: 20px;
-            line-height: 1.8;
-        }
-        .syllabus-section li {
-            margin-bottom: 0.5rem;
-        }
-        .collapsible-header {
-            cursor: pointer;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-        .collapsible-header::after {
-            content: '▼'; /* Down arrow */
-            transition: transform 0.3s ease;
-        }
-        .collapsible-content {
-            max-height: 0;
-            overflow: hidden;
-            transition: max-height 0.5s ease-out;
-        }
-    </style>
+    <link rel="stylesheet" href="/design-system.css">
+    <link rel="stylesheet" href="/syllabus.css">
 </head>
 <body>
     <main class="main-container">
@@ -61,7 +24,14 @@
             </div>
             <div class="collapsible-content">
                 <ul>
-                    <li>Algebra, Matrices and Determinants, Trigonometry, Analytical Geometry of two and three dimensions, Differential Calculus, Integral Calculus and Differential equations, Vector Algebra, Statistics and Probability.</li>
+                    <li><strong>Algebra:</strong> Concept of a set, operations on sets, Venn diagrams. Complex numbers, quadratic equations. Arithmetic, Geometric and Harmonic progressions. Permutations and Combinations. Binomial theorem. Logarithms.</li>
+                    <li><strong>Matrices and Determinants:</strong> Types of matrices, operations on matrices. Determinant of a matrix, basic properties of determinants. Adjoint and inverse of a square matrix, Applications-Solution of a system of linear equations.</li>
+                    <li><strong>Trigonometry:</strong> Angles and their measures in degrees and in radians. Trigonometrical ratios. Trigonometric identities Sum and difference formulae. Multiple and Sub-multiple angles. Inverse trigonometric functions.</li>
+                    <li><strong>Analytical Geometry of two and three dimensions:</strong> Rectangular Cartesian Coordinate system. Distance formula. Equation of a line in various forms. Angle between two lines. Distance of a point from a line. Equation of a circle in standard and in general form.</li>
+                    <li><strong>Differential Calculus:</strong> Concept of a real-valued function–domain, range and graph of a function. Concept of limit, standard limits. Continuity of functions. Derivative of a function. Application of derivatives in problems of maxima and minima.</li>
+                    <li><strong>Integral Calculus and Differential equations:</strong> Integration as inverse of differentiation. Integration by substitution and by parts. Standard integrals. Definite integrals. Application in calculation of areas of plane regions bounded by curves.</li>
+                    <li><strong>Vector Algebra:</strong> Vectors in two and three dimensions, magnitude and direction of a vector. Unit and null vectors, addition of vectors, scalar multiplication of a vector, scalar product or dot product of two vectors.</li>
+                    <li><strong>Statistics and Probability:</strong> Statistics: classification of data, Frequency distribution. Probability: Random experiment, outcomes and associated sample space, events, mutually exclusive and exhaustive events.</li>
                 </ul>
             </div>
         </section>
@@ -72,8 +42,17 @@
             </div>
             <div class="collapsible-content">
                 <ul>
-                    <li>**Part A (English):** Grammar and usage, vocabulary, comprehension, and cohesion.</li>
-                    <li>**Part B (General Knowledge):** Physics, Chemistry, General Science, History, Freedom Movement, Geography, and Current Events.</li>
+                    <li><strong>Part A (English):</strong> The question paper in English will be designed to test the candidate’s understanding of English and workmanlike use of words. The syllabus covers various aspects like: Grammar and usage, vocabulary, comprehension and cohesion in extended text to test the candidate’s proficiency in English.</li>
+                    <li><strong>Part B (General Knowledge):</strong>
+                        <ul>
+                            <li><strong>Physics:</strong> Physical Properties and States of Matter, Mass, Weight, Volume, Density and Specific Gravity, Principle of Archimedes, Pressure Barometer. Motion of objects, Velocity and Acceleration, Newton’s Laws of Motion, Force and Momentum, Parallelogram of Forces, Stability and Equilibrium of bodies, Gravitation, elementary ideas of work, Power and Energy.</li>
+                            <li><strong>Chemistry:</strong> Physical and Chemical changes. Elements, Mixtures and Compounds, Symbols, Formulae and simple Chemical Equations, Law of Chemical Combination. Properties of Air and Water. Preparation and Properties of Hydrogen, Oxygen, Nitrogen and Carbon Dioxide, Oxidation and Reduction.</li>
+                            <li><strong>General Science:</strong> Difference between the living and non-living. Basis of Life—Cells, Protoplasms and Tissues. Growth and Reproduction in Plants and Animals. Elementary knowledge of Human Body and its important organs. Common Epidemics, their causes and prevention.</li>
+                            <li><strong>History, Freedom Movement etc.:</strong> A broad survey of Indian History, with emphasis on Culture and Civilisation. Freedom Movement in India. Elementary study of Indian Constitution and Administration. Elementary knowledge of Five Year Plans of India. Panchayati Raj, Co-operatives and Community Development.</li>
+                            <li><strong>Geography:</strong> The Earth, its shape and size. Latitudes and Longitudes, Concept of time. International Date Line. Movements of Earth and their effects. Origin of Earth. Rocks and their classification; Weathering—Mechanical and Chemical, Earthquakes and Volcanoes. Ocean Currents and Tides. Atmosphere and its composition.</li>
+                            <li><strong>Current Events:</strong> Knowledge of Important events that have happened in India in the recent years. Current important world events. Prominent personalities—both Indian and International.</li>
+                        </ul>
+                    </li>
                 </ul>
             </div>
         </section>
@@ -81,16 +60,20 @@
     </main>
     <script>
         function toggleCollapse(header) {
-            header.classList.toggle('active');
+            header.classList.toggle('active'); // For styling the active header
             const content = header.nextElementSibling;
             if (content.style.maxHeight) {
                 content.style.maxHeight = null;
-                header.style.setProperty('--arrow-transform', 'rotate(0deg)');
             } else {
                 content.style.maxHeight = content.scrollHeight + "px";
-                header.style.setProperty('--arrow-transform', 'rotate(180deg)');
             }
         }
+
+        // Auto-open the first section
+        document.addEventListener('DOMContentLoaded', () => {
+            const firstHeader = document.querySelector('.collapsible-header');
+            if (firstHeader) toggleCollapse(firstHeader);
+        });
     </script>
 </body>
 </html>

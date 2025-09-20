@@ -2,57 +2,85 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <title>Banking Exams Preparation | Competitive Success</title><link rel="icon" href="/success.png" type="image/png">
-    <link rel="stylesheet" href="/exam-hub.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CDS Syllabus | Competitive Success</title>
+    <link rel="icon" href="/success.png" type="image/png">
+    <link rel="stylesheet" href="/design-system.css">
+    <link rel="stylesheet" href="/syllabus.css">
 </head>
 <body>
     <main class="main-container">
         <div class="back-to-home">
-            <a id="backToHomeLink" href="/home.html">← Back to Home</a>
+            <a href="/cds.html">← Back to CDS Resources</a>
         </div>
         <div class="page-header">
-            <h1>Banking Resources</h1>
-            <p>Your complete guide for IBPS, SBI, and other banking exams.</p>
-        </div>
-        <!-- Description Box -->
-        <div class="description-box">
-            <h2>About Banking Exams</h2>
-            <p>Banking exams like IBPS PO, IBPS Clerk, SBI PO, and RBI Assistant are conducted for recruitment to various officer and clerical posts in public sector banks across India. They typically test candidates on Quantitative Aptitude, Reasoning Ability, English Language, and General/Banking Awareness.</p>
-            <div class="website-link-box">
-                <a href="https://www.ibps.in/" target="_blank" rel="noopener noreferrer">Official IBPS Website</a>
-            </div>
+            <h1>CDS Syllabus</h1>
+            <p>Official syllabus for the Combined Defence Services Examination.</p>
         </div>
 
-        <div class="grid-container">
-            <a href="/banking-videos.html" class="resource-card">
-                <div class="card-icon">🎬</div>
-                <div class="card-content">
-                    <h3>Video Lectures</h3>
-                    <p>Access topic-wise video playlists for all subjects.</p>
-                </div>
-            </a>
-            <a href="/banking-papers.html" class="resource-card">
-                <div class="card-icon">📄</div>
-                <div class="card-content">
-                    <h3>Previous Year Papers</h3>
-                    <p>Download solved and unsolved papers from the last 10 years.</p>
-                </div>
-            </a>
-            <a href="/banking-books.html" class="resource-card">
-                <div class="card-icon">📚</div>
-                <div class="card-content">
-                    <h3>Recommended Books</h3>
-                    <p>Find the best books for every subject, recommended by toppers.</p>
-                </div>
-            </a>
-        </div>
+        <section class="syllabus-section">
+            <div class="collapsible-header" onclick="toggleCollapse(this)">
+                <h2>English</h2>
+            </div>
+            <div class="collapsible-content">
+                <ul>
+                    <li>Reading Comprehension</li>
+                    <li>Jumbled Sentences / Para Jumbles</li>
+                    <li>Fill in the Blanks</li>
+                    <li>Error Spotting</li>
+                    <li>Vocabulary (Synonyms/Antonyms/Idioms)</li>
+                </ul>
+            </div>
+        </section>
+
+        <section class="syllabus-section">
+            <div class="collapsible-header" onclick="toggleCollapse(this)">
+                <h2>General Knowledge</h2>
+            </div>
+            <div class="collapsible-content">
+                <ul>
+                    <li>Current Affairs (National and International)</li>
+                    <li>History of India and Indian National Movement</li>
+                    <li>Geography of India and the World</li>
+                    <li>Indian Polity and Governance</li>
+                    <li>Economic and Social Development</li>
+                    <li>General Science (Physics, Chemistry, Biology)</li>
+                    <li>Defence related awareness</li>
+                </ul>
+            </div>
+        </section>
+
+        <section class="syllabus-section">
+            <div class="collapsible-header" onclick="toggleCollapse(this)">
+                <h2>Elementary Mathematics</h2>
+            </div>
+            <div class="collapsible-content">
+                <ul>
+                    <li><strong>Arithmetic:</strong> Number System, HCF, LCM, Decimal Fractions, Unitary Method, Time and Distance, Time and Work, Percentages, Simple and Compound Interest, Profit and Loss.</li>
+                    <li><strong>Algebra:</strong> Basic Operations, Simple Factors, Remainder Theorem, Theory of polynomials, Quadratic equations, Relation between roots and coefficients.</li>
+                    <li><strong>Trigonometry:</strong> Sine, Cosine, Tangent, etc. Heights and distances.</li>
+                    <li><strong>Geometry:</strong> Lines and angles, Plane and plane figures, Theorems on Properties of angles at a point.</li>
+                    <li><strong>Mensuration:</strong> Areas of squares, rectangles, parallelograms, triangle and circle. Surface area and volume of cuboids, lateral surface and volume of right circular cones and cylinders.</li>
+                    <li><strong>Statistics:</strong> Collection and tabulation of statistical data, Graphical representation frequency polygons, histograms, bar charts, pie charts etc.</li>
+                </ul>
+            </div>
+        </section>
     </main>
     <script>
+        function toggleCollapse(header) {
+            header.classList.toggle('active'); // For styling the active header
+            const content = header.nextElementSibling;
+            if (content.style.maxHeight) {
+                content.style.maxHeight = null;
+            } else {
+                content.style.maxHeight = content.scrollHeight + "px";
+            }
+        }
+
+        // Auto-open the first section
         document.addEventListener('DOMContentLoaded', () => {
-            const safeStorage = window.localStorage || {};
-            const userExam = safeStorage.getItem('userExamChoice') || 'banking';
-            document.getElementById('backToHomeLink').href = `/home.html?exam=${userExam}`;
+            const firstHeader = document.querySelector('.collapsible-header');
+            if (firstHeader) toggleCollapse(firstHeader);
         });
     </script>
 </html>

@@ -5,45 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>SSC-CGL Syllabus | Competitive Success</title>
     <link rel="icon" href="/success.png" type="image/png">
-    <link rel="stylesheet" href="/video-page.css">
-    <style>
-        .syllabus-section {
-            background-color: var(--card-background);
-            border: 1px solid var(--card-border-color);
-            border-radius: 12px;
-            padding: 2rem;
-            margin-bottom: 2rem;
-        }
-        .syllabus-section h2 {
-            color: var(--primary-color);
-            border-bottom: 2px solid var(--card-border-color);
-            padding-bottom: 0.5rem;
-            margin-top: 0;
-        }
-        .syllabus-section ul {
-            list-style-type: disc;
-            padding-left: 20px;
-            line-height: 1.8;
-        }
-        .syllabus-section li {
-            margin-bottom: 0.5rem;
-        }
-        .collapsible-header {
-            cursor: pointer;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-        .collapsible-header::after {
-            content: '▼'; /* Down arrow */
-            transition: transform 0.3s ease;
-        }
-        .collapsible-content {
-            max-height: 0;
-            overflow: hidden;
-            transition: max-height 0.5s ease-out;
-        }
-    </style>
+    <link rel="stylesheet" href="/design-system.css">
+    <link rel="stylesheet" href="/syllabus.css">
 </head>
 <body>
     <main class="main-container">
@@ -61,10 +24,10 @@
             </div>
             <div class="collapsible-content">
                 <ul>
-                    <li>General Intelligence & Reasoning</li>
-                    <li>General Awareness</li>
-                    <li>Quantitative Aptitude</li>
-                    <li>English Comprehension</li>
+                    <li><strong>General Intelligence & Reasoning:</strong> Analogies, classification, coding-decoding, puzzles, series, etc.</li>
+                    <li><strong>General Awareness:</strong> History, Culture, Geography, Economic Scene, General Policy & Scientific Research.</li>
+                    <li><strong>Quantitative Aptitude:</strong> Whole numbers, decimals, fractions, percentages, ratio & proportion, square roots, averages, interest, profit and loss, etc.</li>
+                    <li><strong>English Comprehension:</strong> Spot the Error, Fill in the Blanks, Synonyms/Antonyms, Spellings/Detecting mis-spelt words, Idioms & Phrases, etc.</li>
                 </ul>
             </div>
         </section>
@@ -75,9 +38,18 @@
             </div>
             <div class="collapsible-content">
                 <ul>
-                    <li>Paper-I: Mathematical Abilities, Reasoning and General Intelligence, English Language and Comprehension, General Awareness, Computer Knowledge Test, Data Entry Speed Test.</li>
-                    <li>Paper-II: Statistics</li>
-                    <li>Paper-III: General Studies (Finance and Economics)</li>
+                    <li><strong>Paper-I (Compulsory for all posts):</strong>
+                        <ul>
+                            <li>Module-I: Mathematical Abilities</li>
+                            <li>Module-II: Reasoning and General Intelligence</li>
+                            <li>Module-III: English Language and Comprehension</li>
+                            <li>Module-IV: General Awareness</li>
+                            <li>Module-V: Computer Knowledge Test (Qualifying)</li>
+                            <li>Module-VI: Data Entry Speed Test (Qualifying)</li>
+                        </ul>
+                    </li>
+                    <li><strong>Paper-II (For Junior Statistical Officer - JSO):</strong> Statistics</li>
+                    <li><strong>Paper-III (For Assistant Audit Officer/Assistant Accounts Officer):</strong> General Studies (Finance and Economics)</li>
                 </ul>
             </div>
         </section>
@@ -85,16 +57,20 @@
     </main>
     <script>
         function toggleCollapse(header) {
-            header.classList.toggle('active');
+            header.classList.toggle('active'); // For styling the active header
             const content = header.nextElementSibling;
             if (content.style.maxHeight) {
                 content.style.maxHeight = null;
-                header.style.setProperty('--arrow-transform', 'rotate(0deg)');
             } else {
                 content.style.maxHeight = content.scrollHeight + "px";
-                header.style.setProperty('--arrow-transform', 'rotate(180deg)');
             }
         }
+
+        // Auto-open the first section
+        document.addEventListener('DOMContentLoaded', () => {
+            const firstHeader = document.querySelector('.collapsible-header');
+            if (firstHeader) toggleCollapse(firstHeader);
+        });
     </script>
 </body>
 </html>
