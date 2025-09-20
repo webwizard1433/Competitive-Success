@@ -13,6 +13,16 @@
     "bcrypt": "^6.0.0",
     "cors": "^2.8.5",
     "express": "^5.1.0",
+    "openai": "^5.22.0",
     "sqlite3": "^5.1.7"
-  }
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/webwizard1433/Competitive-Success.git"
+  },
+  "keywords": [],
+  "bugs": {
+    "url": "https://github.com/webwizard1433/Competitive-Success/issues"
+  },
+  "homepage": "https://github.com/webwizard1433/Competitive-Success#readme"
 }
