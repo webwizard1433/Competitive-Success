@@ -1,7 +1,10 @@
 const http = require('http');
 const fs = require('fs');
 const path = require('path');
-require('dotenv').config(); // Load environment variables from .env file
+// Load environment variables from .env file only in development
+if (process.env.NODE_ENV !== 'production') {
+    require('dotenv').config();
+}
 const { OpenAI } = require("openai");
 
 // --- Initialize OpenAI Client ---
@@ -105,5 +108,6 @@ const server = http.createServer((req, res) => {
     });
 });
 
-const PORT = 3000;
+// Use the port provided by the environment (for services like Render) or default to 3000
+const PORT = process.env.PORT || 3000;
 server.listen(PORT, () => console.log(`Server running at http://localhost:${PORT}/`));
