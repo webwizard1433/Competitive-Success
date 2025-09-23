@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
     <title>Register | Competitive Success</title>
     <link rel="icon" href="/success.png" type="image/png">
     <style>
@@ -367,12 +367,12 @@
                     })
                 });
 
-                if (!response.ok) {
-                    const errorData = await response.json();
-                    throw new Error(errorData.message || `HTTP error! Status: ${response.status}`);
+                const result = await response.json(); // Parse JSON once
+
+                if (!response.ok) { // Check response status
+                    throw new Error(result.message || `HTTP error! Status: ${response.status}`); // Use result for error message
                 }
 
-                await response.json(); // We still need to consume the JSON body
                 messageDiv.textContent = 'Registration successful! Redirecting to your dashboard...';
                 messageDiv.className = 'message success';
 
