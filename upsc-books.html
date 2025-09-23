@@ -14,7 +14,7 @@
             <p>The best books for every subject, recommended by toppers.</p>
         </div>
         <div class="back-to-home">
-            <a href="/home.html?exam=upsc">← Back to Dashboard</a>
+            <a href="/upsc.html">← Back to UPSC Resources</a>
         </div>
         <div class="grid-container">
             <div class="resource-card">
@@ -36,3 +36,11 @@
         </div>
     </main>
 </html>
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const backLink = document.querySelector('.back-to-home a');
+        const exam = 'upsc'; // Set the exam for this page
+        backLink.href = `/${exam}.html`;
+        backLink.textContent = `← Back to ${exam.toUpperCase()} Resources`;
+    });
+</script>
