@@ -24,13 +24,17 @@ const db = new sqlite3.Database(':memory:', (err) => {
             // db.run('CREATE TABLE IF NOT EXISTS user_progress (userId TEXT, videoId TEXT, completed BOOLEAN, favorited BOOLEAN, PRIMARY KEY (userId, videoId))');
 
             // --- Add a default test user for easier development ---
-            const testUserPassword = 'password123';
-            bcrypt.hash(testUserPassword, saltRounds, (err, hashedPassword) => {
-                if (err) return console.error('Error hashing test password:', err);
-                const insert = 'INSERT OR IGNORE INTO users (contactInfo, fullName, password, role, examChoice) VALUES (?, ?, ?, ?, ?)';
-                db.run(insert, ['test@example.com', 'Test User', hashedPassword, 'student', 'upsc'], (err) => {
-                    if (!err) console.log(`Default user 'test@example.com' with password '${testUserPassword}' is ready.`);
-                });
+            db.get("SELECT * FROM users WHERE contactInfo = 'test@example.com'", (err, row) => {
+                if (!row) {
+                    const testUserPassword = 'password123';
+                    bcrypt.hash(testUserPassword, saltRounds, (err, hashedPassword) => {
+                        if (err) return console.error('Error hashing test password:', err);
+                        const insert = 'INSERT INTO users (contactInfo, fullName, password, role, examChoice) VALUES (?, ?, ?, ?, ?)';
+                        db.run(insert, ['test@example.com', 'Test User', hashedPassword, 'student', 'upsc'], (err) => {
+                            if (!err) console.log(`Default user 'test@example.com' with password '${testUserPassword}' is ready.`);
+                        });
+                    });
+                }
             });
 
             // --- Pre-populate UPSC History Videos ---
