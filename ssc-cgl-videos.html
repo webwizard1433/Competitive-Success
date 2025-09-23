@@ -5,44 +5,56 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="icon" href="/success.png" type="image/png">
     <title>SSC-CGL Video Lectures | Competitive Success</title>
-    <link rel="stylesheet" href="/design-system.css">
-    <link rel="stylesheet" href="/folder-grid.css"> <!-- Assuming folder styles are moved here -->
+    <link rel="stylesheet" href="/exam-hub.css">
 </head>
 <body>
     <main class="main-container">
         <div class="back-to-home">
-            <a href="/home.html?exam=ssc-cgl">← Back to Dashboard</a>
+            <a href="/ssc-cgl.html">← Back to SSC-CGL Resources</a>
         </div>
         <div class="page-header">
             <h1>SSC-CGL Video Lectures</h1>
             <p>Browse video playlists by subject.</p>
         </div>
-        <div class="folder-grid">
-            <a href="/ssc-cgl-quant-videos.html" class="folder"><span class="folder-icon">🧮</span><span class="folder-name">Quantitative Aptitude</span></a>
-            <a href="#" class="folder"><span class="folder-icon">🤔</span><span class="folder-name">Reasoning</span></a>
-            <a href="/ssc-cgl-english-videos.html" class="folder"><span class="folder-icon">🇬🇧</span><span class="folder-name">English</span></a>
-            <a href="#" class="folder"><span class="folder-icon">📰</span><span class="folder-name">General Awareness</span></a>
-            <a href="#" class="folder"><span class="folder-icon">📈</span><span class="folder-name">Advanced Maths</span></a>
-            <a href="#" class="folder"><span class="folder-icon">📊</span><span class="folder-name">Data Interpretation</span></a>
-            <a href="#" class="folder"><span class="folder-icon">📉</span><span class="folder-name">Statistics</span></a>
-            <a href="#" class="folder"><span class="folder-icon">💹</span><span class="folder-name">Finance & Economics</span></a>
-            <a href="#" class="folder"><span class="folder-icon">💻</span><span class="folder-name">Computer</span></a>
-            <a href="#" class="folder"><span class="folder-icon">🎯</span><span class="folder-name">Strategy</span></a>
+        <div class="grid-container">
+            <a href="/ssc-cgl-quant-videos.html" class="resource-card">
+                <div class="card-icon">🧮</div>
+                <div class="card-content">
+                    <h3>Quantitative Aptitude</h3>
+                    <p>Master arithmetic and advanced maths topics.</p>
+                </div>
+            </a>
+            <a href="#" class="resource-card">
+                <div class="card-icon">🤔</div>
+                <div class="card-content">
+                    <h3>Reasoning</h3>
+                    <p>Improve your logical and analytical thinking skills.</p>
+                </div>
+            </a>
+            <a href="/ssc-cgl-english-videos.html" class="resource-card">
+                <div class="card-icon">🇬🇧</div>
+                <div class="card-content">
+                    <h3>English</h3>
+                    <p>Enhance your grammar, vocabulary, and comprehension.</p>
+                </div>
+            </a>
+            <a href="#" class="resource-card">
+                <div class="card-icon">📰</div>
+                <div class="card-content">
+                    <h3>General Awareness</h3>
+                    <p>Stay updated with current affairs and static GK.</p>
+                </div>
+            </a>
+            <a href="#" class="resource-card">
+                <div class="card-icon">💻</div>
+                <div class="card-content">
+                    <h3>Computer Knowledge</h3>
+                    <p>Learn the basics required for the qualifying paper.</p>
+                </div>
+            </a>
         </div>
     </main>
     <script>
-        // --- Standard Authentication Check ---
-        // This prevents access if not logged in and handles screen rotation logouts.
-        const sessionToken = window.localStorage.getItem('sessionToken');
-        if (!sessionToken) {
-            window.location.href = '/login.html';
-        }
-        window.addEventListener('pageshow', function(event) {
-            if (!window.localStorage.getItem('sessionToken')) {
-                window.location.href = '/login.html';
-            }
-        });
-
         // Add a listener to the main content area to remove blur before navigating
         const mainContainer = document.querySelector('.main-container');
         mainContainer.addEventListener('click', function(e) {

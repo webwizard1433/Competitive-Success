@@ -5,43 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>CDS Previous Year Papers | Competitive Success</title>
     <link rel="icon" href="/success.png" type="image/png">
-    <style>
-        :root {
-            --primary-color: #FFC107;
-            --card-background: rgba(255, 255, 255, 0.05);
-            --card-border-color: rgba(255, 255, 255, 0.2);
-            --text-color: #F5F5DC;
-            --secondary-text-color: #adb5bd;
-        }
-        body {
-            background: linear-gradient(135deg, rgb(10, 35, 66) 0%, rgb(0, 26, 51) 100%);
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-            margin: 0; color: var(--text-color);
-        }
-        .main-container { padding: 2rem; max-width: 1200px; margin: auto; }
-        .page-header { text-align: center; margin-bottom: 2.5rem; }
-        .page-header h1 { font-size: 3rem; color: var(--primary-color); margin: 0; }
-        .page-header p { font-size: 1.2rem; color: var(--text-color); }
-        .back-to-home { text-align: left; margin-bottom: 1.5rem; }
-        .back-to-home a { display: inline-block; padding: 0.5rem 1rem; background-color: var(--card-background); border: 1px solid var(--card-border-color); color: var(--primary-color); text-decoration: none; font-weight: bold; border-radius: 5px; transition: background-color 0.3s ease; }
-        .back-to-home a:hover { background-color: rgba(255, 255, 255, 0.1); }
-        @media (max-width: 600px) {
-            .main-container { padding: 1rem; }
-            .page-header h1 { font-size: 2.2rem; }
-        }
-
-        .folder-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 1.5rem; }
-        .folder { background-color: var(--card-background); border: 1px solid var(--card-border-color); backdrop-filter: blur(5px); border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.07); text-align: center; padding: 1.5rem; transition: transform 0.2s ease, box-shadow 0.2s ease; text-decoration: none; color: var(--text-color); display: flex; flex-direction: column; align-items: center; justify-content: center; }
-        .folder:hover .folder-icon {
-            animation: wobble 0.8s ease-in-out;
-        }
-        @keyframes wobble {
-            0%, 100% { transform: rotate(0deg) scale(1); } 25% { transform: rotate(-5deg) scale(1.1); } 75% { transform: rotate(5deg) scale(1.1); }
-        }
-        .folder:hover { transform: translateY(-5px); box-shadow: 0 5px 15px rgba(0,0,0,0.15); }
-        .folder-icon { font-size: 4rem; color: #ffca28; }
-        .folder-name { font-weight: 600; margin-top: 1rem; }
-    </style>
+    <link rel="stylesheet" href="/video-page.css">
+    <link rel="stylesheet" href="/paper-list.css">
 </head>
 <body>
     <main class="main-container">
@@ -52,17 +17,47 @@
             <h1>CDS Previous Year Papers</h1>
             <p>Browse question papers by year.</p>
         </div>
-        <div class="folder-grid">
-            <a href="#" class="folder"><span class="folder-icon">📄</span><span class="folder-name">2023 Papers</span></a>
-            <a href="#" class="folder"><span class="folder-icon">📄</span><span class="folder-name">2022 Papers</span></a>
-            <a href="#" class="folder"><span class="folder-icon">📄</span><span class="folder-name">2021 Papers</span></a>
-            <a href="#" class="folder"><span class="folder-icon">📄</span><span class="folder-name">2020 Papers</span></a>
-            <a href="#" class="folder"><span class="folder-icon">📄</span><span class="folder-name">2019 Papers</span></a>
-            <a href="#" class="folder"><span class="folder-icon">📄</span><span class="folder-name">2018 Papers</span></a>
-            <a href="#" class="folder"><span class="folder-icon">📄</span><span class="folder-name">2017 Papers</span></a>
-            <a href="#" class="folder"><span class="folder-icon">📄</span><span class="folder-name">2016 Papers</span></a>
-            <a href="#" class="folder"><span class="folder-icon">📄</span><span class="folder-name">2015 Papers</span></a>
-            <a href="#" class="folder"><span class="folder-icon">📄</span><span class="folder-name">2014 Papers</span></a>
+        <div class="table-container">
+            <table class="papers-table">
+                <thead>
+                    <tr>
+                        <th>Year</th>
+                        <th>Paper Name</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody id="papersTableBody">
+                    <!-- Paper rows will be populated here -->
+                </tbody>
+            </table>
         </div>
     </main>
+    <script>
+        const papersData = [
+            { year: 2023, name: "CDS (I) - English", url: "#" },
+            { year: 2023, name: "CDS (I) - General Knowledge", url: "#" },
+            { year: 2023, name: "CDS (I) - Elementary Mathematics", url: "#" },
+            { year: 2022, name: "CDS (II) - English", url: "#" },
+            { year: 2022, name: "CDS (II) - General Knowledge", url: "#" },
+            { year: 2022, name: "CDS (II) - Elementary Mathematics", url: "#" },
+        ];
+
+        const tableBody = document.getElementById('papersTableBody');
+
+        function renderTable(papers) {
+            tableBody.innerHTML = '';
+            papers.forEach(paper => {
+                const row = tableBody.insertRow();
+                row.innerHTML = `
+                    <td>${paper.year}</td>
+                    <td>${paper.name}</td>
+                    <td><a href="${paper.url}" class="download-btn" download>Download</a></td>
+                `;
+            });
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            renderTable(papersData);
+        });
+    </script>
 </html>

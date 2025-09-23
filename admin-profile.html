@@ -144,7 +144,7 @@
             }
 
             try {
-                const response = await fetch('/api/admin/change-password', {
+                const response = await fetch('/api/users/update-password', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ currentPassword, newPassword })

@@ -372,17 +372,17 @@
                     throw new Error(errorData.message || `HTTP error! Status: ${response.status}`);
                 }
 
-                const newUser = await response.json();
+                await response.json(); // We still need to consume the JSON body
                 messageDiv.textContent = 'Registration successful! Redirecting to your dashboard...';
                 messageDiv.className = 'message success';
 
                 // --- Auto-login logic ---
                 // In a real app, the server would return a session token.
                 // Here, we simulate it by setting the same items as the login page.
-                const safeStorage = window.localStorage || {}; // Use localStorage for persistence
-                safeStorage.setItem('sessionToken', newUser.contactInfo);
-                safeStorage.setItem('userName', newUser.fullName);
-                safeStorage.setItem('userExamChoice', newUser.examChoice);
+                const safeStorage = window.localStorage || {};
+                safeStorage.setItem('sessionToken', contactInfo.value); // Use the value from the form
+                safeStorage.setItem('userName', fullName.value); // Use the value from the form
+                safeStorage.setItem('userExamChoice', 'upsc'); // Default exam choice
 
                 setTimeout(() => window.location.href = '/home.html', 1500);
             } catch (error) {

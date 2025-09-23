@@ -111,6 +111,7 @@ function populateVideos(videoData, defaultThumbnails, targetGrid = null) {
     videoData.forEach((video, index) => {
         const card = document.createElement('div');
         card.className = 'resource-card';
+        card.dataset.index = index; // Store the video's index on the card
         
         let thumbnailHtml = '';
         const isYouTube = video.id && !video.id.startsWith('placeholder_') && video.type !== 'gdrive';
@@ -155,11 +156,11 @@ function populateVideos(videoData, defaultThumbnails, targetGrid = null) {
         if (video.id.startsWith('placeholder_')) {
             card.classList.add('placeholder');
         } else {
-            card.onclick = () => openModal(video);
-            card.setAttribute('tabindex', '0'); // Make it focusable
+            card.onclick = () => openModal(null, parseInt(card.dataset.index));
+            card.setAttribute('tabindex', '0');
             card.addEventListener('keydown', (e) => {
                 if (e.key === 'Enter') {
-                    openModal(video);
+                    openModal(video, parseInt(card.dataset.index));
                 }
             });
         }
@@ -304,7 +305,11 @@ function updateNavButtons() {
 }
 
 // Function to open the modal and play the video
-function openModal(video) {
+function openModal(video, index = -1) {
+    // If an index is provided, get the video from the global videoData array
+    // This is crucial for pages with multiple grids.
+    if (index !== -1 && !video) video = videoData[index];
+
     if (!video || !video.id || video.id.startsWith('placeholder_')) return;
 
     // Clear any existing autoplay timer

@@ -5,7 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="icon" href="/success.png" type="image/png">
     <title>Railways Previous Year Papers | Competitive Success</title>
-    <link rel="stylesheet" href="/papers-grid.css">
+    <link rel="stylesheet" href="/video-page.css">
+    <link rel="stylesheet" href="/paper-list.css">
 </head>
 <body>
     <main class="main-container">
@@ -16,17 +17,45 @@
             <h1>Railways Previous Year Papers</h1>
             <p>Browse question papers by year.</p>
         </div>
-        <div class="folder-grid">
-            <a href="#" class="folder"><span class="folder-icon">📄</span><span class="folder-name">2023 Papers</span></a>
-            <a href="#" class="folder"><span class="folder-icon">📄</span><span class="folder-name">2022 Papers</span></a>
-            <a href="#" class="folder"><span class="folder-icon">📄</span><span class="folder-name">2021 Papers</span></a>
-            <a href="#" class="folder"><span class="folder-icon">📄</span><span class="folder-name">2020 Papers</span></a>
-            <a href="#" class="folder"><span class="folder-icon">📄</span><span class="folder-name">2019 Papers</span></a>
-            <a href="#" class="folder"><span class="folder-icon">📄</span><span class="folder-name">2018 Papers</span></a>
-            <a href="#" class="folder"><span class="folder-icon">📄</span><span class="folder-name">2017 Papers</span></a>
-            <a href="#" class="folder"><span class="folder-icon">📄</span><span class="folder-name">2016 Papers</span></a>
-            <a href="#" class="folder"><span class="folder-icon">📄</span><span class="folder-name">2015 Papers</span></a>
-            <a href="#" class="folder"><span class="folder-icon">📄</span><span class="folder-name">2014 Papers</span></a>
+        <div class="table-container">
+            <table class="papers-table">
+                <thead>
+                    <tr>
+                        <th>Year</th>
+                        <th>Paper Name</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody id="papersTableBody">
+                    <!-- Paper rows will be populated here -->
+                </tbody>
+            </table>
         </div>
     </main>
+    <script>
+        const papersData = [
+            { year: 2022, name: "RRB NTPC CBT-2", url: "#" },
+            { year: 2021, name: "RRB Group D CBT", url: "#" },
+            { year: 2019, name: "RRB JE CBT-1", url: "#" },
+            { year: 2018, name: "RRB ALP & Technician CBT-1", url: "#" },
+        ];
+
+        const tableBody = document.getElementById('papersTableBody');
+
+        function renderTable(papers) {
+            tableBody.innerHTML = '';
+            papers.forEach(paper => {
+                const row = tableBody.insertRow();
+                row.innerHTML = `
+                    <td>${paper.year}</td>
+                    <td>${paper.name}</td>
+                    <td><a href="${paper.url}" class="download-btn" download>Download</a></td>
+                `;
+            });
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            renderTable(papersData);
+        });
+    </script>
 </html>

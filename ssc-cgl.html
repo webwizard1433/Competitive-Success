@@ -5,8 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
     <title>SSC-CGL Preparation | Competitive Success</title>
     <link rel="icon" href="/success.png" type="image/png">
-    <link rel="stylesheet" href="/design-system.css">
-    <link rel="stylesheet" href="/folder-grid.css">
+    <link rel="stylesheet" href="/exam-hub.css">
 </head>
 <body>
     <main class="main-container">
@@ -33,6 +32,7 @@
                 <div class="card-content">
                     <h3>Video Lectures</h3>
                     <p>Access topic-wise video playlists for all subjects.</p>
+                    <span class="btn-like">Explore Videos</span>
                 </div>
             </a>
             <a href="/ssc-cgl-papers.html" class="resource-card">
@@ -40,6 +40,7 @@
                 <div class="card-content">
                     <h3>Previous Year Papers</h3>
                     <p>Download solved and unsolved papers from the last 10 years.</p>
+                    <span class="btn-like">Browse Papers</span>
                 </div>
             </a>
             <a href="/ssc-cgl-books.html" class="resource-card">
@@ -47,6 +48,7 @@
                 <div class="card-content">
                     <h3>Recommended Books</h3>
                     <p>Find the best books for every subject, recommended by toppers.</p>
+                    <span class="btn-like">Find Books</span>
                 </div>
             </a>
             <a href="/ssc-cgl-syllabus.html" class="resource-card">
@@ -54,6 +56,7 @@
                 <div class="card-content">
                     <h3>Syllabus</h3>
                     <p>Get the detailed official syllabus for Tier-I and Tier-II.</p>
+                    <span class="btn-like">View Syllabus</span>
                 </div>
             </a>
             <a href="/ssc-cgl-notes.html" class="resource-card">
@@ -61,10 +64,16 @@
                 <div class="card-content">
                     <h3>Notes</h3>
                     <p>Access concise, high-quality notes for quick revision.</p>
+                    <span class="btn-like">Get Notes</span>
                 </div>
             </a>
         </div>
     </main>
     <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const safeStorage = window.localStorage || {};
+            const userExam = safeStorage.getItem('userExamChoice') || 'ssc-cgl';
+            document.getElementById('backToHomeLink').href = `/home.html?exam=${userExam}`;
+        });
     </script>
 </html>

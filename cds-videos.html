@@ -5,8 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>CDS Video Lectures | Competitive Success</title>
     <link rel="icon" href="/success.png" type="image/png">
-    <link rel="stylesheet" href="/video-page.css">
-    <link rel="stylesheet" href="/folder-grid.css">
+    <link rel="stylesheet" href="/exam-hub.css">
 </head>
 <body>
     <main class="main-container">
@@ -17,26 +16,35 @@
             <h1>CDS Video Lectures</h1>
             <p>Browse video playlists by subject.</p>
         </div>
-        <div class="folder-grid">
-            <a href="#" class="folder"><span class="folder-icon">🇬🇧</span><span class="folder-name">English</span></a>
-            <a href="#" class="folder"><span class="folder-icon">💡</span><span class="folder-name">General Knowledge</span></a>
-            <a href="#" class="folder"><span class="folder-icon">🧮</span><span class="folder-name">Elementary Maths</span></a>
-            <a href="#" class="folder"><span class="folder-icon">📰</span><span class="folder-name">Current Affairs</span></a>
-            <a href="#" class="folder"><span class="folder-icon">📜</span><span class="folder-name">History</span></a>
-            <a href="#" class="folder"><span class="folder-icon">🌍</span><span class="folder-name">Geography</span></a>
-            <a href="#" class="folder"><span class="folder-icon">🏛️</span><span class="folder-name">Polity</span></a>
-            <a href="#" class="folder"><span class="folder-icon">💹</span><span class="folder-name">Economy</span></a>
-            <a href="#" class="folder"><span class="folder-icon">⚛️</span><span class="folder-name">Physics</span></a>
-            <a href="#" class="folder"><span class="folder-icon">🧪</span><span class="folder-name">Chemistry</span></a>
+        <div class="grid-container">
+            <a href="#" class="resource-card">
+                <div class="card-icon">🇬🇧</div>
+                <div class="card-content">
+                    <h3>English</h3>
+                    <p>Grammar, vocabulary, and comprehension skills.</p>
+                </div>
+            </a>
+            <a href="#" class="resource-card">
+                <div class="card-icon">💡</div>
+                <div class="card-content">
+                    <h3>General Knowledge</h3>
+                    <p>History, Geography, Polity, and Current Affairs.</p>
+                </div>
+            </a>
+            <a href="#" class="resource-card">
+                <div class="card-icon">🧮</div>
+                <div class="card-content">
+                    <h3>Elementary Maths</h3>
+                    <p>Arithmetic, Algebra, Trigonometry, and Geometry.</p>
+                </div>
+            </a>
+            <a href="#" class="resource-card">
+                <div class="card-icon">⚛️</div>
+                <div class="card-content">
+                    <h3>General Science</h3>
+                    <p>Covering Physics, Chemistry, and Biology basics.</p>
+                </div>
+            </a>
         </div>
     </main>
-    <script>
-        // Add a listener to the main content area to remove blur before navigating
-        const mainContainer = document.querySelector('.main-container');
-        mainContainer.addEventListener('click', function(e) {
-            if (e.target.closest('a')) {
-                document.body.classList.remove('menu-open');
-            }
-        }, true);
-    </script>
 </html>

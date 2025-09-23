@@ -39,9 +39,34 @@
     <!-- The Modal -->
     <div id="videoModal" class="modal">
         <div class="modal-content">
+            <span class="close-button" onclick="closeModal()">&times;</span>            <h3 id="videoTitle" class="video-title-modal">Video Title</h3>
             <div id="videoPlayerContainer" class="video-container">
                 <iframe id="videoPlayer" src="" title="Video Player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; fullscreen" allowfullscreen></iframe>
+                <!-- Modern Player Controls -->
+                <div id="playerControlsOverlay" class="player-controls-overlay">
+                    <div id="bigPlayBtn" class="big-play-button"><svg viewBox="0 0 384 512"><path d="M73 39c-14.8-9.1-33.4-9.4-48.5-.9S0 62.6 0 80V432c0 17.4 9.4 33.4 24.5 41.9s33.7 8.1 48.5-.9L361 297c14.3-8.7 23-24.2 23-41s-8.7-32.2-23-41L73 39z"/></svg></div>
+
+                    <div class="controls-bar">
+                        <button id="playPauseBtn" data-tooltip="Play"><svg id="playPauseIcon" viewBox="0 0 384 512"><path d="M73 39c-14.8-9.1-33.4-9.4-48.5-.9S0 62.6 0 80V432c0 17.4 9.4 33.4 24.5 41.9s33.7 8.1 48.5-.9L361 297c14.3-8.7 23-24.2 23-41s-8.7-32.2-23-41L73 39z"/></svg></button>
+                        <div class="volume-controls">
+                            <button id="volumeBtn" data-tooltip="Mute"><svg id="volumeIcon" viewBox="0 0 640 512"><path d="M533.6 32.5C598.5 85.3 640 165.8 640 256s-41.5 170.8-106.4 223.5c-10.1 8.4-25.3 6.9-33.8-3.2s-6.9-25.3 3.2-33.8C557.5 398.2 592 331.2 592 256s-34.5-142.2-89.1-186.5c-10.1-8.4-11.5-23.6-3.2-33.8s23.6-11.5 33.8-3.2zM473.1 107c43.2 35.2 70.9 88.9 70.9 149s-27.7 113.8-70.9 149c-10.1 8.4-25.3 6.9-33.8-3.2s-6.9-25.3 3.2-33.8C483.8 339.3 504 300.6 504 256s-20.2-83.3-61.5-111.2c-10.1-8.4-11.5-23.6-3.2-33.8s23.6-11.5 33.8-3.2zM301.1 34.8C312.6 40 320 51.4 320 64V448c0 12.6-7.4 24-18.9 29.2s-25 3.1-34.4-5.3L131.8 352H64c-35.3 0-64-28.7-64-64V224c0-35.3 28.7-64 64-64h67.8L266.7 40.1c9.4-8.4 22.9-10.4 34.4-5.3z"/></svg></button>
+                            <input type="range" id="volumeSlider" class="volume-slider" min="0" max="1" step="0.05" value="1">
+                        </div>
+                        <span id="currentTime" class="time-display">0:00</span>
+                        <div id="progressBarWrapper" class="progress-bar-wrapper">
+                            <div id="progressBar" class="progress-bar-filled"></div>
+                        </div>
+                        <span id="duration" class="time-display">0:00</span>
+                        <div class="control-group settings">
+                            <button id="settingsBtn" data-tooltip="Settings"><svg viewBox="0 0 512 512"><path d="M495.9 166.6c3.2 8.7 .5 18.4-6.4 24.6l-43.3 39.4c1.1 8.3 1.7 16.8 1.7 25.4s-.6 17.1-1.7 25.4l43.3 39.4c6.9 6.2 9.6 15.9 6.4 24.6-4.4 11.9-9.7 23.3-15.8 34.3l-4.7 8.1c-6.6 11-14 21.4-22.1 31.2-5.9 7.2-15.7 9.6-24.5 6.8l-55.7-17.7c-13.4 10.3-28.2 18.9-44 25.4l-12.5 57.1c-2 9.1-9.9 15.9-19.4 15.9H181.8c-9.5 0-17.4-6.8-19.4-15.9l-12.5-57.1c-15.8-6.5-30.6-15.1-44-25.4L49.8 429.7c-8.8 2.8-18.6 .3-24.5-6.8-8.1-9.8-15.5-20.2-22.1-31.2l-4.7-8.1c-6.1-11-11.4-22.4-15.8-34.3-3.2-8.7-.5-18.4 6.4-24.6l43.3-39.4C50.6 273.1 50 264.6 50 256s.6-17.1 1.7-25.4L7.4 191.2c-6.9-6.2-9.6-15.9-6.4-24.6 4.4-11.9 9.7-23.3 15.8-34.3l4.7-8.1c6.6-11 14-21.4 22.1-31.2 5.9-7.2 15.7-9.6 24.5-6.8l55.7 17.7c13.4-10.3 28.2-18.9 44-25.4l12.5-57.1c2-9.1 9.9-15.9 19.4-15.9h80.4c9.5 0 17.4 6.8 19.4 15.9l12.5 57.1c15.8 6.5 30.6 15.1 44 25.4l55.7-17.7c8.8-2.8 18.6-.3 24.5 6.8 8.1 9.8 15.5 20.2 22.1 31.2l4.7 8.1c6.1 11 11.4 22.4 15.8 34.3zM256 336c44.2 0 80-35.8 80-80s-35.8-80-80-80-80 35.8-80 80 35.8 80 80 80z"/></svg></button>
+                            <div id="settingsMenu" class="settings-menu"></div>
+                        </div>
+                        <button id="pipBtn" data-tooltip="Picture-in-Picture"><svg viewBox="0 0 512 512"><path d="M416 32h-320c-26.47 0-48 21.53-48 48v352c0 26.47 21.53 48 48 48h320c26.47 0 48-21.53 48-48v-352c0-26.47-21.53-48-48-48zm-16 384h-288v-320h288v320zm-32-192h-128v128h128v-128z"/></svg></button>
+                        <button id="fullscreenBtn" data-tooltip="Fullscreen"><svg viewBox="0 0 448 512"><path d="M32 32C14.3 32 0 46.3 0 64v96c0 17.7 14.3 32 32 32s32-14.3 32-32V96h64c17.7 0 32-14.3 32-32s-14.3-32-32-32H32zM64 352c0-17.7-14.3-32-32-32s-32 14.3-32 32v96c0 17.7 14.3 32 32 32h96c17.7 0 32-14.3 32-32s-14.3-32-32-32H64V352zM320 32c-17.7 0-32 14.3-32 32s14.3 32 32 32h64v64c0 17.7 14.3 32 32 32s32-14.3 32-32V64c0-17.7-14.3-32-32-32H320zM448 352c0-17.7-14.3-32-32-32s-32 14.3-32 32v64H320c-17.7 0-32 14.3-32 32s14.3 32 32 32h96c17.7 0 32-14.3 32-32V352z"/></svg></button>
+                    </div>
+                </div>
             </div>
+            <div id="doubtForum" class="doubt-forum-container"></div>
         </div>
     </div>
 
@@ -91,9 +116,9 @@
                 const modernVideos = generatePlaceholders(33, 'Modern India Lecture', videoData.filter(v => v.title.includes('Modern')));
                 
                 // Populate each section with the correct videos and thumbnails
-                populateVideos(ancientVideos, { default: defaultThumbnails.ancient }, ancientGrid);
-                populateVideos(medievalVideos, { default: defaultThumbnails.medieval }, medievalGrid);
-                populateVideos(modernVideos, { default: defaultThumbnails.modern }, modernGrid);
+                populateVideos(ancientVideos, { default: defaultThumbnails.ancient }, ancientGrid, ancientVideos);
+                populateVideos(medievalVideos, { default: defaultThumbnails.medieval }, medievalGrid, medievalVideos);
+                populateVideos(modernVideos, { default: defaultThumbnails.modern }, modernGrid, modernVideos);
 
             } catch (error) {
                 console.error("Failed to load videos:", error);

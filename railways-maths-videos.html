@@ -3,22 +3,22 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>UPSC Polity Videos | Competitive Success</title>
+    <title>Railways Maths Videos | Competitive Success</title>
     <link rel="icon" href="/success.png" type="image/png">
     <link rel="stylesheet" href="/video-page.css">
 </head>
 <body>
     <main class="main-container">
-        <button id="backToTopBtn" title="Go to top">↑</button>
+        <button onclick="scrollToTop()" id="backToTopBtn" title="Go to top">↑</button>
         <div class="back-to-home">
-            <a href="/upsc-videos.html">← Back to Subjects</a>
+            <a href="/railways-videos.html">← Back to Subjects</a>
         </div>
         <div class="page-header">
-            <h1>Polity Lectures</h1>
+            <h1>Mathematics for Railways</h1>
             <p>Click on any video to play it instantly.</p>
         </div>
         <div class="grid-container" id="videoGrid">
-            <!-- Video cards are populated by video-page.js -->
+            <!-- Video cards will be dynamically inserted here by JavaScript -->
         </div>
     </main>
 
@@ -32,7 +32,6 @@
                 <!-- Modern Player Controls -->
                 <div id="playerControlsOverlay" class="player-controls-overlay">
                     <div id="bigPlayBtn" class="big-play-button"><svg viewBox="0 0 384 512"><path d="M73 39c-14.8-9.1-33.4-9.4-48.5-.9S0 62.6 0 80V432c0 17.4 9.4 33.4 24.5 41.9s33.7 8.1 48.5-.9L361 297c14.3-8.7 23-24.2 23-41s-8.7-32.2-23-41L73 39z"/></svg></div>
-
                     <div class="controls-bar">
                         <button id="playPauseBtn" data-tooltip="Play"><svg id="playPauseIcon" viewBox="0 0 384 512"><path d="M73 39c-14.8-9.1-33.4-9.4-48.5-.9S0 62.6 0 80V432c0 17.4 9.4 33.4 24.5 41.9s33.7 8.1 48.5-.9L361 297c14.3-8.7 23-24.2 23-41s-8.7-32.2-23-41L73 39z"/></svg></button>
                         <div class="volume-controls">
@@ -44,10 +43,7 @@
                             <div id="progressBar" class="progress-bar-filled"></div>
                         </div>
                         <span id="duration" class="time-display">0:00</span>
-                        <div class="control-group settings">
-                            <button id="settingsBtn" data-tooltip="Settings"><svg viewBox="0 0 512 512"><path d="M495.9 166.6c3.2 8.7 .5 18.4-6.4 24.6l-43.3 39.4c1.1 8.3 1.7 16.8 1.7 25.4s-.6 17.1-1.7 25.4l43.3 39.4c6.9 6.2 9.6 15.9 6.4 24.6-4.4 11.9-9.7 23.3-15.8 34.3l-4.7 8.1c-6.6 11-14 21.4-22.1 31.2-5.9 7.2-15.7 9.6-24.5 6.8l-55.7-17.7c-13.4 10.3-28.2 18.9-44 25.4l-12.5 57.1c-2 9.1-9.9 15.9-19.4 15.9H181.8c-9.5 0-17.4-6.8-19.4-15.9l-12.5-57.1c-15.8-6.5-30.6-15.1-44-25.4L49.8 429.7c-8.8 2.8-18.6 .3-24.5-6.8-8.1-9.8-15.5-20.2-22.1-31.2l-4.7-8.1c-6.1-11-11.4-22.4-15.8-34.3-3.2-8.7-.5-18.4 6.4-24.6l43.3-39.4C50.6 273.1 50 264.6 50 256s.6-17.1 1.7-25.4L7.4 191.2c-6.9-6.2-9.6-15.9-6.4-24.6 4.4-11.9 9.7-23.3 15.8-34.3l4.7-8.1c6.6-11 14-21.4 22.1-31.2 5.9-7.2 15.7-9.6 24.5-6.8l55.7 17.7c13.4-10.3 28.2-18.9 44-25.4l12.5-57.1c2-9.1 9.9-15.9 19.4-15.9h80.4c9.5 0 17.4 6.8 19.4 15.9l12.5 57.1c15.8 6.5 30.6 15.1 44 25.4l55.7-17.7c8.8-2.8 18.6-.3 24.5 6.8 8.1 9.8 15.5 20.2 22.1 31.2l4.7 8.1c6.1 11 11.4 22.4 15.8 34.3zM256 336c44.2 0 80-35.8 80-80s-35.8-80-80-80-80 35.8-80 80 35.8 80 80 80z"/></svg></button>
-                            <div id="settingsMenu" class="settings-menu"></div>
-                        </div>
+                        <div class="control-group settings"><button id="settingsBtn" data-tooltip="Settings"><svg viewBox="0 0 512 512"><path d="M495.9 166.6c3.2 8.7 .5 18.4-6.4 24.6l-43.3 39.4c1.1 8.3 1.7 16.8 1.7 25.4s-.6 17.1-1.7 25.4l43.3 39.4c6.9 6.2 9.6 15.9 6.4 24.6-4.4 11.9-9.7 23.3-15.8 34.3l-4.7 8.1c-6.6 11-14 21.4-22.1 31.2-5.9 7.2-15.7 9.6-24.5 6.8l-55.7-17.7c-13.4 10.3-28.2 18.9-44 25.4l-12.5 57.1c-2 9.1-9.9 15.9-19.4 15.9H181.8c-9.5 0-17.4-6.8-19.4-15.9l-12.5-57.1c-15.8-6.5-30.6-15.1-44-25.4L49.8 429.7c-8.8 2.8-18.6 .3-24.5-6.8-8.1-9.8-15.5-20.2-22.1-31.2l-4.7-8.1c-6.1-11-11.4-22.4-15.8-34.3-3.2-8.7-.5-18.4 6.4-24.6l43.3-39.4C50.6 273.1 50 264.6 50 256s.6-17.1 1.7-25.4L7.4 191.2c-6.9-6.2-9.6-15.9-6.4-24.6 4.4-11.9 9.7-23.3 15.8-34.3l4.7-8.1c6.6-11 14-21.4 22.1-31.2 5.9-7.2 15.7-9.6 24.5-6.8l55.7 17.7c13.4-10.3 28.2-18.9 44-25.4l12.5-57.1c2-9.1 9.9-15.9 19.4-15.9h80.4c9.5 0 17.4 6.8 19.4 15.9l12.5 57.1c15.8 6.5 30.6 15.1 44 25.4l55.7-17.7c8.8-2.8 18.6-.3 24.5 6.8 8.1 9.8 15.5 20.2 22.1 31.2l4.7 8.1c6.1 11 11.4 22.4 15.8 34.3zM256 336c44.2 0 80-35.8 80-80s-35.8-80-80-80-80 35.8-80 80 35.8 80 80 80z"/></svg></button><div id="settingsMenu" class="settings-menu"></div></div>
                         <button id="pipBtn" data-tooltip="Picture-in-Picture"><svg viewBox="0 0 512 512"><path d="M416 32h-320c-26.47 0-48 21.53-48 48v352c0 26.47 21.53 48 48 48h320c26.47 0 48-21.53 48-48v-352c0-26.47-21.53-48-48-48zm-16 384h-288v-320h288v320zm-32-192h-128v128h128v-128z"/></svg></button>
                         <button id="fullscreenBtn" data-tooltip="Fullscreen"><svg viewBox="0 0 448 512"><path d="M32 32C14.3 32 0 46.3 0 64v96c0 17.7 14.3 32 32 32s32-14.3 32-32V96h64c17.7 0 32-14.3 32-32s-14.3-32-32-32H32zM64 352c0-17.7-14.3-32-32-32s-32 14.3-32 32v96c0 17.7 14.3 32 32 32h96c17.7 0 32-14.3 32-32s-14.3-32-32-32H64V352zM320 32c-17.7 0-32 14.3-32 32s14.3 32 32 32h64v64c0 17.7 14.3 32 32 32s32-14.3 32-32V64c0-17.7-14.3-32-32-32H320zM448 352c0-17.7-14.3-32-32-32s-32 14.3-32 32v64H320c-17.7 0-32 14.3-32 32s14.3 32 32 32h96c17.7 0 32-14.3 32-32V352z"/></svg></button>
                     </div>
@@ -58,40 +54,24 @@
     </div>
 
     <script>
-        // --- Page-Specific Data ---
-        let videoData = []; // This will be fetched from the API
-        const defaultThumbnails = {
-            placeholder: "https://getintoias.com/wp-content/uploads/2018/07/Indian-Polity-Study-Material-Notes.jpg"
-        };
+        let videoData = [];
+        const defaultThumbnails = { default: 'https://images.unsplash.com/photo-1516321497487-e288fb19713f?q=80&w=2070' };
     </script>
     <script src="/video-page.js"></script>
     <script>
-        // --- Page Initialization ---
         document.addEventListener('DOMContentLoaded', async () => {
             const videoGrid = document.getElementById('videoGrid');
             try {
-                const response = await fetch('/api/videos?category=upsc-polity');
-                const fetchedVideos = await response.json();
-                const videos = Array.from({ length: 41 }, (_, i) => 
-                    fetchedVideos[i] || { id: `placeholder_polity_${i+1}`, title: `Polity ${i + 1}`, type: 'placeholder' }
-                );
+                // In a real app, you'd fetch this. For now, we create placeholders.
+                const videos = Array.from({ length: 40 }, (_, i) => ({ id: `placeholder_railways_math_${i+1}`, title: `Railways Maths ${i + 1}`, type: 'placeholder' }));
                 videoData = videos;
-                await fetchUserData(); // Fetch user data for progress
+                await fetchUserData();
                 populateVideos(videoData, defaultThumbnails);
             } catch (error) {
                 console.error("Failed to load videos:", error);
                 videoGrid.innerHTML = '<p>Could not load videos. Please try again later.</p>';
             }
-
-            // Restore video state on reload
-            if (window.sessionStorage) {
-                const activeVideoJson = sessionStorage.getItem('activeVideo');
-                if (activeVideoJson) {
-                    try { openModal(JSON.parse(activeVideoJson)); } catch (e) { console.error(e); }
-                }
-            }
         });
     </script>
-
 </body>
 </html>

@@ -457,23 +457,38 @@
         // --- Student Login Logic ---
         document.getElementById('studentLoginForm').addEventListener('submit', async (e) => {
             e.preventDefault();
-            const contact = document.getElementById('studentContact').value;
+            const contactInfo = document.getElementById('studentContact').value;
             const password = document.getElementById('studentPassword').value;
             const messageEl = document.getElementById('studentMessage');
             const submitButton = e.target.querySelector('button');
+
             submitButton.disabled = true;
             submitButton.textContent = 'Logging in...';
             messageEl.style.display = 'none';
 
-            // Mock student login
-            if (contact === 'saurabh@example.com' && password === 'password123') {
-                safeStorage.setItem('sessionToken', contact);
-                safeStorage.setItem('userName', 'Saurabh');
-                safeStorage.setItem('userExamChoice', 'upsc');
-                window.location.href = '/home.html';
-            } else {
-                messageEl.textContent = 'Invalid credentials. Please check your email/mobile and password.';
+            try {
+                const response = await fetch('/api/users/login', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ contactInfo, password })
+                });
+
+                const result = await response.json();
+
+                if (!response.ok) { // Check if response status is not 2xx
+                    throw new Error(result.message || 'Login failed.');
+                }
+
+                // Login successful (status is 2xx)
+                safeStorage.setItem('sessionToken', result.userData.contactInfo);
+                safeStorage.setItem('userName', result.userData.fullName);
+                safeStorage.setItem('userExamChoice', result.userData.examChoice || 'upsc');
+                window.location.href = '/home.html'; // Redirect to the main dashboard
+
+            } catch (error) {
+                messageEl.textContent = error.message;
                 messageEl.className = 'message error';
+            } finally {
                 submitButton.disabled = false;
                 submitButton.textContent = 'Login';
             }
@@ -513,15 +528,34 @@
             forgotPasswordMessage.className = 'message';
             forgotPasswordMessage.style.display = 'block';
 
-            // Mock forgot password
-            if (contact === 'saurabh@example.com') {
-                const token = `mock_${Date.now()}`;
-                sessionStorage.setItem(`reset_${token}`, contact);
-                forgotPasswordMessage.textContent = 'User found! A reset link has been sent (simulation).';
-                forgotPasswordMessage.className = 'message success';
-                // In a real app, you'd email a link like: /reset-password.html?token=${token}
-            } else {
-                forgotPasswordMessage.textContent = 'No account found with that email or mobile.';
+            try {
+                const response = await fetch('/api/users/forgot-password', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ contactInfo: contact })
+                });
+
+                const result = await response.json();
+
+                if (!result.success) {
+                    throw new Error(result.message);
+                }
+
+                // For simulation: if a user was found, store the token and redirect
+                if (result.token && result.user) {
+                    sessionStorage.setItem(result.token, result.user);
+                    forgotPasswordMessage.textContent = 'User found! Redirecting to reset page...';
+                    forgotPasswordMessage.className = 'message success';
+                    setTimeout(() => {
+                        window.location.href = `/reset-password.html?token=${result.token}`;
+                    }, 1500);
+                } else {
+                    // If user not found, server still sends success, so we show a generic message
+                    forgotPasswordMessage.textContent = 'If an account exists, a reset link has been sent.';
+                    forgotPasswordMessage.className = 'message success';
+                }
+            } catch (error) {
+                forgotPasswordMessage.textContent = error.message || 'An error occurred.';
                 forgotPasswordMessage.className = 'message error';
             }
         });
